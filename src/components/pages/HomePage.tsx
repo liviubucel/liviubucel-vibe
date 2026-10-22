@@ -119,7 +119,7 @@ export default function HomePage() {
           </ul>
           <ArrowUpRight className="lb-bento-arrow" size={18} aria-hidden="true" />
         </Link>
-        <div className="lb-bento-panel lb-bento-clock"><LocalTimes ro={ro}/></div>
+        <div className="lb-bento-panel lb-bento-clock"><LondonClock ro={ro}/></div>
         <Link className="lb-bento-panel lb-bento-tile lb-bento-projects" to={localizedPath('/projects',lang)}>
           <FolderKanban size={22} aria-hidden="true"/>
           <h2>{t.projects}</h2>
