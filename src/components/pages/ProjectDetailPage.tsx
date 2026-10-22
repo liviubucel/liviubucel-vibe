@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
+import { getLanguage, localizedPath } from '@/lib/portfolio';
 import { motion } from 'framer-motion';
 import { ExternalLink, Calendar, ArrowLeft } from 'lucide-react';
 import { Image } from '@/components/ui/image';
@@ -13,6 +14,7 @@ import { format } from 'date-fns';
 import { ro } from 'date-fns/locale';
 
 export default function ProjectDetailPage() {
+  const lang = getLanguage(useLocation().pathname);
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<Proiecte | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,7 +51,7 @@ export default function ProjectDetailPage() {
               <h1 className="font-heading text-4xl font-bold text-secondary-foreground mb-6">
                 Proiect negăsit
               </h1>
-              <Link to="/projects">
+              <Link to={localizedPath('/projects',lang)}>
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                   Înapoi la proiecte
                 </Button>
@@ -61,7 +63,7 @@ export default function ProjectDetailPage() {
             {/* Hero Section */}
             <section className="w-full bg-secondary py-24">
               <div className="max-w-[100rem] mx-auto px-8 lg:px-16">
-                <Link to="/projects" className="inline-flex items-center gap-2 text-secondary-foreground/70 hover:text-primary font-paragraph text-sm mb-8 transition-colors">
+                <Link to={localizedPath('/projects',lang)} className="inline-flex items-center gap-2 text-secondary-foreground/70 hover:text-primary font-paragraph text-sm mb-8 transition-colors">
                   <ArrowLeft className="w-4 h-4" />
                   Înapoi la proiecte
                 </Link>
