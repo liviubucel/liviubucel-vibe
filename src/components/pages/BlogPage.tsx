@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { getLanguage, localizedPath } from '@/lib/portfolio';
 import { motion } from 'framer-motion';
 import { Calendar, User } from 'lucide-react';
 import { Image } from '@/components/ui/image';
@@ -12,6 +13,7 @@ import { format } from 'date-fns';
 import { ro } from 'date-fns/locale';
 
 export default function BlogPage() {
+  const lang = getLanguage(useLocation().pathname);
   const [articles, setArticles] = useState<BlogArticles[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasNext, setHasNext] = useState(false);
@@ -65,11 +67,11 @@ export default function BlogPage() {
             </div>
             
             <h1 className="font-heading text-6xl lg:text-7xl font-bold text-secondary-foreground mb-6">
-              Blog Tehnic
+              {lang === 'ro' ? 'Blog Tehnic' : 'Security Writing'}
             </h1>
             
             <p className="text-secondary-foreground/80 text-xl font-paragraph max-w-4xl leading-relaxed">
-              Articole despre securitate cibernetică, ethical hacking și investigații digitale.
+              {lang === 'ro' ? 'Articole despre securitate cibernetică, ethical hacking și investigații digitale.' : 'Research, technical writing, incident analysis and evidence-led cybersecurity notes.'}
             </p>
           </motion.div>
         </div>
@@ -89,7 +91,7 @@ export default function BlogPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: idx * 0.1 }}
                     >
-                      <Link to={`/blog/${article._id}`} className="group block h-full">
+                      <Link to={localizedPath('/blog/' + (article.slug || article._id), lang)} className="group block h-full">
                         <div className="bg-secondary rounded-lg overflow-hidden hover:border-l-4 hover:border-primary transition-all h-full flex flex-col">
                           {article.featuredImage && (
                             <div className="relative h-64 overflow-hidden">

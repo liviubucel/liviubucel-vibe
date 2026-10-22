@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
+import { items } from '@wix/data';
+import { getLanguage, localizedPath } from '@/lib/portfolio';
 import { motion } from 'framer-motion';
 import { Calendar, User, ArrowLeft, Tag } from 'lucide-react';
 import { Image } from '@/components/ui/image';
@@ -13,6 +15,7 @@ import { format } from 'date-fns';
 import { ro } from 'date-fns/locale';
 
 export default function BlogDetailPage() {
+  const lang = getLanguage(useLocation().pathname);
   const { id } = useParams<{ id: string }>();
   const [article, setArticle] = useState<BlogArticles | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +28,8 @@ export default function BlogDetailPage() {
     if (!id) return;
     
     try {
-      const data = await BaseCrudService.getById<BlogArticles>('articoleblog', id);
+      const matching = await items.query('articoleblog').eq('slug', id).limit(1).find();
+      const data = matching.items.length ? matching.items[0] as BlogArticles : await BaseCrudService.getById<BlogArticles>('articoleblog', id);
       setArticle(data);
     } catch (error) {
       console.error('Error loading article:', error);
@@ -49,7 +53,7 @@ export default function BlogDetailPage() {
               <h1 className="font-heading text-4xl font-bold text-secondary-foreground mb-6">
                 Articol negăsit
               </h1>
-              <Link to="/blog">
+              <Link to={localizedPath('/blog',lang)}>
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                   Înapoi la blog
                 </Button>
@@ -61,7 +65,7 @@ export default function BlogDetailPage() {
             {/* Hero Section */}
             <section className="w-full bg-secondary py-24">
               <div className="max-w-[100rem] mx-auto px-8 lg:px-16">
-                <Link to="/blog" className="inline-flex items-center gap-2 text-secondary-foreground/70 hover:text-primary font-paragraph text-sm mb-8 transition-colors">
+                <Link to={localizedPath('/blog',lang)} className="inline-flex items-center gap-2 text-secondary-foreground/70 hover:text-primary font-paragraph text-sm mb-8 transition-colors">
                   <ArrowLeft className="w-4 h-4" />
                   Înapoi la blog
                 </Link>

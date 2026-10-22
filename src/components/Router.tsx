@@ -12,107 +12,40 @@ import BlogPage from '@/components/pages/BlogPage';
 import BlogDetailPage from '@/components/pages/BlogDetailPage';
 import ContactPage from '@/components/pages/ContactPage';
 import PrivacyPage from '@/components/pages/PrivacyPage';
+import RomaniaCyberMonitorPage from '@/components/pages/RomaniaCyberMonitorPage';
 
-// Layout component that includes ScrollToTop
 function Layout() {
-  return (
-    <>
-      <ScrollToTop />
-      <Outlet />
-    </>
-  );
+  return <><ScrollToTop /><Outlet /></>;
 }
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Layout />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        index: true,
-        element: <HomePage />,
-        routeMetadata: {
-          pageIdentifier: 'home',
-        },
-      },
-      {
-        path: "about",
-        element: <AboutPage />,
-        routeMetadata: {
-          pageIdentifier: 'about',
-        },
-      },
-      {
-        path: "projects",
-        element: <ProjectsPage />,
-        routeMetadata: {
-          pageIdentifier: 'projects',
-        },
-      },
-      {
-        path: "projects/:id",
-        element: <ProjectDetailPage />,
-        routeMetadata: {
-          pageIdentifier: 'project-detail',
-        },
-      },
-      {
-        path: "accreditations",
-        element: <AccreditationsPage />,
-        routeMetadata: {
-          pageIdentifier: 'accreditations',
-        },
-      },
-      {
-        path: "experience",
-        element: <ExperiencePage />,
-        routeMetadata: {
-          pageIdentifier: 'experience',
-        },
-      },
-      {
-        path: "blog",
-        element: <BlogPage />,
-        routeMetadata: {
-          pageIdentifier: 'blog',
-        },
-      },
-      {
-        path: "blog/:id",
-        element: <BlogDetailPage />,
-        routeMetadata: {
-          pageIdentifier: 'blog-detail',
-        },
-      },
-      {
-        path: "contact",
-        element: <ContactPage />,
-        routeMetadata: {
-          pageIdentifier: 'contact',
-        },
-      },
-      {
-        path: "privacy",
-        element: <PrivacyPage />,
-        routeMetadata: {
-          pageIdentifier: 'privacy',
-        },
-      },
-      {
-        path: "*",
-        element: <Navigate to="/" replace />,
-      },
-    ],
-  },
-], {
-  basename: import.meta.env.BASE_NAME,
-});
+const pages = [
+  { path: 'about', element: <AboutPage />, identifier: 'about' },
+  { path: 'projects', element: <ProjectsPage />, identifier: 'projects' },
+  { path: 'projects/:id', element: <ProjectDetailPage />, identifier: 'project-detail' },
+  { path: 'accreditations', element: <AccreditationsPage />, identifier: 'accreditations' },
+  { path: 'experience', element: <ExperiencePage />, identifier: 'experience' },
+  { path: 'blog', element: <BlogPage />, identifier: 'blog' },
+  { path: 'blog/:id', element: <BlogDetailPage />, identifier: 'blog-detail' },
+  { path: 'romania-cyber-monitor', element: <RomaniaCyberMonitorPage />, identifier: 'monitor' },
+  { path: 'romania-cyber-monitor/:category', element: <RomaniaCyberMonitorPage />, identifier: 'monitor-category' },
+  { path: 'romania-cyber-monitor/incidents/:slug', element: <RomaniaCyberMonitorPage />, identifier: 'monitor-incident' },
+  { path: 'contact', element: <ContactPage />, identifier: 'contact' },
+  { path: 'privacy', element: <PrivacyPage />, identifier: 'privacy' },
+];
+
+const router = createBrowserRouter([{
+  path: '/',
+  element: <Layout />,
+  errorElement: <ErrorPage />,
+  children: [
+    { index: true, element: <HomePage />, routeMetadata: { pageIdentifier: 'home' } },
+    ...pages.map(page => ({ path: page.path, element: page.element, routeMetadata: { pageIdentifier: page.identifier } })),
+    { path: 'ro', element: <HomePage />, routeMetadata: { pageIdentifier: 'home-ro' } },
+    ...pages.map(page => ({ path: 'ro/' + page.path, element: page.element, routeMetadata: { pageIdentifier: page.identifier + '-ro' } })),
+    { path: '*', element: <Navigate to="/" replace /> },
+  ],
+}], { basename: import.meta.env.BASE_NAME });
 
 export default function AppRouter() {
-  return (
-    <MemberProvider>
-      <RouterProvider router={router} />
-    </MemberProvider>
-  );
+  return <MemberProvider><RouterProvider router={router} /></MemberProvider>;
 }

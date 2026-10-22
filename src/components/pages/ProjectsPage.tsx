@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { getLanguage, localizedPath } from '@/lib/portfolio';
 import { motion } from 'framer-motion';
 import { ExternalLink, Calendar } from 'lucide-react';
 import { Image } from '@/components/ui/image';
@@ -12,6 +13,7 @@ import { format } from 'date-fns';
 import { ro } from 'date-fns/locale';
 
 export default function ProjectsPage() {
+  const lang = getLanguage(useLocation().pathname);
   const [projects, setProjects] = useState<Proiecte[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasNext, setHasNext] = useState(false);
@@ -65,11 +67,11 @@ export default function ProjectsPage() {
             </div>
             
             <h1 className="font-heading text-6xl lg:text-7xl font-bold text-secondary-foreground mb-6">
-              Proiecte Tehnice
+              {lang === 'ro' ? 'Proiecte Tehnice' : 'Technical Projects'}
             </h1>
             
             <p className="text-secondary-foreground/80 text-xl font-paragraph max-w-4xl leading-relaxed">
-              Explorează proiectele mele în domeniul securității cibernetice, ethical hacking și investigații digitale.
+              {lang === 'ro' ? 'Explorează proiectele mele în domeniul securității cibernetice, ethical hacking și investigații digitale.' : 'Explore my real security-engineering, ethical hacking and digital investigation projects.'}
             </p>
           </motion.div>
         </div>
@@ -89,7 +91,7 @@ export default function ProjectsPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: idx * 0.1 }}
                     >
-                      <Link to={`/projects/${project._id}`} className="group block">
+                      <Link to={localizedPath('/projects/' + project._id, lang)} className="group block">
                         <div className="bg-secondary rounded-lg overflow-hidden hover:border-l-4 hover:border-primary transition-all h-full">
                           {project.projectImage && (
                             <div className="relative h-64 overflow-hidden">
