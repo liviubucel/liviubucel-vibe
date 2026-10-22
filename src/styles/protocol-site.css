@@ -476,3 +476,23 @@ body { background:#131313; color:#f5f5f5; }
   .lb-page .lb-article {padding:23px 19px;}
   .lb-page .lb-cards {gap:12px;}
 }
+
+/* Remove Wix/Mozilla card wrappers' default white inset on dark article grids. */
+.lb-page:not(.lb-portfolio-home) .mzp-c-card.mzp-c-card-medium {
+  background:transparent;
+  border:0;
+  border-radius:10px;
+  box-shadow:none;
+  margin:0;
+  padding:0;
+  min-width:0;
+  overflow:visible;
+}
+.lb-page:not(.lb-portfolio-home) .mzp-c-card .lb-card {
+  width:100%;
+  box-sizing:border-box;
+  color:#f5f5f5 !important;
+}
+.lb-page:not(.lb-portfolio-home) .mzp-c-card .lb-card-title {
+  overflow-wrap:anywhere;
+}
