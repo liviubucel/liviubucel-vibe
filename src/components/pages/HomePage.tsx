@@ -1,22 +1,17 @@
+import { ArrowUpRight, Github, Linkedin, Youtube, Mail, ShieldCheck, FolderKanban, BriefcaseBusiness, BookOpen, Palette, Heart, Globe2 } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { submissions } from '@wix/forms';
-import { getNativeProjects,projectTechnologies,type NativeProject } from '@/lib/wix-portfolio';
+import { getNativeProjects, type NativeProject } from '@/lib/wix-portfolio';
+import { BaseCrudService } from '@/integrations';
+import type { Accreditations } from '@/entities';
 import { getPublishedBlogPosts, type NativeBlogPost } from '@/lib/wix-blog';
 import { getLanguage, labels, localizedPath, portfolio } from '@/lib/portfolio';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 const SIGNUP_FORM_ID = 'e85c654a-1a61-44dd-beb7-54868f6c7014';
-const areas = [
-  ['Ethical Hacking', 'Understand attacks and validate weaknesses'],
-  ['Digital Forensics', 'Investigate incidents and preserve evidence'],
-  ['Threat Intelligence', 'Separate attacker claims from verified facts'],
-  ['Security Engineering', 'Build defensible systems and secure infrastructure'],
-  ['PKI & TLS', 'Certificate management and ACME automation'],
-  ['Vulnerability Research', 'Assess exploitability and practical remediation']
-];
 
 function LondonClock({ro}:{ro:boolean}) {
   const [time,setTime] = useState('');
@@ -41,6 +36,7 @@ export default function HomePage() {
   const t = labels[lang];
   const [projects,setProjects]=useState<NativeProject[]>([]);
   const [articles,setArticles]=useState<NativeBlogPost[]>([]);
+  const [credentials,setCredentials]=useState<Accreditations[]>([]);
   const [email,setEmail]=useState('');
   const [consent,setConsent]=useState(false);
   const [submitted,setSubmitted]=useState(false);
@@ -52,11 +48,13 @@ export default function HomePage() {
     let mounted=true;
     Promise.allSettled([
       getNativeProjects(),
-      getPublishedBlogPosts()
+      getPublishedBlogPosts(),
+      BaseCrudService.getAll<Accreditations>('acreditari', [], {limit: 20})
     ]).then(result=>{
       if(!mounted)return;
       if(result[0].status==='fulfilled')setProjects(result[0].value);
       if(result[1].status==='fulfilled')setArticles(result[1].value);
+      if(result[2].status==='fulfilled')setCredentials(result[2].value.items);
       setLoading(false);
     });
     return ()=>{mounted=false};
@@ -77,117 +75,117 @@ export default function HomePage() {
     } finally {setBusy(false);}
   }
 
-  return <div className="lb-page">
+  return <div className="lb-page lb-portfolio-home">
     <Header/>
-    <main>
-      <section className="lb-section">
-        <div className="lb-container lb-intro">
+    <main id="main-content" className="lb-bento-stage">
+      <div className="lb-bento-grid">
+        <section className="lb-bento-panel lb-bento-hero">
+          <div className="lb-bento-hero-copy">
+            <p className="lb-bento-eyebrow">{t.heading}</p>
+            <h1>{ro ? 'Salut 👋' : 'Hello 👋'}<span>{ro ? 'Sunt Liviu Bucel' : "I'm Liviu Bucel"}</span></h1>
+            <p className="lb-bento-intro">{t.intro}</p>
+            <p className="lb-bento-motto">{t.motto}</p>
+            <nav className="lb-bento-socials" aria-label={ro ? 'Profiluri sociale' : 'Social profiles'}>
+              <a href={portfolio.links.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub"><Github size={21}/></a>
+              <a href={portfolio.links.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><Linkedin size={21}/></a>
+              <a href={portfolio.links.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube"><Youtube size={21}/></a>
+              <a href={portfolio.links.tryhackme} target="_blank" rel="noopener noreferrer" aria-label="TryHackMe"><ShieldCheck size={21}/></a>
+              <a href={'mailto:'+portfolio.email} aria-label="Email"><Mail size={21}/></a>
+            </nav>
+          </div>
+          <Image src={portfolio.media.portrait} className="lb-bento-avatar"
+            alt={ro ? 'Avatarul lui Liviu Bucel' : 'Liviu Bucel personal avatar'} loading="eager" />
+        </section>
+
+        <section className="lb-bento-panel lb-bento-about">
+          <h2>{ro?'Despre mine':'About me'}</h2>
+          <p>{ro?'Sunt Liviu, pasionat de securitatea cibernetică și investigațiile digitale.':'Hi, I am Liviu, focused on practical cybersecurity and digital investigation.'}</p>
+          <p className="lb-bento-muted">{ro?'Domenii de interes:':'Areas of focus:'}</p>
+          <ul>{t.areas.map(area=><li key={area}>{area}</li>)}</ul>
+          <p>{t.profile}</p>
+          <Link to={localizedPath('/about',lang)} className="lb-bento-inline-link">
+            {ro?'Mai multe despre mine':'Learn more'} <ArrowUpRight size={17}/></Link>
+        </section>
+
+        <Link className="lb-bento-panel lb-bento-tile lb-bento-credentials" to={localizedPath('/accreditations',lang)}>
+          <ShieldCheck size={22} aria-hidden="true"/>
+          <h2>{t.accreditations}</h2>
+          <p>{ro?'Certificări și pregătire profesională':'Certifications and professional learning'}</p>
+          <ul className="lb-bento-credential-list">
+            {credentials.map(item => <li key={item._id}>
+              <strong>{item.certificationName}</strong>
+              <span>{item.description?.replace('Status: ','').replace('.','') || '—'}</span>
+            </li>)}
+          </ul>
+          <ArrowUpRight className="lb-bento-arrow" size={18} aria-hidden="true" />
+        </Link>
+        <div className="lb-bento-panel lb-bento-clock"><LocalTimes ro={ro}/></div>
+        <Link className="lb-bento-panel lb-bento-tile lb-bento-projects" to={localizedPath('/projects',lang)}>
+          <FolderKanban size={22} aria-hidden="true"/>
+          <h2>{t.projects}</h2>
+          <p>{projects.length>0 ? String(projects.length)+' '+(ro?'proiecte tehnice':'technical projects') : (ro?'Portofoliul meu tehnic':'My technical portfolio')}</p>
+          <ArrowUpRight className="lb-bento-arrow" size={18} aria-hidden="true"/>
+        </Link>
+        <Link className="lb-bento-panel lb-bento-tile lb-bento-experience" to={localizedPath('/experience',lang)}>
+          <BriefcaseBusiness size={22} aria-hidden="true"/>
+          <h2>{t.experience}</h2>
+          <p><span className="lb-bento-pulse" aria-hidden="true"/> {ro?'Deschis la oportunități':'Open to opportunities'}</p>
+          <ArrowUpRight className="lb-bento-arrow" size={18} aria-hidden="true"/>
+        </Link>
+        <Link className="lb-bento-panel lb-bento-tile lb-bento-contact" to={localizedPath('/contact',lang)}>
+          <Mail size={22} aria-hidden="true"/>
+          <h2>{t.contact}</h2>
+          <p>{ro?'Hai să discutăm':'Let us connect'}</p>
+          <ArrowUpRight className="lb-bento-arrow" size={18} aria-hidden="true"/>
+        </Link>
+        <Link className="lb-bento-panel lb-bento-tile lb-bento-blog" to={localizedPath('/blog',lang)}>
+          <BookOpen size={22} aria-hidden="true"/>
+          <h2>{t.blog}</h2>
+          <p>{articles[0]?.title || (ro?'Articole și cercetare':'Writing and research')}</p>
+          <ArrowUpRight className="lb-bento-arrow" size={18} aria-hidden="true"/>
+        </Link>
+        <Link className="lb-bento-panel lb-bento-tile lb-bento-design" to={localizedPath('/design-works',lang)}>
+          <Palette size={22} aria-hidden="true"/>
+          <h2>{ro?'Lucrări de design':'Design works'}</h2>
+          <ArrowUpRight className="lb-bento-arrow" size={18} aria-hidden="true"/>
+        </Link>
+        <a className="lb-bento-panel lb-bento-tile lb-bento-support" href="https://buymeacoffee.com/liviubucel" target="_blank" rel="noopener noreferrer">
+          <Heart size={22} aria-hidden="true"/>
+          <h2>{ro?'Susține munca mea':'Support my work'}</h2>
+          <ArrowUpRight className="lb-bento-arrow" size={18} aria-hidden="true"/>
+        </a>
+
+        <section className="lb-bento-panel lb-bento-newsletter">
           <div>
-            <p className="lb-eyebrow">{ro?'Liviu Bucel · Securitate cibernetică':'Liviu Bucel · Cybersecurity'}</p>
-            <h1 className="lb-display">{ro?'Securitate. Dovezi. Impact.':'Security. Evidence. Impact.'}</h1>
-            <p className="lb-summary">{t.intro}</p>
-            <p style={{fontWeight:700,letterSpacing:'.1em',fontSize:'.85rem',marginTop:32}}>{t.motto}</p>
-            <div className="lb-actions">
-              <Link className="mzp-c-button" to={localizedPath('/projects',lang)}>{t.projects}</Link>
-              <Link className="mzp-c-button mzp-t-secondary" to={localizedPath('/contact',lang)}>{t.cta}</Link>
+            <h2>{ro?'Actualizări Romania Cyber Monitor':'Romania Cyber Monitor updates'}</h2>
+            <p>{ro?'Înregistrare nativă Wix Forms. Activarea alertelor prin email urmează separat.':'Native Wix Forms signup. Email alerts will be enabled separately.'}</p>
+          </div>
+          <form onSubmit={subscribe}>
+            <div className="lb-bento-input-row">
+              <label className="lb-screen-reader" htmlFor="bento-email">Email</label>
+              <input id="bento-email" type="email" required autoComplete="email" value={email}
+                placeholder={ro?'Adresa ta de email':'Email address'} onChange={event=>setEmail(event.target.value)}/>
+              <button type="submit" disabled={!consent||busy}>{busy?t.subscribing:t.subscribeAction}</button>
             </div>
-            <div style={{display:'flex',gap:24,flexWrap:'wrap',marginTop:28}}>
-              <a className="lb-text-link" href={portfolio.links.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-              <a className="lb-text-link" href={portfolio.links.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
-              <a className="lb-text-link" href={portfolio.links.tryhackme} target="_blank" rel="noopener noreferrer">TryHackMe ↗</a>
-            </div>
-          </div>
-          <div>
-            <Image src={portfolio.media.portrait} alt={ro?'Portret Liviu Bucel':'Liviu Bucel portrait'} loading="eager"/>
-          </div>
-        </div>
-      </section>
-      <hr className="lb-rule"/>
-      <section className="lb-section lb-section-alt">
-        <div className="lb-container">
-          <p className="lb-eyebrow">{ro?'Despre mine':'What I do'}</p>
-          <h2 className="lb-headline">{ro?'Explorez cum eșuează sistemele.':'Understanding how systems fail.'}</h2>
-          <p className="lb-summary" style={{marginBottom:40}}>{t.profile}</p>
-          <div className="lb-feature-grid">
-            {areas.map(([name,desc])=><div className="lb-feature" key={name}>
-              <h3>{name}</h3><p>{desc}</p>
-            </div>)}
-          </div>
-          <div className="lb-actions"><Link className="lb-text-link" to={localizedPath('/about',lang)}>{ro?'Despre mine →':'Read more about me →'}</Link></div>
-        </div>
-      </section>
-      <section className="lb-section">
-        <div className="lb-container">
-          <div style={{display:'flex',alignItems:'end',justifyContent:'space-between',gap:20,flexWrap:'wrap',marginBottom:32}}>
-            <div><p className="lb-eyebrow">{ro?'Portofoliu':'Portfolio'}</p><h2 className="lb-headline">{t.latestProjects}</h2></div>
-            <Link className="lb-text-link" to={localizedPath('/projects',lang)}>{ro?'Toate proiectele →':'All projects →'}</Link>
-          </div>
-          <div className="lb-cards">
-            {projects.slice(0,4).map(project=><article className="mzp-c-card mzp-c-card-medium" key={project.id||project._id}>
-              <Link to={localizedPath('/projects/'+(project.slug||project.id||project._id),lang)} className="lb-card">
-                <p className="lb-card-meta">{projectTechnologies(project)||'Security engineering'}</p>
-                <h3 className="lb-card-title">{project.title}</h3>
-                <p>{project.description}</p>
-                <span className="lb-text-link" aria-hidden="true">{ro?'Detalii →':'Details →'}</span>
-              </Link>
-            </article>)}
-            {!loading && projects.length===0 && <p>{t.emptyProjects}</p>}
-          </div>
-        </div>
-      </section>
-      <section className="lb-section lb-section-alt">
-        <div className="lb-container">
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'end',gap:20,flexWrap:'wrap',marginBottom:32}}>
-            <div><p className="lb-eyebrow">{ro?'Articole':'Insights'}</p><h2 className="lb-headline">{t.latestPosts}</h2></div>
-            <Link className="lb-text-link" to={localizedPath('/blog',lang)}>{ro?'Toate articolele →':'All articles →'}</Link>
-          </div>
-          <div className="lb-cards">
-            {articles.slice(0,4).map(post=><article className="mzp-c-card mzp-c-card-medium" key={post._id||post.id}>
-              <Link className="lb-card" to={localizedPath('/blog/'+(post.slug||post._id||post.id),lang)}>
-                <p className="lb-card-meta">{post.language?.toUpperCase()}{post.firstPublishedDate?' · '+new Date(post.firstPublishedDate).toLocaleDateString(ro?'ro-RO':'en-GB'):''}</p>
-                <h3 className="lb-card-title">{post.title}</h3>
-                <p>{post.excerpt}</p>
-                <span className="lb-text-link" aria-hidden="true">{ro?'Citește →':'Read →'}</span>
-              </Link>
-            </article>)}
-          </div>
-          {!loading && articles.length===0 && <p>{t.emptyPosts}</p>}
-        </div>
-      </section>
-      <section className="lb-section">
-        <div className="lb-container">
-          <p className="lb-eyebrow">{ro?'Conectat cu lumea':'Beyond the page'}</p>
-          <h2 className="lb-headline">{ro?'În prezent.':'Now & next.'}</h2>
-          <div className="lb-feature-grid">
-            <LondonClock ro={ro}/>
-            <div className="lb-feature"><h3>{ro?'Experiență':'Experience'}</h3><p>{ro?'Lucrări și proiecte de securitate aplicată.':'Practical security projects and engineering work.'}</p>
-              <Link className="lb-text-link" to={localizedPath('/experience',lang)}>{ro?'Vezi experiența →':'Explore experience →'}</Link></div>
-            <div className="lb-feature"><h3>{ro?'Lucrări de design':'Design works'}</h3><p>{ro?'Explorări vizuale și proiecte personale.':'Selected visual explorations and personal work.'}</p>
-              <Link className="lb-text-link" to={localizedPath('/design-works',lang)}>{ro?'Explorează →':'Explore work →'}</Link></div>
-          </div>
-          <p className="lb-privacy-note" style={{marginTop:24}}><a className="lb-text-link" href="https://buymeacoffee.com/liviubucel" target="_blank" rel="noopener noreferrer">{ro?'Susține proiectele mele ↗':'Support my independent work ↗'}</a></p>
-        </div>
-      </section>
-      <section className="lb-section lb-section-alt">
-        <div className="lb-container lb-split">
-          <div>
-            <p className="lb-eyebrow">Newsletter</p>
-            <h2 className="lb-headline">{ro?'Actualizări de securitate.':'Security updates.'}</h2>
-            <p className="lb-summary">{t.subscribeText}</p>
-            <p className="lb-privacy-note">{ro?'Cererea și consimțământul sunt gestionate în Wix Forms și Wix Contacts. Trimiterea alertelor va fi activată separat.':'Your request and consent are managed in Wix Forms and Wix Contacts. Email delivery will be activated separately.'}</p>
-          </div>
-          <form className="mzp-c-form lb-form" onSubmit={subscribe}>
-            <div className="mzp-c-field"><label className="mzp-c-field-label" htmlFor="updates-email">Email</label>
-              <input className="mzp-c-field-control" id="updates-email" type="email" value={email} required autoComplete="email" onChange={e=>setEmail(e.target.value)}/></div>
-            <label style={{display:'flex',gap:12,alignItems:'start',marginBottom:20}}>
-              <input type="checkbox" required checked={consent} onChange={e=>setConsent(e.target.checked)}/>
-              <span>{t.consent} <Link className="lb-text-link" to={localizedPath('/privacy',lang)}>{t.privacy}</Link></span>
+            <label className="lb-bento-consent"><input type="checkbox" checked={consent} required onChange={event=>setConsent(event.target.checked)}/>
+              <span>{t.consent} <Link to={localizedPath('/privacy',lang)}>{t.privacy}</Link></span>
             </label>
-            <div className="lb-actions"><button className="mzp-c-button" type="submit" disabled={busy||!consent}>{busy?t.subscribing:t.subscribeAction}</button></div>
-            <div role="status" aria-live="polite">{submitted&&<p className="lb-notice">{t.submitted}</p>}{error&&<p role="alert" className="lb-notice">{error}</p>}</div>
+            {error&&<p role="alert" className="lb-bento-error">{error}</p>}
+            {submitted&&<p role="status" className="lb-bento-success">{t.submitted}</p>}
           </form>
-        </div>
-      </section>
+        </section>
+        <section className="lb-bento-panel lb-bento-meta">
+          <div>© {new Date().getFullYear()} · {t.motto}</div>
+          <div className="lb-bento-meta-links">
+            <Link to={localizedPath('/privacy',lang)}>{t.privacy}</Link>
+            <Link to={ro?'/':'/ro'}>{ro?'EN':'RO'}</Link>
+          </div>
+        </section>
+      </div>
+      <nav className="lb-bento-extra-links" aria-label={ro?'Mai multe pagini':'More pages'}>
+        <Link to={localizedPath('/romania-cyber-monitor',lang)}><Globe2 size={18}/>{t.monitor}<ArrowUpRight size={16}/></Link>
+        <Link to={localizedPath('/contact',lang)}><Mail size={18}/>{ro?'Solicită CV-ul':'Request CV'}<ArrowUpRight size={16}/></Link>
+      </nav>
     </main>
     <Footer/>
   </div>;
