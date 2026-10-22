@@ -247,3 +247,40 @@ input:focus-visible, textarea:focus-visible { outline: 3px solid var(--lb-focus)
 .lb-bento-credential-list li {padding:10px 0; border-top:1px solid #363636; display:flex; align-items:flex-start; flex-direction:column; gap:4px;}
 .lb-bento-credential-list strong {font-size:.88rem; font-weight:700;}
 .lb-bento-credential-list span {font-size:.75rem; color:#aaa;}
+
+
+/* Align Mozilla Protocol desktop navigation logo and links to a single row. */
+@media (min-width:1191px) {
+  .lb-navigation .mzp-c-navigation-l-content {
+    width:min(calc(100% - 48px), 1400px);
+    max-width:1400px;
+    margin-inline:auto;
+  }
+  .lb-navigation .mzp-c-navigation-container {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:26px;
+    min-height:80px;
+  }
+  .lb-navigation .mzp-c-navigation-logo {
+    float:none;
+    flex:none;
+    width:auto;
+    margin:0;
+    padding:0;
+  }
+  .lb-navigation .mzp-c-navigation-items {
+    float:none;
+    flex:1;
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:18px;
+    margin:0;
+    padding:0;
+  }
+  .lb-navigation .mzp-c-navigation-menu,
+  .lb-navigation .mzp-c-menu {margin:0; padding:0;}
+  .lb-navigation .mzp-c-menu-category-list {align-items:center; margin:0;}
+}
