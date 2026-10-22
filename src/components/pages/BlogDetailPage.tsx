@@ -1,3 +1,4 @@
+import { Image } from '@/components/ui/image';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -22,7 +23,7 @@ function renderNode(node: RichNode, index: number): ReactNode {
   if (node.type === 'DIVIDER') return <hr key={node.id||index}/>;
   if (node.type === 'IMAGE') {
     const url = node.imageData?.image?.src?.url;
-    return url?.startsWith('https://') ? <figure key={node.id||index}><img src={url} alt={node.imageData?.altText||''} loading="lazy"/></figure> : null;
+    return url?.startsWith('https://') ? <figure key={node.id||index}><Image src={url} alt={node.imageData?.altText||''} loading="lazy"/></figure> : null;
   }
   return children.length ? <div key={node.id||index}>{children}</div> : null;
 }

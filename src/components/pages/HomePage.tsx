@@ -1,3 +1,4 @@
+import { Image } from '@/components/ui/image';
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { submissions } from '@wix/forms';
@@ -97,7 +98,7 @@ export default function HomePage() {
             </div>
           </div>
           <div>
-            <img src={portfolio.media.portrait} alt={ro?'Portret Liviu Bucel':'Liviu Bucel portrait'} loading="eager"/>
+            <Image src={portfolio.media.portrait} alt={ro?'Portret Liviu Bucel':'Liviu Bucel portrait'} loading="eager"/>
           </div>
         </div>
       </section>

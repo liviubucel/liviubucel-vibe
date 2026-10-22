@@ -1,3 +1,4 @@
+import { Image } from '@/components/ui/image';
 import { Link, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -25,7 +26,7 @@ export default function AboutPage(){
         <p className="lb-summary">{ro?'Îmi place să înțeleg cum funcționează atacurile, cum apar defecțiunile de securitate și cum pot fi investigate incidentele. Proiectele mele pun accentul pe rezultate verificabile, separarea responsabilităților și protecția datelor.':'I’m interested in how attacks work, why systems fail, and how incidents can be investigated. My work prioritises testable findings, secure boundaries and protecting real-world data.'}</p>
         <div className="lb-actions"><Link className="mzp-c-button" to={localizedPath('/projects',lang)}>{ro?'Vezi proiectele':'View my work'}</Link></div>
       </div>
-      <img src={portfolio.media.portrait} alt={ro?'Portret Liviu Bucel':'Liviu Bucel portrait'} loading="lazy"/>
+      <Image src={portfolio.media.portrait} alt={ro?'Portret Liviu Bucel':'Liviu Bucel portrait'} loading="lazy"/>
     </div></section>
     <section className="lb-section lb-section-alt"><div className="lb-container">
       <p className="lb-eyebrow">{ro?'Domenii de interes':'Technical focus'}</p><h2 className="lb-headline">{ro?'Cum lucrez.':'What I work on.'}</h2>
