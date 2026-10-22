@@ -1,76 +1,94 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Mail, Github, Linkedin, Youtube, ExternalLink, FileText } from 'lucide-react';
+import { useState, type FormEvent } from 'react';
+import { useLocation, Link } from 'react-router-dom';
+import { submissions } from '@wix/forms';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { getLanguage, localizedPath, portfolio } from '@/lib/portfolio';
 
-const accounts = [
-  { name: 'GitHub', url: portfolio.links.github, Icon: Github },
-  { name: 'LinkedIn', url: portfolio.links.linkedin, Icon: Linkedin },
-  { name: 'TryHackMe', url: portfolio.links.tryhackme, Icon: ExternalLink },
-  { name: 'YouTube', url: portfolio.links.youtube, Icon: Youtube },
-];
+/** Owned and editable in Wix Forms → Liviu Bucel — Contact. */
+const CONTACT_FORM_ID = '350bbd87-09af-4295-9dbc-7e9cab1123bb';
 
 export default function ContactPage() {
   const lang = getLanguage(useLocation().pathname);
-  const isRo = lang === 'ro';
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main>
-        <section className="bg-secondary py-20 text-secondary-foreground">
-          <div className="max-w-[100rem] mx-auto px-6 lg:px-16">
-            <p className="text-primary text-sm uppercase tracking-widest mb-6">Contact</p>
-            <h1 className="font-heading font-bold text-5xl sm:text-6xl mb-5">
-              {isRo ? 'Hai să vorbim' : "Let's talk"}
-            </h1>
-            <p className="text-secondary-foreground/75 text-lg max-w-3xl">
-              {isRo ? 'Sunt deschis la oportunități și colaborări în securitate cibernetică, ingineria securității și investigații digitale.' : 'Open to roles, collaborations and professional conversations in cybersecurity, security engineering and digital forensics.'}
+  const isRo = lang==='ro';
+  const [name,setName]=useState('');
+  const [email,setEmail]=useState('');
+  const [subject,setSubject]=useState('');
+  const [message,setMessage]=useState('');
+  const [busy,setBusy]=useState(false);
+  const [success,setSuccess]=useState(false);
+  const [error,setError]=useState('');
+
+  async function send(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (busy) return;
+    setBusy(true);setSuccess(false);setError('');
+    try {
+      await submissions.createSubmission({
+        formId: CONTACT_FORM_ID,
+        submissions: {
+          first_name: name.trim(),
+          email: email.trim().toLowerCase(),
+          subject: subject.trim(),
+          message: message.trim()
+        }
+      });
+      setSuccess(true);
+      setName('');setEmail('');setSubject('');setMessage('');
+    } catch {
+      setError(isRo ? 'Trimiterea nu a reușit. Poți folosi adresa de email de mai jos.' : 'Your message was not sent. You can contact me directly using the email below.');
+    } finally {setBusy(false);}
+  }
+
+  return <div className="lb-page">
+    <Header/>
+    <main>
+      <section className="lb-section lb-section-alt">
+        <div className="lb-container">
+          <p className="lb-eyebrow">{isRo?'Contact profesional':'Professional enquiries'}</p>
+          <h1 className="lb-headline">{isRo?'Hai să discutăm.':"Let's talk."}</h1>
+          <p className="lb-summary">{isRo
+            ? 'Oportunități în cybersecurity, colaborări, proiecte tehnice și investigații digitale.'
+            : 'Cybersecurity opportunities, collaborations, technical projects, and digital investigations.'}</p>
+        </div>
+      </section>
+      <section className="lb-section"><div className="lb-container lb-split">
+        <div>
+          <h2 className="lb-headline" style={{fontSize:'clamp(2rem,3vw,3rem)'}}>{isRo?'Trimite un mesaj':'Send a message'}</h2>
+          <form className="mzp-c-form lb-form" onSubmit={send}>
+            <div className="mzp-c-field"><label className="mzp-c-field-label" htmlFor="contact-name">{isRo?'Nume':'Name'}</label>
+              <input id="contact-name" className="mzp-c-field-control" type="text" value={name} autoComplete="name" required maxLength={120} onChange={e=>setName(e.target.value)}/></div>
+            <div className="mzp-c-field"><label className="mzp-c-field-label" htmlFor="contact-email">Email</label>
+              <input id="contact-email" className="mzp-c-field-control" type="email" value={email} autoComplete="email" required maxLength={254} onChange={e=>setEmail(e.target.value)}/></div>
+            <div className="mzp-c-field"><label className="mzp-c-field-label" htmlFor="contact-subject">{isRo?'Subiect':'Subject'}</label>
+              <input id="contact-subject" className="mzp-c-field-control" type="text" value={subject} required maxLength={180} onChange={e=>setSubject(e.target.value)}/></div>
+            <div className="mzp-c-field"><label className="mzp-c-field-label" htmlFor="contact-message">{isRo?'Mesaj':'Message'}</label>
+              <textarea id="contact-message" className="mzp-c-field-control" value={message} required minLength={10} maxLength={6000} onChange={e=>setMessage(e.target.value)}/></div>
+            <p className="lb-privacy-note">{isRo?'Prin trimitere, datele introduse sunt prelucrate pentru răspuns, prin Wix Forms.':'Messages are processed through native Wix Forms so I can reply.'}{' '}
+              <Link className="lb-text-link" to={localizedPath('/privacy',lang)}>{isRo?'Confidențialitate':'Privacy policy'}</Link>
             </p>
-          </div>
-        </section>
-        <section className="max-w-[100rem] mx-auto px-6 lg:px-16 py-20 grid lg:grid-cols-2 gap-12">
-          <div>
-            <h2 className="font-heading text-3xl font-bold mb-6">{isRo ? 'Contact direct' : 'Direct contact'}</h2>
-            <a href={'mailto:' + portfolio.email} className="flex items-center gap-3 text-xl text-primary underline break-all">
-              <Mail size={22}/>{portfolio.email}
-            </a>
-            <p className="mt-6 text-foreground/70">
-              {isRo ? 'Pentru recrutare, colaborări și solicitări profesionale, trimite-mi un email cu subiectul și contextul.' : 'For hiring, collaborations and professional enquiries, email me with a subject and some context.'}
-            </p>
-            <div className="mt-10 border border-divider/30 rounded p-6">
-              <FileText className="text-primary mb-3"/>
-              <h3 className="font-heading font-semibold text-xl mb-3">{isRo ? 'CV profesional' : 'Professional CV'}</h3>
-              <p className="text-foreground/75 mb-5">
-                {isRo ? 'CV-ul este disponibil la cerere, nu printr-un link public neprotejat.' : 'My CV is available on request, rather than through an unprotected public download.'}
-              </p>
-              <a className="inline-block bg-primary text-primary-foreground font-semibold px-6 py-3 rounded"
-                href={'mailto:' + portfolio.email + '?subject=' + encodeURIComponent('CV request – Liviu Bucel')}>
-                {isRo ? 'Solicită CV-ul' : 'Request CV'}
-              </a>
+            <div className="lb-actions"><button className="mzp-c-button" type="submit" disabled={busy}>{busy?(isRo?'Se trimite…':'Sending…'):(isRo?'Trimite mesajul':'Send message')}</button></div>
+            <div aria-live="polite" role="status">
+              {success && <p className="lb-notice">{isRo?'Mesajul a fost trimis. Mulțumesc!':'Your message was sent. Thank you!'}</p>}
+              {error && <p className="lb-notice" role="alert">{error}</p>}
             </div>
+          </form>
+        </div>
+        <aside>
+          <h2 style={{fontSize:'1.4rem',fontWeight:700,marginBottom:24}}>{isRo?'Date de contact':'Other ways to connect'}</h2>
+          <div className="lb-footer-links" style={{gap:18}}>
+            <a className="lb-text-link" href={'mailto:'+portfolio.email}>{portfolio.email}</a>
+            <a className="lb-text-link" href={portfolio.links.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+            <a className="lb-text-link" href={portfolio.links.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+            <a className="lb-text-link" href={portfolio.links.tryhackme} target="_blank" rel="noopener noreferrer">TryHackMe ↗</a>
           </div>
-          <div>
-            <h2 className="font-heading text-3xl font-bold mb-6">{isRo ? 'Profiluri oficiale' : 'Official profiles'}</h2>
-            <ul className="grid gap-4">
-              {accounts.map(({name,url,Icon}) => (
-                <li key={name}>
-                  <a href={url} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-between gap-4 border border-divider/30 rounded p-5 hover:border-primary transition-colors">
-                    <span className="flex items-center gap-3"><Icon size={22}/>{name}</span><ExternalLink size={16}/>
-                  </a>
-                </li>
-              ))}
-              <li>
-                <Link to={localizedPath('/projects',lang)} className="flex items-center gap-3 text-primary underline pt-4">
-                  {isRo ? 'Vezi proiectele mele tehnice' : 'Browse my technical projects'}
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
+          <hr className="lb-rule" style={{margin:'32px 0'}}/>
+          <h3 style={{fontWeight:700,fontSize:'1.35rem'}}>{isRo?'Ai nevoie de CV?':'Need my CV?'}</h3>
+          <p className="lb-privacy-note">{isRo?'Solicită o copie prin formularul de contact sau email. Nu există un link public neprotejat.':'Request a copy through this form or email. No unprotected public CV link is provided.'}</p>
+          <a className="lb-text-link" href={'mailto:'+portfolio.email+'?subject='+encodeURIComponent('CV request – Liviu Bucel')}>{isRo?'Solicită CV-ul →':'Request CV →'}</a>
+        </aside>
+      </div></section>
+    </main>
+    <Footer/>
+  </div>;
 }

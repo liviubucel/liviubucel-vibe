@@ -13,6 +13,7 @@ import BlogDetailPage from '@/components/pages/BlogDetailPage';
 import ContactPage from '@/components/pages/ContactPage';
 import PrivacyPage from '@/components/pages/PrivacyPage';
 import RomaniaCyberMonitorPage from '@/components/pages/RomaniaCyberMonitorPage';
+import LegacySectionPage from '@/components/pages/LegacySectionPage';
 
 function Layout() {
   return <><ScrollToTop /><Outlet /></>;
@@ -31,6 +32,9 @@ const pages = [
   { path: 'romania-cyber-monitor/incidents/:slug', element: <RomaniaCyberMonitorPage />, identifier: 'monitor-incident' },
   { path: 'contact', element: <ContactPage />, identifier: 'contact' },
   { path: 'privacy', element: <PrivacyPage />, identifier: 'privacy' },
+  { path: 'design-works', element: <LegacySectionPage section='design' />, identifier: 'design-works' },
+  { path: 'travel', element: <LegacySectionPage section='travel' />, identifier: 'travel' },
+  { path: 'playground', element: <LegacySectionPage section='playground' />, identifier: 'playground' },
 ];
 
 const router = createBrowserRouter([{

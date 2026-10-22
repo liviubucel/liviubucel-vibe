@@ -1,174 +1,39 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getLanguage, localizedPath } from '@/lib/portfolio';
-import { motion } from 'framer-motion';
-import { ExternalLink, Calendar } from 'lucide-react';
-import { Image } from '@/components/ui/image';
-import { Button } from '@/components/ui/button';
-import { BaseCrudService } from '@/integrations';
-import { Proiecte } from '@/entities';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { format } from 'date-fns';
-import { ro } from 'date-fns/locale';
+import { getLanguage, localizedPath } from '@/lib/portfolio';
+import { getNativeProjects,projectTechnologies,type NativeProject } from '@/lib/wix-portfolio';
 
-export default function ProjectsPage() {
-  const lang = getLanguage(useLocation().pathname);
-  const [projects, setProjects] = useState<Proiecte[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasNext, setHasNext] = useState(false);
-  const [skip, setSkip] = useState(0);
-
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
-  const loadProjects = async (loadMore = false) => {
-    try {
-      const result = await BaseCrudService.getAll<Proiecte>('proiecte', {}, { 
-        limit: 6, 
-        skip: loadMore ? skip : 0 
-      });
-      
-      if (loadMore) {
-        setProjects(prev => [...prev, ...result.items]);
-      } else {
-        setProjects(result.items);
-      }
-      
-      setHasNext(result.hasNext);
-      setSkip(result.nextSkip || 0);
-    } catch (error) {
-      console.error('Error loading projects:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLoadMore = () => {
-    loadProjects(true);
-  };
-
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-
-      {/* Hero Section */}
-      <section className="w-full bg-secondary py-24">
-        <div className="max-w-[100rem] mx-auto px-8 lg:px-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="flex items-center gap-3 mb-8">
-              <span className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-heading text-xl font-bold">01</span>
-              <span className="text-secondary-foreground/70 text-sm font-paragraph uppercase tracking-wider">Portofoliu</span>
-            </div>
-            
-            <h1 className="font-heading text-6xl lg:text-7xl font-bold text-secondary-foreground mb-6">
-              {lang === 'ro' ? 'Proiecte Tehnice' : 'Technical Projects'}
-            </h1>
-            
-            <p className="text-secondary-foreground/80 text-xl font-paragraph max-w-4xl leading-relaxed">
-              {lang === 'ro' ? 'Explorează proiectele mele în domeniul securității cibernetice, ethical hacking și investigații digitale.' : 'Explore my real security-engineering, ethical hacking and digital investigation projects.'}
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Projects Grid */}
-      <section className="w-full bg-background py-24">
-        <div className="max-w-[100rem] mx-auto px-8 lg:px-16">
-          <div className="min-h-[600px]">
-            {isLoading ? null : projects.length > 0 ? (
-              <>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {projects.map((project, idx) => (
-                    <motion.div
-                      key={project._id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: idx * 0.1 }}
-                    >
-                      <Link to={localizedPath('/projects/' + project._id, lang)} className="group block">
-                        <div className="bg-secondary rounded-lg overflow-hidden hover:border-l-4 hover:border-primary transition-all h-full">
-                          {project.projectImage && (
-                            <div className="relative h-64 overflow-hidden">
-                              <Image 
-                                src={project.projectImage}
-                                alt={project.projectTitle || 'Project image'}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                width={400}
-                              />
-                            </div>
-                          )}
-                          
-                          <div className="p-6">
-                            <h3 className="font-heading text-2xl font-bold text-secondary-foreground mb-3 group-hover:text-primary transition-colors">
-                              {project.projectTitle}
-                            </h3>
-                            
-                            {project.detailedDescription && (
-                              <p className="text-secondary-foreground/70 font-paragraph text-sm mb-4 line-clamp-3">
-                                {project.detailedDescription}
-                              </p>
-                            )}
-
-                            {project.technologiesUsed && (
-                              <div className="flex flex-wrap gap-2 mb-4">
-                                {project.technologiesUsed.split(',').slice(0, 3).map((tech, i) => (
-                                  <span key={i} className="px-3 py-1 bg-surfacedark text-secondary-foreground/80 font-paragraph text-xs rounded">
-                                    {tech.trim()}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-
-                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-divider/10">
-                              {project.completionDate && (
-                                <div className="flex items-center gap-2 text-secondary-foreground/60">
-                                  <Calendar className="w-4 h-4" />
-                                  <span className="font-paragraph text-xs">
-                                    {format(new Date(project.completionDate), 'MMMM yyyy', { locale: ro })}
-                                  </span>
-                                </div>
-                              )}
-                              
-                              {project.projectLink && (
-                                <ExternalLink className="w-5 h-5 text-primary" />
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {hasNext && (
-                  <div className="flex justify-center mt-12">
-                    <Button
-                      onClick={handleLoadMore}
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-heading text-base px-8 py-6"
-                    >
-                      Încarcă mai multe proiecte
-                    </Button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-20">
-                <p className="text-foreground/60 font-paragraph text-lg">
-                  Nu există proiecte disponibile momentan.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <Footer />
-    </div>
-  );
+export default function ProjectsPage(){
+  const lang=getLanguage(useLocation().pathname);
+  const ro=lang==='ro';
+  const [projects,setProjects]=useState<NativeProject[]>([]);
+  const [loading,setLoading]=useState(true);
+  const [error,setError]=useState(false);
+  useEffect(()=>{
+    let active=true;
+    getNativeProjects().then(data=>{if(active)setProjects(data)}).catch(()=>{if(active)setError(true)}).finally(()=>{if(active)setLoading(false)});
+    return ()=>{active=false};
+  },[]);
+  return <div className="lb-page"><Header/><main>
+    <section className="lb-section lb-section-alt"><div className="lb-container">
+      <p className="lb-eyebrow">{ro?'Securitate și inginerie':'Security & engineering'}</p>
+      <h1 className="lb-headline">{ro?'Proiecte și cercetare':'Selected projects'}</h1>
+      <p className="lb-summary">{ro?'Lucrări tehnice autentice în threat intelligence, securitate cloud, PKI/TLS și investigații digitale.':'Original technical work across threat intelligence, cloud security, PKI/TLS, and digital investigations.'}</p>
+    </div></section>
+    <section className="lb-section"><div className="lb-container">
+      {loading && <p role="status">{ro?'Se încarcă…':'Loading…'}</p>}
+      {error && <p role="alert">{ro?'Nu am putut încărca proiectele.':'Projects are temporarily unavailable.'}</p>}
+      <div className="lb-cards">{projects.map(project=><article className="mzp-c-card mzp-c-card-medium" key={project.id||project._id}>
+        <Link className="lb-card" to={localizedPath('/projects/'+(project.slug||project.id||project._id),lang)}>
+          <p className="lb-card-meta">{projectTechnologies(project) || 'Cybersecurity'}</p>
+          <h2 className="lb-card-title">{project.title}</h2>
+          <p>{project.description}</p><span className="lb-text-link" aria-hidden="true">{ro?'Deschide proiectul →':'Explore project →'}</span>
+        </Link>
+      </article>)}</div>
+      {!loading&&!error&&projects.length===0&&<p>{ro?'Nu sunt proiecte publicate.':'No projects published.'}</p>}
+      <p className="lb-privacy-note" style={{marginTop:32}}>{ro?'Proiectele sunt gestionate prin Wix Portfolio.':'Projects are managed in the native Wix Portfolio app.'}</p>
+    </div></section>
+  </main><Footer/></div>;
 }

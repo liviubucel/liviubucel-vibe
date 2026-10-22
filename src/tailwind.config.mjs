@@ -19,20 +19,20 @@ export default {
                 '9xl': ['8rem', { lineHeight: '1', letterSpacing: '0.07em', fontWeight: '900' }],
             },
             fontFamily: {
-                heading: "Sora",
-                paragraph: "Sora"
+                heading: "Mozilla Headline",
+                paragraph: "Mozilla Text"
             },
             colors: {
-                foreground: '#111111',
+                foreground: '#000000',
                 destructive: '#DF3131',
                 destructiveforeground: '#FFFFFF',
-                surfacedark: '#1C1C1C',
-                divider: '#E0E0E0',
-                background: '#FAFAFA',
-                secondary: '#121212',
-                'secondary-foreground': '#FFFFFF',
+                surfacedark: '#F5F5F5',
+                divider: '#D5D5D5',
+                background: '#FFFFFF',
+                secondary: '#FFFFFF',
+                'secondary-foreground': '#000000',
                 'primary-foreground': '#FFFFFF',
-                primary: '#D23F0F'
+                primary: '#000000'
             },
         },
     },

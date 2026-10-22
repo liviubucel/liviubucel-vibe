@@ -1,170 +1,193 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, Github, Linkedin, Mail, ShieldCheck, BookOpen, ExternalLink } from 'lucide-react';
-import { Image } from '@/components/ui/image';
-import { BaseCrudService } from '@/integrations';
-import type { AbonaiNewsletter, BlogArticles, Proiecte } from '@/entities';
+import { submissions } from '@wix/forms';
+import { getNativeProjects,projectTechnologies,type NativeProject } from '@/lib/wix-portfolio';
+import { getPublishedBlogPosts, type NativeBlogPost } from '@/lib/wix-blog';
 import { getLanguage, labels, localizedPath, portfolio } from '@/lib/portfolio';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
+const SIGNUP_FORM_ID = 'e85c654a-1a61-44dd-beb7-54868f6c7014';
+const areas = [
+  ['Ethical Hacking', 'Understand attacks and validate weaknesses'],
+  ['Digital Forensics', 'Investigate incidents and preserve evidence'],
+  ['Threat Intelligence', 'Separate attacker claims from verified facts'],
+  ['Security Engineering', 'Build defensible systems and secure infrastructure'],
+  ['PKI & TLS', 'Certificate management and ACME automation'],
+  ['Vulnerability Research', 'Assess exploitability and practical remediation']
+];
+
+function LondonClock({ro}:{ro:boolean}) {
+  const [time,setTime] = useState('');
+  useEffect(()=>{
+    const update=()=>setTime(new Intl.DateTimeFormat(ro?'ro-RO':'en-GB',{
+      hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Europe/London'
+    }).format(new Date()));
+    update();
+    const interval=setInterval(update,30000);
+    return ()=>clearInterval(interval);
+  },[ro]);
+  return <div className="lb-feature">
+    <div className="lb-eyebrow">{ro?'Ora locală':'Local time'} · UK</div>
+    <h3 style={{fontSize:'clamp(2rem,4vw,3.5rem)',fontVariantNumeric:'tabular-nums',margin:0}}>{time || '—'}</h3>
+    <p>{ro?'Europa/Londra':'Europe/London'}</p>
+  </div>;
+}
+
 export default function HomePage() {
   const lang = getLanguage(useLocation().pathname);
+  const ro = lang==='ro';
   const t = labels[lang];
-  const [projects, setProjects] = useState<Proiecte[]>([]);
-  const [posts, setPosts] = useState<BlogArticles[]>([]);
-  const [email, setEmail] = useState('');
-  const [consented, setConsented] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [resultMessage, setResultMessage] = useState('');
-  const [hasLoaded, setHasLoaded] = useState(false);
+  const [projects,setProjects]=useState<NativeProject[]>([]);
+  const [articles,setArticles]=useState<NativeBlogPost[]>([]);
+  const [email,setEmail]=useState('');
+  const [consent,setConsent]=useState(false);
+  const [submitted,setSubmitted]=useState(false);
+  const [error,setError]=useState('');
+  const [busy,setBusy]=useState(false);
+  const [loading,setLoading]=useState(true);
 
-  useEffect(() => {
-    let mounted = true;
-    async function fetchContent() {
-      const responses = await Promise.allSettled([
-        BaseCrudService.getAll<Proiecte>('proiecte', [], { limit: 30 }),
-        BaseCrudService.getAll<BlogArticles>('articoleblog', [], { limit: 30 }),
-      ]);
-      if (!mounted) return;
-      if (responses[0].status === 'fulfilled') setProjects(responses[0].value.items);
-      if (responses[1].status === 'fulfilled') {
-        setPosts(responses[1].value.items.slice().sort((a, b) =>
-          String(b.publicationDate || '').localeCompare(String(a.publicationDate || ''))));
-      }
-      setHasLoaded(true);
-    }
-    fetchContent();
-    return () => { mounted = false; };
-  }, []);
+  useEffect(()=>{
+    let mounted=true;
+    Promise.allSettled([
+      getNativeProjects(),
+      getPublishedBlogPosts()
+    ]).then(result=>{
+      if(!mounted)return;
+      if(result[0].status==='fulfilled')setProjects(result[0].value);
+      if(result[1].status==='fulfilled')setArticles(result[1].value);
+      setLoading(false);
+    });
+    return ()=>{mounted=false};
+  },[]);
 
-  async function subscribe(event: FormEvent<HTMLFormElement>) {
+  async function subscribe(event:FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!consented || !email.trim() || busy) return;
-    setBusy(true);
-    setResultMessage('');
+    if(busy||!consent||!email.trim())return;
+    setBusy(true);setError('');setSubmitted(false);
     try {
-      await BaseCrudService.create<AbonaiNewsletter>('abonatinewsletter', {
-        emailAddress: email.trim().toLowerCase(),
-        privacyPolicyAgreement: true,
-        subscriptionDate: new Date().toISOString(),
+      await submissions.createSubmission({
+        formId:SIGNUP_FORM_ID,
+        submissions:{email:email.trim().toLowerCase(),consent:true}
       });
-      setEmail('');
-      setConsented(false);
-      setResultMessage(t.submitted);
+      setSubmitted(true);setEmail('');setConsent(false);
     } catch {
-      setResultMessage(t.failed);
-    } finally {
-      setBusy(false);
-    }
+      setError(ro?'Solicitarea nu a putut fi înregistrată.':'Your request could not be saved.');
+    } finally {setBusy(false);}
   }
 
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Header />
-      <main>
-        <section className="bg-secondary text-secondary-foreground">
-          <div className="max-w-[100rem] mx-auto px-6 lg:px-16 py-20 lg:py-28 grid gap-12 lg:grid-cols-[1.5fr_0.7fr] items-center">
-            <div>
-              <p className="text-primary uppercase tracking-[0.2em] text-xs font-semibold mb-6">{t.heading}</p>
-              <h1 className="font-heading text-5xl sm:text-7xl lg:text-8xl leading-[1.05] font-bold tracking-tight mb-8">
-                {lang === 'ro' ? 'Salut, sunt' : "Hello, I'm"} <span className="text-primary">{portfolio.name}</span>
-              </h1>
-              <p className="text-lg md:text-xl leading-relaxed text-secondary-foreground/80 max-w-3xl">{t.intro}</p>
-              <p className="mt-7 font-semibold tracking-widest text-sm">{t.motto}</p>
-              <div className="flex flex-wrap items-center gap-3 mt-10">
-                <Link className="bg-primary text-primary-foreground font-semibold px-6 py-3 rounded inline-flex gap-2 items-center" to={localizedPath('/projects', lang)}>
-                  {t.latestProjects} <ArrowRight size={18} />
-                </Link>
-                <Link className="border border-secondary-foreground/30 text-secondary-foreground font-semibold px-6 py-3 rounded" to={localizedPath('/contact', lang)}>
-                  {t.cta}
-                </Link>
-              </div>
-              <div className="flex gap-6 items-center mt-10">
-                <a href={portfolio.links.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="text-secondary-foreground/70 hover:text-primary"><Github size={22}/></a>
-                <a href={portfolio.links.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-secondary-foreground/70 hover:text-primary"><Linkedin size={22}/></a>
-                <a href={'mailto:' + portfolio.email} aria-label="Email" className="text-secondary-foreground/70 hover:text-primary"><Mail size={22}/></a>
-              </div>
+  return <div className="lb-page">
+    <Header/>
+    <main>
+      <section className="lb-section">
+        <div className="lb-container lb-intro">
+          <div>
+            <p className="lb-eyebrow">{ro?'Liviu Bucel · Securitate cibernetică':'Liviu Bucel · Cybersecurity'}</p>
+            <h1 className="lb-display">{ro?'Securitate. Dovezi. Impact.':'Security. Evidence. Impact.'}</h1>
+            <p className="lb-summary">{t.intro}</p>
+            <p style={{fontWeight:700,letterSpacing:'.1em',fontSize:'.85rem',marginTop:32}}>{t.motto}</p>
+            <div className="lb-actions">
+              <Link className="mzp-c-button" to={localizedPath('/projects',lang)}>{t.projects}</Link>
+              <Link className="mzp-c-button mzp-t-secondary" to={localizedPath('/contact',lang)}>{t.cta}</Link>
             </div>
-            <div className="flex justify-center lg:justify-end">
-              <div className="relative w-64 sm:w-80 lg:w-full max-w-sm overflow-hidden rounded-lg border border-secondary-foreground/10">
-                <Image src={portfolio.media.portrait} alt={lang === 'ro' ? 'Portret Liviu Bucel' : 'Portrait of Liviu Bucel'} className="w-full h-auto object-cover" width={620} />
-              </div>
+            <div style={{display:'flex',gap:24,flexWrap:'wrap',marginTop:28}}>
+              <a className="lb-text-link" href={portfolio.links.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+              <a className="lb-text-link" href={portfolio.links.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+              <a className="lb-text-link" href={portfolio.links.tryhackme} target="_blank" rel="noopener noreferrer">TryHackMe ↗</a>
             </div>
           </div>
-        </section>
-
-        <section className="max-w-[100rem] mx-auto px-6 lg:px-16 py-20">
-          <div className="flex items-center gap-3 mb-8"><ShieldCheck className="text-primary" /><h2 className="font-heading text-3xl sm:text-4xl font-bold">{lang === 'ro' ? 'Domenii de interes' : 'Core focus'}</h2></div>
-          <p className="text-foreground/75 text-lg max-w-4xl mb-10">{t.profile}</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {t.areas.map(area => <div key={area} className="border border-divider/30 bg-secondary text-secondary-foreground rounded p-6 font-semibold">{area}</div>)}
+          <div>
+            <img src={portfolio.media.portrait} alt={ro?'Portret Liviu Bucel':'Liviu Bucel portrait'} loading="eager"/>
           </div>
-          <div className="mt-8 text-sm text-foreground/75">
-            <a href={portfolio.links.tryhackme} target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">TryHackMe</a>
-            <span className="mx-3">·</span>
-            <a href={portfolio.links.zebrabyte} target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">ZebraByte</a>
+        </div>
+      </section>
+      <hr className="lb-rule"/>
+      <section className="lb-section lb-section-alt">
+        <div className="lb-container">
+          <p className="lb-eyebrow">{ro?'Despre mine':'What I do'}</p>
+          <h2 className="lb-headline">{ro?'Explorez cum eșuează sistemele.':'Understanding how systems fail.'}</h2>
+          <p className="lb-summary" style={{marginBottom:40}}>{t.profile}</p>
+          <div className="lb-feature-grid">
+            {areas.map(([name,desc])=><div className="lb-feature" key={name}>
+              <h3>{name}</h3><p>{desc}</p>
+            </div>)}
           </div>
-        </section>
-
-        <section className="bg-secondary text-secondary-foreground">
-          <div className="max-w-[100rem] mx-auto px-6 lg:px-16 py-20">
-            <div className="flex flex-wrap justify-between items-end gap-5 mb-10">
-              <h2 className="font-heading text-3xl sm:text-4xl font-bold">{t.latestProjects}</h2>
-              <Link to={localizedPath('/projects',lang)} className="text-primary flex items-center gap-2">{t.more} <ArrowRight size={16}/></Link>
-            </div>
-            <div className="grid md:grid-cols-2 gap-6 min-h-32">
-              {projects.slice(0,4).map(project => (
-                <Link to={localizedPath('/projects/' + project._id, lang)} key={project._id}
-                  className="border border-secondary-foreground/20 rounded p-8 hover:border-primary transition-colors">
-                  <h3 className="font-heading text-2xl font-semibold mb-3">{project.projectTitle}</h3>
-                  <p className="text-secondary-foreground/75 mb-5 line-clamp-3">{project.detailedDescription}</p>
-                  {project.technologiesUsed && <p className="text-sm text-primary">{project.technologiesUsed}</p>}
-                  <span className="mt-5 flex gap-2 items-center text-sm"><ExternalLink size={16}/>{lang === 'ro' ? 'Detalii' : 'Details'}</span>
-                </Link>
-              ))}
-              {hasLoaded && projects.length === 0 && <p className="text-secondary-foreground/70">{t.emptyProjects}</p>}
-            </div>
+          <div className="lb-actions"><Link className="lb-text-link" to={localizedPath('/about',lang)}>{ro?'Despre mine →':'Read more about me →'}</Link></div>
+        </div>
+      </section>
+      <section className="lb-section">
+        <div className="lb-container">
+          <div style={{display:'flex',alignItems:'end',justifyContent:'space-between',gap:20,flexWrap:'wrap',marginBottom:32}}>
+            <div><p className="lb-eyebrow">{ro?'Portofoliu':'Portfolio'}</p><h2 className="lb-headline">{t.latestProjects}</h2></div>
+            <Link className="lb-text-link" to={localizedPath('/projects',lang)}>{ro?'Toate proiectele →':'All projects →'}</Link>
           </div>
-        </section>
-
-        <section className="max-w-[100rem] mx-auto px-6 lg:px-16 py-20">
-          <div className="flex flex-wrap justify-between items-end gap-5 mb-10">
-            <div className="flex items-center gap-3"><BookOpen className="text-primary"/><h2 className="font-heading text-3xl sm:text-4xl font-bold">{t.latestPosts}</h2></div>
-            <Link to={localizedPath('/blog',lang)} className="text-primary flex items-center gap-2">{t.more} <ArrowRight size={16}/></Link>
-          </div>
-          <div className="grid lg:grid-cols-2 gap-6 min-h-32">
-            {posts.slice(0,4).map(post => (
-              <Link key={post._id} to={localizedPath('/blog/' + (post.slug || post._id), lang)}
-                className="rounded border border-divider/30 p-7 hover:border-primary transition-colors">
-                <p className="text-sm text-foreground/60 mb-3">{post.publicationDate ? String(post.publicationDate).slice(0,10) : ''}</p>
-                <h3 className="font-heading text-xl font-semibold mb-3">{post.articleTitle}</h3>
-                <p className="text-foreground/75 line-clamp-3">{post.excerpt}</p>
+          <div className="lb-cards">
+            {projects.slice(0,4).map(project=><article className="mzp-c-card mzp-c-card-medium" key={project.id||project._id}>
+              <Link to={localizedPath('/projects/'+(project.slug||project.id||project._id),lang)} className="lb-card">
+                <p className="lb-card-meta">{projectTechnologies(project)||'Security engineering'}</p>
+                <h3 className="lb-card-title">{project.title}</h3>
+                <p>{project.description}</p>
+                <span className="lb-text-link" aria-hidden="true">{ro?'Detalii →':'Details →'}</span>
               </Link>
-            ))}
-            {hasLoaded && posts.length === 0 && <p className="text-foreground/70">{t.emptyPosts}</p>}
+            </article>)}
+            {!loading && projects.length===0 && <p>{t.emptyProjects}</p>}
           </div>
-        </section>
-
-        <section className="bg-secondary text-secondary-foreground">
-          <div className="max-w-[100rem] mx-auto px-6 lg:px-16 py-20 grid md:grid-cols-2 gap-10">
-            <div><h2 className="font-heading text-3xl sm:text-4xl font-bold mb-5">{t.subscribe}</h2><p className="text-secondary-foreground/75">{t.subscribeText}</p></div>
-            <form onSubmit={subscribe} className="space-y-5">
-              <label className="block text-sm" htmlFor="subscription-email">Email</label>
-              <input id="subscription-email" type="email" autoComplete="email" required value={email}
-                onChange={event => setEmail(event.target.value)}
-                className="w-full rounded bg-background text-foreground border border-divider/30 px-4 py-3" placeholder="you@example.com"/>
-              <label className="flex gap-3 items-start text-sm text-secondary-foreground/80">
-                <input type="checkbox" required checked={consented} onChange={event => setConsented(event.target.checked)} className="mt-1"/>
-                <span>{t.consent} <Link className="underline" to={localizedPath('/privacy', lang)}>{t.privacy}</Link></span>
-              </label>
-              <button type="submit" disabled={busy || !consented} className="rounded bg-primary text-primary-foreground font-semibold px-6 py-3 disabled:opacity-50">{busy ? t.subscribing : t.subscribeAction}</button>
-              <p aria-live="polite" role="status" className="text-sm">{resultMessage}</p>
-            </form>
+        </div>
+      </section>
+      <section className="lb-section lb-section-alt">
+        <div className="lb-container">
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'end',gap:20,flexWrap:'wrap',marginBottom:32}}>
+            <div><p className="lb-eyebrow">{ro?'Articole':'Insights'}</p><h2 className="lb-headline">{t.latestPosts}</h2></div>
+            <Link className="lb-text-link" to={localizedPath('/blog',lang)}>{ro?'Toate articolele →':'All articles →'}</Link>
           </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
+          <div className="lb-cards">
+            {articles.slice(0,4).map(post=><article className="mzp-c-card mzp-c-card-medium" key={post._id||post.id}>
+              <Link className="lb-card" to={localizedPath('/blog/'+(post.slug||post._id||post.id),lang)}>
+                <p className="lb-card-meta">{post.language?.toUpperCase()}{post.firstPublishedDate?' · '+new Date(post.firstPublishedDate).toLocaleDateString(ro?'ro-RO':'en-GB'):''}</p>
+                <h3 className="lb-card-title">{post.title}</h3>
+                <p>{post.excerpt}</p>
+                <span className="lb-text-link" aria-hidden="true">{ro?'Citește →':'Read →'}</span>
+              </Link>
+            </article>)}
+          </div>
+          {!loading && articles.length===0 && <p>{t.emptyPosts}</p>}
+        </div>
+      </section>
+      <section className="lb-section">
+        <div className="lb-container">
+          <p className="lb-eyebrow">{ro?'Conectat cu lumea':'Beyond the page'}</p>
+          <h2 className="lb-headline">{ro?'În prezent.':'Now & next.'}</h2>
+          <div className="lb-feature-grid">
+            <LondonClock ro={ro}/>
+            <div className="lb-feature"><h3>{ro?'Experiență':'Experience'}</h3><p>{ro?'Lucrări și proiecte de securitate aplicată.':'Practical security projects and engineering work.'}</p>
+              <Link className="lb-text-link" to={localizedPath('/experience',lang)}>{ro?'Vezi experiența →':'Explore experience →'}</Link></div>
+            <div className="lb-feature"><h3>{ro?'Lucrări de design':'Design works'}</h3><p>{ro?'Explorări vizuale și proiecte personale.':'Selected visual explorations and personal work.'}</p>
+              <Link className="lb-text-link" to={localizedPath('/design-works',lang)}>{ro?'Explorează →':'Explore work →'}</Link></div>
+          </div>
+          <p className="lb-privacy-note" style={{marginTop:24}}><a className="lb-text-link" href="https://buymeacoffee.com/liviubucel" target="_blank" rel="noopener noreferrer">{ro?'Susține proiectele mele ↗':'Support my independent work ↗'}</a></p>
+        </div>
+      </section>
+      <section className="lb-section lb-section-alt">
+        <div className="lb-container lb-split">
+          <div>
+            <p className="lb-eyebrow">Newsletter</p>
+            <h2 className="lb-headline">{ro?'Actualizări de securitate.':'Security updates.'}</h2>
+            <p className="lb-summary">{t.subscribeText}</p>
+            <p className="lb-privacy-note">{ro?'Cererea și consimțământul sunt gestionate în Wix Forms și Wix Contacts. Trimiterea alertelor va fi activată separat.':'Your request and consent are managed in Wix Forms and Wix Contacts. Email delivery will be activated separately.'}</p>
+          </div>
+          <form className="mzp-c-form lb-form" onSubmit={subscribe}>
+            <div className="mzp-c-field"><label className="mzp-c-field-label" htmlFor="updates-email">Email</label>
+              <input className="mzp-c-field-control" id="updates-email" type="email" value={email} required autoComplete="email" onChange={e=>setEmail(e.target.value)}/></div>
+            <label style={{display:'flex',gap:12,alignItems:'start',marginBottom:20}}>
+              <input type="checkbox" required checked={consent} onChange={e=>setConsent(e.target.checked)}/>
+              <span>{t.consent} <Link className="lb-text-link" to={localizedPath('/privacy',lang)}>{t.privacy}</Link></span>
+            </label>
+            <div className="lb-actions"><button className="mzp-c-button" type="submit" disabled={busy||!consent}>{busy?t.subscribing:t.subscribeAction}</button></div>
+            <div role="status" aria-live="polite">{submitted&&<p className="lb-notice">{t.submitted}</p>}{error&&<p role="alert" className="lb-notice">{error}</p>}</div>
+          </form>
+        </div>
+      </section>
+    </main>
+    <Footer/>
+  </div>;
 }
