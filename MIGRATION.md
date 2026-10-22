@@ -14,7 +14,7 @@ Workflow: isolated migration branch and PR. Preserve the original repository, pr
 - 18 fake Wix Vibe seed rows removed (6 projects, 5 blog posts, 4 credentials, 3 fake employment entries) after isolated backup.
 - Restricted 5 CMS collections' update/removal access; newsletter PII read is PRIVILEGED. Newsletter public insert requires further antispam controls.
 - 26 original project images accepted by Wix Media Manager; initial processing status PENDING.
-- New Wix CMS romaniaCyberIncidents collection created with restricted editorial writes. It is currently EMPTY pending Cloudflare D1 source migration.
+- Wix CMS romaniaCyberIncidents created with restricted editorial writes. Imported 73/73 published Cloudflare D1 incidents into this native CMS; all 73 were unverified ransomware-group claims, never confirmed breaches. Imported Ransomware.live upstream feed name/homepage from original D1 source registry as attribution (source homepage is NOT individual incident verification). The D1 ingestion pipeline and source tables remain to migrate.
 
 ## Git branch source changes
 - Real source identity, verified social/email links, portrait from Wix Media, bilingual EN/RO links and navigation.
@@ -23,10 +23,10 @@ Workflow: isolated migration branch and PR. Preserve the original repository, pr
 - Contact page with real email, verified social accounts and CV request by email rather than an insecure public file.
 - Bilingual React Router routes for original core pages and Cyber Monitor.
 - Blog links preserve real original slugs and original item metadata.
-- New native Wix CMS Cyber Monitor reader with incident categories and verification status; DOES NOT migrate D1 ingestion yet.
+- New native Wix CMS Cyber Monitor reader with incident categories, verification status and source-feed attribution. Reads the 73 imported published incident records; DOES NOT migrate D1 cron/ingestion yet.
 
 ## Unfinished and not safe for production cutover
-1. Export/sanitise/import Cloudflare D1 incident records and source evidence; replace scheduled ingestion/Queues/cron only after tested alternative.
+1. Verify and migrate complete Cloudflare D1 incident-source evidence metadata/source-reference relations, sync audit logs and all scheduled ingestion/Queues/cron, only after tested native alternatives. The 73 publicly published incidents and upstream Ransomware.live attribution HAVE BEEN MIGRATED.
 2. Preserve all article rich text, images, inline links, original SEO tags, hreflang and EN/RO translation accuracy; current articles are imported as full plain text only.
 3. Build native equivalents for all remaining source URLs: design-works, travel, playground, RSS, llms.txt, SEO redirects.
 4. Secure native CV request/delivery system; email-based request is a temporary safe function, not a full migration of the signed-token CV backend.

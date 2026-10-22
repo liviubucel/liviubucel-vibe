@@ -19,6 +19,8 @@ type Incident = {
   publishedAt?: string;
   summary?: string;
   sourceUrl?: string;
+  sourceName?: string;
+  sourceLanding?: string;
   romaniaRelationshipBasis?: string;
 };
 
@@ -115,6 +117,15 @@ export default function RomaniaCyberMonitorPage() {
                   {incident.summary && <p className="whitespace-pre-line leading-relaxed text-foreground/80 mb-4">{incident.summary.replace(/<[^>]*>/g,'')}</p>}
                   {incident.sourceUrl && /^https:\/\//i.test(incident.sourceUrl) && (
                     <a href={incident.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex gap-2 items-center text-primary text-sm"><ExternalLink size={16}/>{lang === 'ro' ? 'Sursă publică' : 'Public source'}</a>
+                  )}
+                  {incident.sourceName && incident.sourceLanding && /^https:\/\//i.test(incident.sourceLanding) && (
+                    <p className="text-foreground/70 text-sm mt-3">
+                      {lang === 'ro' ? 'Agregatorul care a raportat afirmația:' : 'Source feed for this reported claim:'}{' '}
+                      <a href={incident.sourceLanding} target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                        {incident.sourceName} <ExternalLink className="inline" size={13}/>
+                      </a>
+                      {' '}— {lang === 'ro' ? 'link către platformă, nu confirmarea individuală a incidentului.' : 'feed homepage, not evidence verifying this individual claim.'}
+                    </p>
                   )}
                 </li>
               ))}
