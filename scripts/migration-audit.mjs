@@ -10,7 +10,7 @@ const checks=[
   ['Native Wix Blog for all posts',read('src/lib/wix-blog.ts').includes("from '@wix/blog'")],
   ['Native Blog list page',read('src/components/pages/BlogPage.tsx').includes('getPublishedBlogPosts')],
   ['Native Blog rich-content detail',read('src/components/pages/BlogDetailPage.tsx').includes("getPublishedBlogPost")],
-  ['Native Wix Portfolio dependency',Boolean(pkg.dependencies['@wix/portfolio'])],
+  ['Portfolio SDK not imported until Vibe installs it', !read('src/lib/wix-portfolio.ts').includes("from '@wix/portfolio'")],
   ['Native Wix Portfolio project index',read('src/components/pages/ProjectsPage.tsx').includes('getNativeProjects')],
   ['Native Wix Portfolio project detail',read('src/components/pages/ProjectDetailPage.tsx').includes('getNativeProject')],
   ['Native homepage project cards',read('src/components/pages/HomePage.tsx').includes('getNativeProjects')],
