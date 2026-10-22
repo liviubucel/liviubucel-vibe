@@ -63,3 +63,10 @@ npm install failed because a Vibe-internal package @wix/locale-dataset-javascrip
 - Need verify Wix-native email automations and confirmation/unsubscribe before newsletter delivery. Full automated threat feed ingestion is not yet migrated, only 73 published incident records.
 - SEO redirect validation for 2 long blog slugs, canonical metadata, full sitemap, accessibility/security headers, and domain cutover are not signed off.
 - Original liviubucel.com live production, Cloudflare Workers, Sanity, original GitHub repository and DNS remain untouched.
+
+## Wix Vibe runtime import fix (2026-10-22)
+- Captured exact HTTP 500 from the authenticated remote Vite server: Failed to resolve import @wix/portfolio from src/lib/wix-portfolio.ts. This 500 also made Router.tsx fail to hydrate.
+- Removed the missing static SDK import and the dependent backend API route.
+- **Temporary read-only bridge** reads the already imported legacy CMS mirror for project cards while the actual Wix Portfolio app remains installed with all four real projects.
+- Editing Portfolio entries alone does not instantly update the temporary CMS reader. The live native SDK integration remains an acceptance requirement before retiring CMS mirrors.
+- No change to Wix Blog or Wix Forms native app flows, original site, DNS or production hosting.

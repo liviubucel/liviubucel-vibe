@@ -1,6 +1,19 @@
-import { projects } from '@wix/portfolio';
+import { BaseCrudService } from '@/integrations';
+import type { Proiecte } from '@/entities';
 
-/** Source of truth: native Wix Portfolio, managed in the Wix site dashboard. */
+/**
+ * Wix Vibe bridge for the four verified portfolio projects.
+ *
+ * The official Wix Portfolio app is installed, with the four source projects imported.
+ * Wix Vibe's remote Vite runtime currently fails with HTTP 500 for an import of
+ * '@wix/portfolio' (unavailable in its installed module graph).
+ *
+ * This conservative READ-ONLY fallback uses the previously migrated Wix CMS mirror
+ * until the managed Vibe runtime supplies the @wix/portfolio SDK. It does not write
+ * to CMS or replace native Wix Portfolio for editorial management.
+ * Changes to the native Portfolio must be resynced with this legacy mirror before
+ * this fallback will reflect them; don't mistake it for live native integration.
+ */
 export interface NativeProject {
   _id?: string;
   id?: string;
@@ -8,28 +21,28 @@ export interface NativeProject {
   description?: string;
   slug?: string;
   hidden?: boolean;
-  details?: Array<{label?: string; text?: string; link?: {text?: string; url?: string; target?: string}}>;
+  details?: Array<{label?:string; text?:string; link?:{text?:string;url?:string;target?:string}}>;
 }
 export async function getNativeProjects(): Promise<NativeProject[]> {
-  // Portfolio read is privileged on some Wix site plans; use a server-side
-  // projection of *published* projects, not a public elevated client token.
-  const response = await fetch('/api/native-projects.json', { headers: {Accept:'application/json'} });
-  if (response.ok) {
-    const result = await response.json() as {projects: NativeProject[]};
-    return result.projects || [];
-  }
-  // Wix Vibe preview can route differently than the published Astro site.
-  // Native Wix SDK remains the same source of truth for both execution paths.
-  const sdkResponse = await projects.listProjects({paging:{limit:100}});
-  return (sdkResponse.projects || []).filter(project=>!project.hidden) as NativeProject[];
+  const result = await BaseCrudService.getAll<Proiecte>('proiecte', [], {limit: 100});
+  return (result.items || []).map((item):NativeProject => ({
+    _id: item._id,
+    id: item._id,
+    title: item.projectTitle,
+    description: item.detailedDescription,
+    details: [
+      {label:'Technologies',text:item.technologiesUsed},
+      ...(item.projectLink?.startsWith('https://') ? [{label:'Project link',link:{text:'Open source project',url:item.projectLink,target:'_blank'}}] : [])
+    ]
+  }));
 }
-export async function getNativeProject(idOrSlug: string): Promise<NativeProject | undefined> {
+export async function getNativeProject(idOrSlug:string):Promise<NativeProject | undefined> {
   const all = await getNativeProjects();
-  return all.find(item => item.slug === idOrSlug || item._id === idOrSlug || item.id === idOrSlug);
+  return all.find(project => project.id === idOrSlug || project._id === idOrSlug || project.slug === idOrSlug);
 }
-export function projectExternalLink(project: NativeProject): string | undefined {
-  return project.details?.map(x=>x.link?.url).find(x=>!!x && /^https:\/\//.test(x));
+export function projectExternalLink(project:NativeProject):string|undefined {
+  return project.details?.map(item=>item.link?.url).find(link=>!!link && /^https:\/\//.test(link));
 }
-export function projectTechnologies(project:NativeProject):string | undefined {
-  return project.details?.find(x=>x.label === 'Technologies')?.text;
+export function projectTechnologies(project:NativeProject):string|undefined {
+  return project.details?.find(item=>item.label==='Technologies')?.text;
 }
