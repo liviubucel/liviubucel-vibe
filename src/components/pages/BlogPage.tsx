@@ -1,181 +1,80 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getLanguage, localizedPath } from '@/lib/portfolio';
-import { motion } from 'framer-motion';
-import { Calendar, User } from 'lucide-react';
-import { Image } from '@/components/ui/image';
-import { Button } from '@/components/ui/button';
-import { BaseCrudService } from '@/integrations';
-import { BlogArticles } from '@/entities';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { format } from 'date-fns';
-import { ro } from 'date-fns/locale';
+import { getLanguage, localizedPath } from '@/lib/portfolio';
+import { getPublishedBlogPosts, type NativeBlogPost } from '@/lib/wix-blog';
 
 export default function BlogPage() {
   const lang = getLanguage(useLocation().pathname);
-  const [articles, setArticles] = useState<BlogArticles[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasNext, setHasNext] = useState(false);
-  const [skip, setSkip] = useState(0);
+  const [items, setItems] = useState<NativeBlogPost[]>([]);
+  const [query, setQuery] = useState('');
+  const [languageFilter, setLanguageFilter] = useState<'all' | 'en' | 'ro'>('all');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadArticles();
-  }, []);
+    let active = true;
+    getPublishedBlogPosts()
+      .then(posts => { if (active) setItems(posts); })
+      .catch(() => { if (active) setError(lang === 'ro' ? 'Articolele nu au putut fi încărcate.' : 'Could not load the articles.'); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [lang]);
 
-  const loadArticles = async (loadMore = false) => {
-    try {
-      const result = await BaseCrudService.getAll<BlogArticles>('articoleblog', {}, { 
-        limit: 6, 
-        skip: loadMore ? skip : 0 
-      });
-      
-      if (loadMore) {
-        setArticles(prev => [...prev, ...result.items]);
-      } else {
-        setArticles(result.items);
-      }
-      
-      setHasNext(result.hasNext);
-      setSkip(result.nextSkip || 0);
-    } catch (error) {
-      console.error('Error loading articles:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const filtered = useMemo(() =>
+    items.filter(post => (languageFilter === 'all' || post.language === languageFilter)
+      && (post.title || '').toLocaleLowerCase().includes(query.toLocaleLowerCase())),
+    [items,languageFilter,query]);
 
-  const handleLoadMore = () => {
-    loadArticles(true);
-  };
-
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-
-      {/* Hero Section */}
-      <section className="w-full bg-secondary py-24">
-        <div className="max-w-[100rem] mx-auto px-8 lg:px-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="flex items-center gap-3 mb-8">
-              <span className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-heading text-xl font-bold">01</span>
-              <span className="text-secondary-foreground/70 text-sm font-paragraph uppercase tracking-wider">Articole</span>
+  return <div className="lb-page">
+    <Header/>
+    <main>
+      <section className="lb-section lb-section-alt">
+        <div className="lb-container">
+          <div className="lb-eyebrow">{lang === 'ro' ? 'Articole și analize' : 'Writing & research'}</div>
+          <h1 className="lb-headline">{lang === 'ro' ? 'Blog și cercetare' : 'Security writing'}</h1>
+          <p className="lb-summary">{lang === 'ro'
+            ? 'Analize, explicații și observații despre vulnerabilități, incidente și securitate cibernetică.'
+            : 'Original analysis and technical notes on vulnerabilities, incident response, and security engineering.'}</p>
+        </div>
+      </section>
+      <section className="lb-section">
+        <div className="lb-container">
+          <div style={{display:'flex',flexWrap:'wrap',gap:18,alignItems:'center',justifyContent:'space-between',marginBottom:36}}>
+            <label htmlFor="blog-search" style={{display:'block',width:'min(100%,560px)'}}>
+              <span className="lb-eyebrow" style={{display:'block',marginBottom:9}}>{lang === 'ro' ? 'Caută un articol' : 'Find an article'}</span>
+              <input id="blog-search" className="lb-search" value={query} onChange={event=>setQuery(event.target.value)}
+                placeholder={lang==='ro'?'Caută după titlu…':'Search article titles…'} type="search" />
+            </label>
+            <div role="group" aria-label="Article language" className="lb-actions" style={{marginTop:0}}>
+              {(['all','en','ro'] as const).map(choice=><button key={choice}
+                type="button" className={'mzp-c-button' + (languageFilter!==choice?' mzp-t-secondary':'')}
+                aria-pressed={languageFilter===choice} onClick={()=>setLanguageFilter(choice)}>
+                {choice==='all'?(lang==='ro'?'Toate':'All'):choice.toUpperCase()}
+              </button>)}
             </div>
-            
-            <h1 className="font-heading text-6xl lg:text-7xl font-bold text-secondary-foreground mb-6">
-              {lang === 'ro' ? 'Blog Tehnic' : 'Security Writing'}
-            </h1>
-            
-            <p className="text-secondary-foreground/80 text-xl font-paragraph max-w-4xl leading-relaxed">
-              {lang === 'ro' ? 'Articole despre securitate cibernetică, ethical hacking și investigații digitale.' : 'Research, technical writing, incident analysis and evidence-led cybersecurity notes.'}
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Articles Grid */}
-      <section className="w-full bg-background py-24">
-        <div className="max-w-[100rem] mx-auto px-8 lg:px-16">
-          <div className="min-h-[600px]">
-            {isLoading ? null : articles.length > 0 ? (
-              <>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {articles.map((article, idx) => (
-                    <motion.div
-                      key={article._id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: idx * 0.1 }}
-                    >
-                      <Link to={localizedPath('/blog/' + (article.slug || article._id), lang)} className="group block h-full">
-                        <div className="bg-secondary rounded-lg overflow-hidden hover:border-l-4 hover:border-primary transition-all h-full flex flex-col">
-                          {article.featuredImage && (
-                            <div className="relative h-64 overflow-hidden">
-                              <Image 
-                                src={article.featuredImage}
-                                alt={article.articleTitle || 'Article image'}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                width={400}
-                              />
-                            </div>
-                          )}
-                          
-                          <div className="p-6 flex-1 flex flex-col">
-                            <h3 className="font-heading text-2xl font-bold text-secondary-foreground mb-3 group-hover:text-primary transition-colors">
-                              {article.articleTitle}
-                            </h3>
-                            
-                            {article.excerpt && (
-                              <p className="text-secondary-foreground/70 font-paragraph text-sm mb-4 line-clamp-3 flex-1">
-                                {article.excerpt}
-                              </p>
-                            )}
-
-                            {article.tags && (
-                              <div className="flex flex-wrap gap-2 mb-4">
-                                {article.tags.split(',').slice(0, 3).map((tag, i) => (
-                                  <span key={i} className="px-3 py-1 bg-surfacedark text-secondary-foreground/80 font-paragraph text-xs rounded">
-                                    {tag.trim()}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-
-                            <div className="flex items-center justify-between pt-4 border-t border-divider/10 mt-auto">
-                              <div className="flex items-center gap-4 text-secondary-foreground/60">
-                                {article.publicationDate && (
-                                  <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4" />
-                                    <span className="font-paragraph text-xs">
-                                      {format(new Date(article.publicationDate), 'd MMM yyyy', { locale: ro })}
-                                    </span>
-                                  </div>
-                                )}
-                                
-                                {article.author && (
-                                  <div className="flex items-center gap-2">
-                                    <User className="w-4 h-4" />
-                                    <span className="font-paragraph text-xs">
-                                      {article.author}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {hasNext && (
-                  <div className="flex justify-center mt-12">
-                    <Button
-                      onClick={handleLoadMore}
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-heading text-base px-8 py-6"
-                    >
-                      Încarcă mai multe articole
-                    </Button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-20">
-                <p className="text-foreground/60 font-paragraph text-lg">
-                  Nu există articole disponibile momentan.
-                </p>
-              </div>
-            )}
           </div>
+          {loading && <p role="status">{lang==='ro'?'Se încarcă articolele…':'Loading articles…'}</p>}
+          {error && <div className="lb-notice" role="alert">{error}</div>}
+          {!loading && !error && filtered.length === 0 && <p>{lang==='ro'?'Niciun articol pentru această căutare.':'No articles match this search.'}</p>}
+          <div className="lb-cards">
+            {filtered.map(post=><article key={post._id||post.id} className="mzp-c-card mzp-c-card-medium">
+              <Link className="lb-card" to={localizedPath('/blog/'+(post.slug||post._id||post.id),lang)}>
+                <div className="lb-card-meta">
+                  {post.language?.toUpperCase()}
+                  {post.firstPublishedDate && <> · <time dateTime={String(post.firstPublishedDate)}>{new Date(post.firstPublishedDate).toLocaleDateString(lang==='ro'?'ro-RO':'en-GB',{year:'numeric',month:'long',day:'numeric'})}</time></>}
+                </div>
+                <h2 className="lb-card-title">{post.title}</h2>
+                <p>{post.excerpt || (lang==='ro'?'Citește articolul integral.':'Read the full article.')}</p>
+                <span className="lb-text-link" aria-hidden="true">{lang==='ro'?'Citește articolul →':'Read article →'}</span>
+              </Link>
+            </article>)}
+          </div>
+          <p className="lb-privacy-note" style={{marginTop:32}}>{lang==='ro'?'Articolele se editează în aplicația Wix Blog.':'Articles are published and managed in the native Wix Blog app.'}</p>
         </div>
       </section>
-
-      <Footer />
-    </div>
-  );
+    </main>
+    <Footer/>
+  </div>;
 }

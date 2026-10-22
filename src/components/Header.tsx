@@ -15,59 +15,50 @@ const navigation = [
 ] as const;
 
 export default function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const location = useLocation();
-  const language = getLanguage(location.pathname);
+  const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
+  const language = getLanguage(pathname);
+  const otherLanguage = language === 'en' ? 'ro' : 'en';
+  const currentBase = pathname.replace(/^\/ro(?=\/|$)/, '') || '/';
   const t = labels[language];
-  const switchLanguage = language === 'en' ? 'ro' : 'en';
-  const unprefixedPath = location.pathname.replace(/^\/ro(?=\/|$)/, '') || '/';
-  const languageHref = localizedPath(unprefixedPath, switchLanguage);
-  const nav = navigation.map(item => ({
-    ...item,
-    href: localizedPath(item.path, language),
-    label: t[item.key],
-  }));
-
   return (
-    <header className="sticky top-0 z-50 bg-secondary border-b border-divider/10">
-      <div className="max-w-[100rem] mx-auto px-6 lg:px-16">
-        <div className="min-h-20 flex items-center justify-between gap-6">
-          <Link to={localizedPath('/', language)} aria-label={portfolio.name} className="font-heading text-xl font-bold text-secondary-foreground">
-            {portfolio.name}
-          </Link>
-          <nav aria-label={language === 'ro' ? 'Navigare principală' : 'Main navigation'} className="hidden xl:flex gap-5 items-center">
-            {nav.map(item => (
-              <Link key={item.href} to={item.href}
-                aria-current={location.pathname === item.href ? 'page' : undefined}
-                className={location.pathname === item.href ? 'text-primary font-semibold text-sm' : 'text-secondary-foreground/80 hover:text-primary text-sm'}>
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <div className="flex items-center gap-3">
-            <Link to={languageHref} hrefLang={switchLanguage} aria-label={switchLanguage === 'ro' ? 'Română' : 'English'}
-              className="rounded border border-divider/30 px-3 py-2 text-sm text-secondary-foreground hover:text-primary">
-              {switchLanguage.toUpperCase()}
+    <header className="mzp-c-navigation lb-navigation" role="banner">
+      <div className="mzp-c-navigation-l-content">
+        <div className="mzp-c-navigation-container">
+          <div className="mzp-c-navigation-logo">
+            <Link to={localizedPath('/',language)} aria-label={portfolio.name}>{portfolio.name}</Link>
+          </div>
+          <button type="button" className="lb-mobile-button"
+            aria-controls="lb-protocol-menu" aria-expanded={open}
+            aria-label={open ? 'Close navigation' : 'Open navigation'}
+            onClick={() => setOpen(value => !value)}>
+            {open ? <X size={19} aria-hidden="true" /> : <Menu size={19} aria-hidden="true" />}
+            <span style={{ marginLeft: 8 }}>{language === 'ro' ? 'Meniu' : 'Menu'}</span>
+          </button>
+          <div className={'mzp-c-navigation-items' + (open ? ' lb-menu-open' : '')} id="lb-protocol-menu">
+            <div className="mzp-c-navigation-menu">
+              <nav className="mzp-c-menu mzp-is-basic" aria-label={language === 'ro' ? 'Navigare principală' : 'Main navigation'}>
+                <ul className="mzp-c-menu-category-list">
+                  {navigation.map(({path,key}) => {
+                    const href = localizedPath(path,language);
+                    return (
+                      <li className="mzp-c-menu-category" key={path}>
+                        <Link className="mzp-c-menu-title" to={href}
+                          aria-current={pathname === href ? 'page' : undefined}
+                          onClick={() => setOpen(false)}>{t[key]}</Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </nav>
+            </div>
+            <Link to={localizedPath(currentBase,otherLanguage)} hrefLang={otherLanguage}
+              onClick={()=>setOpen(false)} className="lb-language"
+              aria-label={otherLanguage === 'ro' ? 'Vezi în română' : 'View in English'}>
+              {otherLanguage.toUpperCase()}
             </Link>
-            <button type="button" aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={menuOpen} aria-controls="portfolio-mobile-nav"
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="xl:hidden p-2 text-secondary-foreground">
-              {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
           </div>
         </div>
-        {menuOpen && (
-          <nav id="portfolio-mobile-nav" aria-label="Mobile navigation" className="xl:hidden grid grid-cols-2 sm:grid-cols-3 gap-3 py-6 border-t border-divider/10">
-            {nav.map(item => (
-              <Link key={item.href} to={item.href} onClick={() => setMenuOpen(false)}
-                aria-current={location.pathname === item.href ? 'page' : undefined}
-                className="text-secondary-foreground hover:text-primary py-2 text-sm">
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        )}
       </div>
     </header>
   );
