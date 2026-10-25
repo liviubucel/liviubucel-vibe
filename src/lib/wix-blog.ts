@@ -17,7 +17,7 @@ export interface RichNode {
   type: string;
   id?: string;
   nodes?: RichNode[];
-  textData?: { text?: string; decorations?: unknown[] };
+  textData?: { text?: string; decorations?: Array<{type?:string;linkData?:{link?:{url?:string}}}> };
   headingData?: { level?: number };
   imageData?: { altText?: string; image?: { src?: { url?: string; id?: string } } };
 }

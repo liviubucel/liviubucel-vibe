@@ -5,6 +5,7 @@ import {openNordlysPhotoSwipe} from '@/components/nordlys/PhotoSwipeViewer';
 import {getLanguage,localizedPath} from '@/lib/portfolio';
 import {getPublishedBlogPost,getPublishedBlogPosts,type NativeBlogPost,type RichNode} from '@/lib/wix-blog';
 import {NordlysTableOfContents} from '@/components/nordlys/NordlysArticleInteractions';
+import {setNordlysDocumentSEO} from '@/components/nordlys/NordlysSeo';
 
 type Heading={id:string;level:number;text:string};
 type ImageEntry={src:string;alt:string};
@@ -94,6 +95,7 @@ export default function BlogDetailPage(){
       .finally(()=>{if(active)setLoading(false)});
     return()=>{active=false};
   },[id,ro]);
+  useEffect(()=>{if(article?.title)setNordlysDocumentSEO(article.title,article.excerpt||'Cybersecurity analysis by Liviu Bucel');},[article]);
   const headings=useMemo<Heading[]>(()=>article?.richContent?.nodes
     ?.map((node,i)=>node.type==='HEADING'?{id:safeId(node,i),level:Number(node.headingData?.level)||2,text:textOf(node)}:null)
     .filter((h):h is Heading=>!!h)||[],[article]);

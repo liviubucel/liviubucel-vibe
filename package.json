@@ -67,7 +67,7 @@
     "@wix/data": "^1.0.376",
     "@wix/design-system": "^1.199.0",
     "@wix/ecom": "^1.0.1706",
-    "@wix/essentials": "^1.0.1",
+    "@wix/essentials": "^1.0.10",
     "@wix/events": "1.0.705",
     "@wix/faq": "^1.0.42",
     "@wix/fast-gallery-vibe": "1.28.0",

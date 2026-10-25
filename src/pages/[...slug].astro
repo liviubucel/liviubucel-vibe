@@ -11,11 +11,17 @@ import "@/vendor/photoswipe/photoswipe.css";
 import "@/vendor/photoswipe/photoswipe-dynamic-caption-plugin.css";
 import "@/vendor/photoswipe/photoswipe-thumbs-plugin.css";
 
+// Wix Vibe's original catch-all hard-coded pageName "Home" for every route.
+// Preserve native SEO service while passing an actual page name, and prefer
+// the forwarded public HTTPS URL over the private Astro http proxy address.
+const forwardedUrl=Astro.request.headers.get('x-wix-forwarded-url');
+const pageUrl=forwardedUrl&&URL.canParse(forwardedUrl)&&/^https?:$/.test(new URL(forwardedUrl).protocol)
+  ?forwardedUrl:Astro.url.href;
+const segments=Astro.url.pathname.split('/').filter(Boolean);
+const pageName=(segments[0]==='ro'?segments[1]:segments[0])||'Home';
 const seoTagsServiceConfig = await loadSEOTagsServiceConfig({
-  pageUrl: Astro.url.href,
-  itemData: {
-    pageName: 'Home',
-  },
+  pageUrl,
+  itemData:{pageName:pageName==='Home'?'Home':pageName.replace(/(^|-)[a-z]/g,(x)=>x.replace('-',' ').toUpperCase())}
 });
 ---
 

@@ -1,0 +1,53 @@
+---
+/* Native Wix Blog SEO per the official Wix-managed Astro item-page guide:
+ * https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/feature-guides/seo/add-seo-support-to-item-pages
+ * The React application still renders the post using the existing Wix SDK.
+ */
+import { SEO } from '@wix/seo/components';
+import { seoTags } from '@wix/seo';
+import { loadSEOTagsServiceConfig } from '@wix/seo/services';
+import { WIX_APPS } from '@wix/essentials';
+import { Head } from '@/components/Head';
+import AppRouter from '@/components/Router';
+import '@wix/wix-vibe-plugins/plugins-vars.css';
+import '@wix/wix-vibe-plugins/plugins-theme.css';
+import '@/styles/global.css';
+import '@/styles/nordlys.css';
+import '@/vendor/photoswipe/photoswipe.css';
+import '@/vendor/photoswipe/photoswipe-dynamic-caption-plugin.css';
+import '@/vendor/photoswipe/photoswipe-thumbs-plugin.css';
+
+export const wixMetadata={
+  appDefId: WIX_APPS.blogs.id,
+  pageIdentifier: WIX_APPS.blogs.postPageMetadata.pageIdentifier,
+  identifiers:{
+    slug:WIX_APPS.blogs.postPageMetadata.identifiers.slug
+  }
+};
+const forwarded=Astro.request.headers.get('x-wix-forwarded-url');
+const pageUrl=forwarded&&URL.canParse(forwarded)&&/^https?:$/.test(new URL(forwarded).protocol)
+  ?forwarded:Astro.url.href;
+const seoTagsServiceConfig=await loadSEOTagsServiceConfig({
+  pageUrl,
+  itemType:seoTags.ItemType.BLOG_POST,
+  itemData:{slug:Astro.params.slug!}
+});
+---
+<html lang="en" class="w-full h-full">
+  <head>
+    <script is:inline>
+      try {
+        const mode=localStorage.getItem('liviubucel-nordlys-mode')==='light'?'light':'dark';
+        document.documentElement.dataset.mode=mode;
+        document.documentElement.style.colorScheme=mode;
+      } catch {document.documentElement.dataset.mode='dark'}
+    </script>
+    <Head/>
+    <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags"/>
+  </head>
+  <body class="w-full h-full">
+    <div id="root" class="w-full h-full">
+      <AppRouter client:only="react"/>
+    </div>
+  </body>
+</html>
