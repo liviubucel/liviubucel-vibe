@@ -25,7 +25,7 @@ export default function ContactPage(){
       <div className="nordlys-field"><label htmlFor="n-contact-email">Email</label><input id="n-contact-email" type="email" autoComplete="email" required maxLength={254} value={email} onChange={e=>setEmail(e.target.value)}/></div>
       <div className="nordlys-field"><label htmlFor="n-contact-subject">{ro?'Subiect':'Subject'}</label><input id="n-contact-subject" required maxLength={180} value={subject} onChange={e=>setSubject(e.target.value)}/></div>
       <div className="nordlys-field"><label htmlFor="n-contact-message">{ro?'Mesaj':'Message'}</label><textarea id="n-contact-message" required minLength={10} maxLength={6000} value={message} onChange={e=>setMessage(e.target.value)}/></div>
-      <p className="nordlys-item-meta">{ro?'Mesajele sunt procesate prin Wix Forms, conform':'Submissions are processed using Wix Forms, as described in the'} <Link className="nordlys-inline-link" to={localizedPath('/privacy',lang)}>{ro?'politicii de confidențialitate':'privacy policy'}</Link>.</p>
+      <p className="nordlys-item-meta">{ro?'Mesajele sunt procesate prin Wix Forms, conform':'Submissions are processed using Wix Forms, as described in the'} <Link viewTransition className="nordlys-inline-link" to={localizedPath('/privacy',lang)}>{ro?'politicii de confidențialitate':'privacy policy'}</Link>.</p>
       <button className="nordlys-btn" type="submit" disabled={busy}>{busy?(ro?'Se trimite…':'Sending…'):(ro?'Trimite mesajul':'Send message')}</button>
       {sent&&<p className="nordlys-feedback" role="status">{ro?'Mesaj trimis. Mulțumesc!':'Message sent. Thank you!'}</p>}
       {error&&<p className="nordlys-feedback" role="alert">{error}</p>}

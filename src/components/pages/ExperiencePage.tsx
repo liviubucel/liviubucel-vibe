@@ -15,10 +15,10 @@ export default function ExperiencePage(){
     <NordlysPageHeading eyebrow={ro?'Profil profesional':'Career profile'} title={ro?'CV / Experiență':'Resume & experience'} intro={ro?'Experiență relevantă în IT, infrastructură, suport și securitate cibernetică.':'Practical background in IT support, web infrastructure and security engineering, alongside cybersecurity studies and labs.'}/>
     <div className="nordlys-post-list">{roles.map(role=><section className="nordlys-list-item" key={role.en}><h2 className="nordlys-item-title">{role.en}</h2><p className="nordlys-item-meta">{role.where} · {role.when}</p><p className="nordlys-item-description">{role.description}</p></section>)}</div>
     <section className="nordlys-section nordlys-article"><h2>{ro?'Proiecte și competențe':'Projects and credentials'}</h2>
-      <p>{ro?'Poți consulta':'Explore'} <Link className="nordlys-inline-link" to={localizedPath('/projects',lang)}>{ro?'proiectele tehnice':'technical projects'}</Link> {ro?'și':'and'} <Link className="nordlys-inline-link" to={localizedPath('/accreditations',lang)}>{ro?'certificările':'credentials'}</Link> {ro?'pentru informații verificabile.':'for supporting details.'}</p>
+      <p>{ro?'Poți consulta':'Explore'} <Link viewTransition className="nordlys-inline-link" to={localizedPath('/projects',lang)}>{ro?'proiectele tehnice':'technical projects'}</Link> {ro?'și':'and'} <Link viewTransition className="nordlys-inline-link" to={localizedPath('/accreditations',lang)}>{ro?'certificările':'credentials'}</Link> {ro?'pentru informații verificabile.':'for supporting details.'}</p>
       <h2>{ro?'Solicită CV-ul':'Request my CV'}</h2>
       <p>{ro?'CV-ul actualizat este disponibil la cerere, nu printr-un link public.':'A current CV is available on request rather than through an unprotected public download.'}</p>
-      <div className="nordlys-actions"><Link className="nordlys-btn" to={localizedPath('/contact',lang)}>{ro?'Solicită CV':'Request CV'}</Link><a className="nordlys-btn nordlys-btn-outline" href={portfolio.links.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+      <div className="nordlys-actions"><Link viewTransition className="nordlys-btn" to={localizedPath('/contact',lang)}>{ro?'Solicită CV':'Request CV'}</Link><a className="nordlys-btn nordlys-btn-outline" href={portfolio.links.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
     </section>
   </>;
 }

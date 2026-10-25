@@ -20,7 +20,7 @@ export default function SearchPage(){
   return <>
     <NordlysPageHeading eyebrow={ro?'Caută pe site':'Site search'} title={ro?'Căutare':'Search'} intro={ro?'Caută în articolele și proiectele publicate în Wix.':'Search published Wix Blog articles and projects.'}/>
     <form role="search" onSubmit={e=>{e.preventDefault();setParams(query?{q:query}:{})}}><label className="nordlys-field" htmlFor="n-global-search">{ro?'Termen de căutare':'Search term'}<input className="nordlys-search" type="search" id="n-global-search" value={query} autoFocus onChange={e=>setQuery(e.target.value)} placeholder={ro?'Introdu termenul':'Enter keywords'} /></label><button className="nordlys-btn" type="submit">{ro?'Caută':'Search'}</button></form>
-    <div className="nordlys-post-list" style={{marginTop:40}}>{results.map(p=><Link className="nordlys-list-item" to={localizedPath(p.path,lang)} key={p.type+':'+p.id}><p className="nordlys-item-meta">{p.type}</p><h2 className="nordlys-item-title">{p.title}</h2><p className="nordlys-item-description">{p.snippet}</p></Link>)}</div>
+    <div className="nordlys-post-list" style={{marginTop:40}}>{results.map(p=><Link viewTransition className="nordlys-list-item" to={localizedPath(p.path,lang)} key={p.type+':'+p.id}><p className="nordlys-item-meta">{p.type}</p><h2 className="nordlys-item-title">{p.title}</h2><p className="nordlys-item-description">{p.snippet}</p></Link>)}</div>
     {loading&&<p role="status">{ro?'Se încarcă…':'Loading content…'}</p>}
     {!loading&&query&&results.length===0&&<p role="status">{ro?'Niciun rezultat.':'No matching results.'}</p>}
   </>;

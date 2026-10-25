@@ -8,7 +8,7 @@ export default function ProjectDetailPage(){
   useEffect(()=>{let active=true;if(!id){setLoading(false);return}getNativeProject(id).then(v=>{if(active)setProject(v)}).catch(()=>{if(active)setError(true)}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[id]);
   const link=project?projectExternalLink(project):undefined;
   return <article>
-    <p className="nordlys-item-meta"><Link className="nordlys-inline-link" to={localizedPath('/projects',lang)}>← {ro?'Toate proiectele':'All projects'}</Link></p>
+    <p className="nordlys-item-meta"><Link viewTransition className="nordlys-inline-link" to={localizedPath('/projects',lang)}>← {ro?'Toate proiectele':'All projects'}</Link></p>
     {loading?<p role="status">{ro?'Se încarcă…':'Loading project…'}</p>:project?<><header className="nordlys-section">
       <p className="nordlys-kicker">{projectTechnologies(project)||'Cybersecurity'}</p><h1 className="nordlys-page-title">{project.title}</h1><p className="nordlys-page-lead">{project.description}</p>
     </header><div className="nordlys-article">

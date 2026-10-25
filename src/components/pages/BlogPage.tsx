@@ -18,7 +18,7 @@ export default function BlogPage(){
     <label className="nordlys-field" htmlFor="n-search-posts"><span className="nordlys-kicker">{ro?'Caută în articole':'Search articles'}</span><input className="nordlys-search" id="n-search-posts" type="search" value={query} onChange={e=>{setQuery(e.target.value);setPage(0)}} placeholder={ro?'Titlu sau cuvânt cheie':'Title or keyword'} /></label>
     {loading&&<p role="status">{ro?'Se încarcă…':'Loading articles…'}</p>}
     {error&&<p role="alert">{ro?'Articolele nu sunt disponibile.':'Articles are currently unavailable.'}</p>}
-    <div className="nordlys-post-list">{items.map(post=><Link className="nordlys-list-item" to={localizedPath('/blog/'+(post.slug||post.id||post._id),lang)} key={post.id||post._id}>
+    <div className="nordlys-post-list">{items.map(post=><Link viewTransition className="nordlys-list-item" to={localizedPath('/blog/'+(post.slug||post.id||post._id),lang)} key={post.id||post._id}>
       <h2 className="nordlys-item-title">{post.title}</h2>
       <p className="nordlys-item-meta">{post.firstPublishedDate?new Date(post.firstPublishedDate).toLocaleDateString(ro?'ro-RO':'en-GB',{day:'numeric',month:'long',year:'numeric'}):''}{post.minutesToRead?' · '+post.minutesToRead+' min':''}</p>
       <p className="nordlys-item-description">{post.excerpt}</p>
