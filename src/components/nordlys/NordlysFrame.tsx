@@ -2,6 +2,7 @@ import {createContext,useContext,useEffect,useRef,useState,type MouseEvent,type 
 import {Link,Outlet,useLocation} from 'react-router-dom';
 import {Github,Linkedin,Menu,Moon,Search,Sun,X,Rss,ChevronDown,ArrowUp} from 'lucide-react';
 import {getLanguage,localizedPath,portfolio,type Language} from '@/lib/portfolio';
+import NordlysSeo from '@/components/nordlys/NordlysSeo';
 
 /**
  * React adaptation of Nordlys original theme UI/animations:
@@ -79,7 +80,9 @@ export function NordlysBottom({landing=false}:{landing?:boolean}){
     <hr className="nordlys-separator"/>
     <div className={landing?'nordlys-bottom-bar':'nordlys-footer-row'}>
       {!landing&&<span>© {new Date().getFullYear()} {portfolio.name}</span>}
-      <ExternalLinks/><span className="nordlys-grow"/><LanguageSwitch lang={lang}/><NordlysModeToggle/>
+      <ExternalLinks/><span className="nordlys-grow"/>
+      <a className="nordlys-source-link" href="/nordlys-source.zip" title="GPL-3.0 corresponding source">Source</a>
+      <LanguageSwitch lang={lang}/><NordlysModeToggle/>
     </div>
   </footer>;
 }
@@ -163,7 +166,7 @@ function ScrollTopControl(){
 export function NordlysFrame(){
   const {pathname}=useLocation();
   const isHome=pathname==='/'||pathname==='/ro'||pathname==='/ro/';
-  return <div className="nordlys-root"><div className="nordlys-container">
+  return <div className="nordlys-root"><NordlysSeo/><div className="nordlys-container">
     {isHome?<Outlet/>:<div className="nordlys-main"><NordlysNavigation/><main id="main" className="nordlys-main-body"><Outlet/></main><NordlysBottom/><ScrollTopControl/></div>}
   </div></div>;
 }

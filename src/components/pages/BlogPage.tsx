@@ -3,6 +3,7 @@ import {Link,useLocation} from 'react-router-dom';
 import {getPublishedBlogPosts,type NativeBlogPost} from '@/lib/wix-blog';
 import {getLanguage,localizedPath} from '@/lib/portfolio';
 import {NordlysPageHeading} from '@/components/nordlys/NordlysFrame';
+import NordlysNewsletter from '@/components/nordlys/NordlysNewsletter';
 const PAGE_SIZE=5;
 export default function BlogPage(){
   const lang=getLanguage(useLocation().pathname),ro=lang==='ro';
@@ -25,5 +26,6 @@ export default function BlogPage(){
     </Link>)}</div>
     {!loading&&!error&&filtered.length===0&&<p>{ro?'Niciun articol găsit.':'No matching posts.'}</p>}
     {total>1&&<div className="nordlys-pager"><button disabled={page===0} onClick={()=>setPage(p=>Math.max(0,p-1))}>← {ro?'Anterior':'Previous'}</button><span>{page+1} / {total}</span><button disabled={page>=total-1} onClick={()=>setPage(p=>p+1)}>{ro?'Următor':'Next'} →</button></div>}
+    <NordlysNewsletter/>
   </>;
 }

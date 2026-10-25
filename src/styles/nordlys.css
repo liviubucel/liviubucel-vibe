@@ -346,3 +346,10 @@ html.theme-switching ::view-transition-old(root){z-index:1;}
 .nordlys-image-close{position:fixed;top:15px;right:18px;z-index:1;border:0;background:transparent;color:white;cursor:pointer;padding:8px;}
 @keyframes nordlys-lightbox-enter{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){.nordlys-toc-chevron,.nordlys-toc-collapse,.nordlys-image-overlay{transition:none!important;animation:none!important}}
+
+.nordlys-newsletter{border-top:1px solid var(--n-border);margin-top:70px;padding-top:40px;}
+.nordlys-newsletter-consent{display:flex;align-items:flex-start;gap:11px;font-size:.92rem;color:var(--n-muted);margin:20px 0;line-height:1.55;cursor:pointer;}
+.nordlys-newsletter-consent input{width:17px;height:17px;margin-top:3px;accent-color:var(--n-accent);}
+
+.nordlys-source-link {color:var(--n-muted)!important;font-size:.78rem;opacity:.76;text-decoration:none;transition:opacity .5s ease-in-out;}
+.nordlys-source-link:hover,.nordlys-source-link:focus-visible{opacity:1;text-decoration:underline;}
