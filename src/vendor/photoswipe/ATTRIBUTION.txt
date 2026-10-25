@@ -1,0 +1,1 @@
+Bundled PhotoSwipe v5.4.4 and upstream compatible caption/thumbnail plugins (MIT licenses preserved), for offline first-party loading without an additional runtime package dependency.

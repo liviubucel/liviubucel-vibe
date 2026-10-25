@@ -158,7 +158,7 @@ function ScrollTopControl(){
     window.addEventListener('scroll',onScroll,{passive:true});
     return()=>{window.removeEventListener('scroll',onScroll);if(frame)cancelAnimationFrame(frame)};
   },[pathname]);
-  return <button className="nordlys-scroll-top" type="button" aria-label="Scroll to top" data-visible={visible} onClick={()=>window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})}><ArrowUp size={30}/></button>;
+  return <button className="nordlys-scroll-top" type="button" aria-label="Scroll to top" data-visible={visible} onClick={()=>window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}><ArrowUp size={30}/></button>;
 }
 export function NordlysFrame(){
   const {pathname}=useLocation();

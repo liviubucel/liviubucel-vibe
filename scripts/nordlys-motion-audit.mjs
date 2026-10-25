@@ -21,7 +21,10 @@ const tests=[
   ['Tools accent and hover CSS',css.includes('--tool-highlight')&&css.includes('.nordlys-tool-choice:hover')],
   ['Blog reading progress bar',post.includes('ArticleProgress')&&css.includes('.nordlys-reading-progress')],
   ['Blog headings and animated TOC',post.includes('NordlysTableOfContents')&&toc.includes('IntersectionObserver')&&css.includes('.nordlys-toc-collapse[data-open=true]')],
-  ['Article lightbox zoom and keyboard arrows',post.includes('ArticleLightbox')&&post.includes("e.key==='ArrowRight'")],
+  ['Original PhotoSwipe zoom, keyboard and touch engine used',post.includes('openNordlysPhotoSwipe')&&read('src/components/nordlys/PhotoSwipeViewer.ts').includes('photoswipe-lightbox.esm.js')],
+  ['PhotoSwipe thumbnails and dynamic captions bundled',read('src/components/nordlys/PhotoSwipeViewer.ts').includes('photoswipe-thumbs-plugin.esm.js')&&read('src/components/nordlys/PhotoSwipeViewer.ts').includes('photoswipe-dynamic-caption-plugin.esm.js')],
+  ['PhotoSwipe MIT licenses preserved',fs.existsSync(new URL('../src/vendor/photoswipe/LICENSE-PHOTOSWIPE.txt',import.meta.url))&&fs.existsSync(new URL('../src/vendor/photoswipe/LICENSE-CAPTION.txt',import.meta.url))&&fs.existsSync(new URL('../src/vendor/photoswipe/LICENSE-THUMBS.txt',import.meta.url))],
+  ['PhotoSwipe CSS is shipped in Wix Astro page',read('src/pages/[...slug].astro').includes('vendor/photoswipe/photoswipe.css')],
   ['Animations respect reduced motion',css.includes('@media(prefers-reduced-motion:reduce)')]
 ];
 for(const [label,ok] of tests)console.log(ok?'PASS':'FAIL',label);
