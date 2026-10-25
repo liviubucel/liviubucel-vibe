@@ -1,7 +1,7 @@
 import {useEffect,useMemo,useState,type ReactNode} from 'react';
 import {Link,useLocation,useParams} from 'react-router-dom';
-import {createPortal} from 'react-dom';
-import {ChevronLeft,ChevronRight,X,ZoomIn} from 'lucide-react';
+import {ZoomIn} from 'lucide-react';
+import {openNordlysPhotoSwipe} from '@/components/nordlys/PhotoSwipeViewer';
 import {getLanguage,localizedPath} from '@/lib/portfolio';
 import {getPublishedBlogPost,getPublishedBlogPosts,type NativeBlogPost,type RichNode} from '@/lib/wix-blog';
 import {NordlysTableOfContents} from '@/components/nordlys/NordlysArticleInteractions';
@@ -27,30 +27,35 @@ function ArticleProgress(){
   },[]);
   return <div className="nordlys-reading-progress" aria-hidden="true"><div style={{width:progress+'%'}}/></div>;
 }
-function ArticleLightbox({photos,index,onClose,onNavigate}:{photos:ImageEntry[];index:number;onClose:()=>void;onNavigate:(i:number)=>void}){
-  useEffect(()=>{
-    function closeOnEscape(e:KeyboardEvent){
-      if(e.key==='Escape')onClose();
-      if(e.key==='ArrowRight')onNavigate((index+1)%photos.length);
-      if(e.key==='ArrowLeft')onNavigate((index+photos.length-1)%photos.length);
-    }
-    document.addEventListener('keydown',closeOnEscape);
-    const previous=document.body.style.overflow;document.body.style.overflow='hidden';
-    return()=>{document.removeEventListener('keydown',closeOnEscape);document.body.style.overflow=previous};
-  },[index,photos.length,onClose,onNavigate]);
-  const photo=photos[index];
-  if(!photo)return null;
-  return createPortal(<div className="nordlys-lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" onClick={onClose}>
-    <button type="button" className="nordlys-lightbox-close" onClick={onClose} aria-label="Close image viewer"><X size={28}/></button>
-    {photos.length>1&&<button type="button" className="nordlys-lightbox-prev" aria-label="Previous image" onClick={e=>{e.stopPropagation();onNavigate((index+photos.length-1)%photos.length)}}><ChevronLeft size={34}/></button>}
-    <figure onClick={e=>e.stopPropagation()}><img src={photo.src} alt={photo.alt}/><figcaption>{photo.alt}</figcaption></figure>
-    {photos.length>1&&<button type="button" className="nordlys-lightbox-next" aria-label="Next image" onClick={e=>{e.stopPropagation();onNavigate((index+1)%photos.length)}}><ChevronRight size={34}/></button>}
-  </div>,document.body);
-}
 function renderNode(node:RichNode,index:number,openImage:(src:string)=>void):ReactNode{
   const children=node.nodes?.map((child,i)=>renderNode(child,i,openImage))??[];
-  if(node.type==='TEXT')return <span key={node.id||index}>{node.textData?.text}</span>;
-  if(node.type==='PARAGRAPH')return <p key={node.id||index}>{children}</p>;
+  if(node.type==='TEXT'){
+    const raw=node.textData?.text||'';
+    // Preserve the source's meaning without treating user-authored HTML as code.
+    const decorations=node.textData?.decorations||[];
+    let content:ReactNode=raw;
+    for(const d of decorations){
+      if(d.type==='BOLD')content=<strong>{content}</strong>;
+      if(d.type==='ITALIC')content=<em>{content}</em>;
+      if(d.type==='UNDERLINE')content=<u>{content}</u>;
+    }
+    return <span key={node.id||index}>{content}</span>;
+  }
+  if(node.type==='PARAGRAPH'){
+    const raw=textOf(node).trim();
+    if(!raw || /^#{3,8}$/.test(raw))return null;
+    // Legacy imported posts contain Markdown-style heading lines as text.
+    const markdownHeading=/^(#{2,5})\s+(.+)$/.exec(raw);
+    if(markdownHeading){
+      const depth=Math.min(markdownHeading[1].length,4);
+      const headingId='legacy-'+String(node.id||index).replace(/[^a-zA-Z0-9_-]/g,'').slice(0,70);
+      const inner=<>{markdownHeading[2]}<a className="nordlys-heading-anchor" href={'#'+headingId} aria-label={'Link to '+markdownHeading[2]}>#</a></>;
+      if(depth===2)return <h2 id={headingId} key={node.id||index}>{inner}</h2>;
+      if(depth===3)return <h3 id={headingId} key={node.id||index}>{inner}</h3>;
+      return <h4 id={headingId} key={node.id||index}>{inner}</h4>;
+    }
+    return <p key={node.id||index}>{children}</p>;
+  }
   if(node.type==='HEADING'){
     const level=Math.max(2,Math.min(4,Number(node.headingData?.level)||2));
     const id=safeId(node,index);
@@ -79,10 +84,10 @@ export default function BlogDetailPage(){
   const [article,setArticle]=useState<NativeBlogPost>();
   const [allPosts,setAllPosts]=useState<NativeBlogPost[]>([]);
   const [loading,setLoading]=useState(true),[error,setError]=useState('');
-  const [imageIndex,setImageIndex]=useState(-1);
+  const [imageError,setImageError]=useState(false);
   useEffect(()=>{
     let active=true;if(!id){setLoading(false);return;}
-    setLoading(true);setError('');setImageIndex(-1);
+    setLoading(true);setError('');setImageError(false);
     Promise.all([getPublishedBlogPost(id),getPublishedBlogPosts()])
       .then(([post,list])=>{if(active){setArticle(post);setAllPosts(list)}})
       .catch(()=>{if(active)setError(ro?'Articolul nu a putut fi încărcat.':'Article could not be loaded.')})
@@ -117,14 +122,14 @@ export default function BlogDetailPage(){
     </header>
     {headings.length>2&&<NordlysTableOfContents headings={headings.map(h=>({id:h.id,label:h.text,level:h.level}))}/>}
     <div className="nordlys-article">{article.richContent?.nodes?.length?
-      article.richContent.nodes.map((node,index)=>renderNode(node,index,(src:string)=>setImageIndex(photos.findIndex(p=>p.src===src)))):
+      article.richContent.nodes.map((node,index)=>renderNode(node,index,(src:string)=>{void openNordlysPhotoSwipe(photos,photos.findIndex(p=>p.src===src)).catch(()=>setImageError(true))})):
       <p>{article.contentText||article.excerpt}</p>}
     </div>
     <nav className="nordlys-adjacent-posts" aria-label="Adjacent posts">
       <div>{prev&&<Link viewTransition to={linkTo(prev)}><span className="nordlys-item-meta">← {ro?'Anterior':'Previous'}</span><span>{prev.title}</span></Link>}</div>
       <div>{next&&<Link viewTransition to={linkTo(next)}><span className="nordlys-item-meta">{ro?'Următor':'Next'} →</span><span>{next.title}</span></Link>}</div>
     </nav>
-    {imageIndex>=0&&photos[imageIndex]&&<ArticleLightbox photos={photos} index={imageIndex} onClose={()=>setImageIndex(-1)} onNavigate={setImageIndex}/>}
+    {imageError&&<p className="nordlys-feedback" role="alert">{ro?'Vizualizarea imaginii nu este disponibilă momentan.':'Image viewer is currently unavailable.'}</p>}
     </>:<p role={error?'alert':'status'}>{error||(ro?'Articolul nu există.':'Post not found.')}</p>}
   </article>;
 }

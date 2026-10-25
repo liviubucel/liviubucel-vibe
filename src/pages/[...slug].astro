@@ -7,6 +7,9 @@ import "@wix/wix-vibe-plugins/plugins-vars.css";
 import "@wix/wix-vibe-plugins/plugins-theme.css";
 import "@/styles/global.css";
 import "@/styles/nordlys.css";
+import "@/vendor/photoswipe/photoswipe.css";
+import "@/vendor/photoswipe/photoswipe-dynamic-caption-plugin.css";
+import "@/vendor/photoswipe/photoswipe-thumbs-plugin.css";
 
 const seoTagsServiceConfig = await loadSEOTagsServiceConfig({
   pageUrl: Astro.url.href,
@@ -18,6 +21,15 @@ const seoTagsServiceConfig = await loadSEOTagsServiceConfig({
 
 <html lang="en" class="w-full h-full">
   <head>
+    <script is:inline>
+      try {
+        const mode = localStorage.getItem('liviubucel-nordlys-mode') === 'light' ? 'light' : 'dark';
+        document.documentElement.dataset.mode = mode;
+        document.documentElement.style.colorScheme = mode;
+      } catch {
+        document.documentElement.dataset.mode = 'dark';
+      }
+    </script>
     <Head />
     <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags" />
   </head>
