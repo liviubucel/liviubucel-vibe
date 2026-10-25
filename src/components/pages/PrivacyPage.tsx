@@ -1,7 +1,6 @@
 import { useLocation } from 'react-router-dom';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import {getLanguage,portfolio} from '@/lib/portfolio';
+import {NordlysPageHeading} from '@/components/nordlys/NordlysFrame';
 const en = [
   ['Controller and scope','This independent personal website, including Romania Cyber Monitor, is operated by Liviu Bucel. It describes data processing through contact, updates and technical operations.'],
   ['Contact and form data','The native Wix Forms app processes the name, email address, subject and message you choose to send. Wix Contacts may retain contact details and a reply is sent only for the enquiry you make.'],
@@ -24,18 +23,12 @@ const ro = [
 ];
 export default function PrivacyPage(){
   const lang=getLanguage(useLocation().pathname),isRo=lang==='ro',sections=isRo?ro:en;
-  return <div className="lb-page"><Header/><main>
-    <section className="lb-section lb-section-alt"><div className="lb-container">
-      <p className="lb-eyebrow">{isRo?'Protecția datelor':'Data protection'}</p>
-      <h1 className="lb-headline">{isRo?'Confidențialitate':'Privacy policy'}</h1>
-      <p className="lb-summary">{isRo?'Actualizat la 22 octombrie 2026':'Updated 22 October 2026'}</p>
-    </div></section>
-    <section className="lb-section"><div className="lb-container"><article className="mzp-c-article lb-article">
-      {sections.map(([title,description],i)=><section key={title}>
-        <h2>{i+1}. {title}</h2><p>{description}</p>
-      </section>)}
-      <section><h2>{isRo?'Contact confidențialitate':'Privacy contact'}</h2>
-        <p><a href={'mailto:'+portfolio.email}>{portfolio.email}</a></p></section>
-    </article></div></section>
-  </main><Footer/></div>;
+  return <>
+    <NordlysPageHeading eyebrow={isRo?'Protecția datelor':'Data protection'} title={isRo?'Confidențialitate':'Privacy policy'} intro={isRo?'Actualizat la 22 octombrie 2026':'Updated 22 October 2026'}/>
+    <article className="nordlys-article">{sections.map(([title,description],i)=><section key={title}>
+      <h2>{i+1}. {title}</h2><p>{description}</p></section>)}
+      <h2>{isRo?'Contact pentru confidențialitate':'Privacy contact'}</h2>
+      <p><a href={'mailto:'+portfolio.email}>{portfolio.email}</a></p>
+    </article>
+  </>;
 }

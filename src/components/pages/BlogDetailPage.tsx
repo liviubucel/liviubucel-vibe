@@ -1,8 +1,6 @@
 import { Image } from '@/components/ui/image';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { getLanguage, localizedPath } from '@/lib/portfolio';
 import { getPublishedBlogPost, type NativeBlogPost, type RichNode } from '@/lib/wix-blog';
 
@@ -44,31 +42,15 @@ export default function BlogDetailPage() {
       .finally(()=> { if(active) setLoading(false); });
     return ()=>{active=false};
   },[id,lang]);
-  return <div className="lb-page">
-    <Header/>
-    <main>
-      <section className="lb-section lb-section-alt">
-        <div className="lb-container">
-          <Link className="lb-text-link" to={localizedPath('/blog',lang)}>{lang==='ro'?'← Toate articolele':'← All articles'}</Link>
-          {loading ? <p style={{marginTop:32}} role="status">{lang==='ro'?'Se încarcă…':'Loading…'}</p> : article ? <>
-            <p className="lb-eyebrow" style={{marginTop:48}}>{lang==='ro'?'Cercetare și analize':'Research & analysis'} · {article.language?.toUpperCase()}</p>
-            <h1 className="lb-headline" style={{maxWidth:'20ch'}}>{article.title}</h1>
-            <p className="lb-summary">{article.excerpt}</p>
-            <p className="lb-card-meta" style={{marginTop:24}}>
-              {article.firstPublishedDate && <time dateTime={String(article.firstPublishedDate)}>{new Date(article.firstPublishedDate).toLocaleDateString(lang==='ro'?'ro-RO':'en-GB',{year:'numeric',month:'long',day:'numeric'})}</time>}
-              {' '}· Liviu Bucel
-            </p>
-          </>:error?<p role="alert">{error}</p>:<p>{lang==='ro'?'Articolul nu a fost găsit.':'Article not found.'}</p>}
-        </div>
-      </section>
-      {article && <article className="lb-section"><div className="lb-container">
-        <div className="mzp-c-article lb-article">
-          {article.richContent?.nodes?.length
-            ? article.richContent.nodes.map((node,index)=>renderNode(node,index))
-            : <p>{article.contentText || article.excerpt}</p>}
-        </div>
-      </div></article>}
-    </main>
-    <Footer/>
-  </div>;
+  return <article>
+    <p className="nordlys-item-meta"><Link className="nordlys-inline-link" to={localizedPath('/blog',lang)}>← {lang==='ro'?'Toate articolele':'All posts'}</Link></p>
+    {loading?<p role="status">{lang==='ro'?'Se încarcă…':'Loading article…'}</p>:article?<><header className="nordlys-section">
+      <p className="nordlys-kicker">{lang==='ro'?'Cercetare și analize':'Research & analysis'}</p>
+      <h1 className="nordlys-page-title">{article.title}</h1>
+      <p className="nordlys-page-lead">{article.excerpt}</p>
+      <p className="nordlys-item-meta">{article.firstPublishedDate&&new Date(article.firstPublishedDate).toLocaleDateString(lang==='ro'?'ro-RO':'en-GB',{day:'numeric',month:'long',year:'numeric'})} · Liviu Bucel</p>
+    </header><div className="nordlys-article">
+      {article.richContent?.nodes?.length?article.richContent.nodes.map((node,index)=>renderNode(node,index)):<p>{article.contentText||article.excerpt}</p>}
+    </div></>:<p role={error?'alert':'status'}>{error||(lang==='ro'?'Articolul nu există.':'Post not found.')}</p>}
+  </article>;
 }

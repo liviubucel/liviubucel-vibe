@@ -1,25 +1,24 @@
-import { Link, useLocation } from 'react-router-dom';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import {Link,useLocation} from 'react-router-dom';
 import {getLanguage,localizedPath,portfolio} from '@/lib/portfolio';
+import {NordlysPageHeading} from '@/components/nordlys/NordlysFrame';
+const roles=[
+  {en:'Technical Support Specialist',where:'ZebraByte',when:'April 2022 – January 2024 · United Kingdom',
+   description:'Web hosting support, cPanel, DNS, email troubleshooting, SSL certificate renewals, WordPress connectivity and Cloudflare protection basics.'},
+  {en:'IT Technician',where:'Intact Media Group',when:'November 2019 – September 2020 · Bucharest, Romania',
+   description:'Level 1 IT support in a media environment: workstations, Windows applications, email, networks and escalation of infrastructure issues.'},
+  {en:'Practical cybersecurity labs and projects',where:'Independent practice and learning',when:'Ongoing',
+   description:'Defensive threat-analysis simulations, security-awareness training, Python and security labs covering Linux, Windows, enumeration, incident response and network security.'}
+];
 export default function ExperiencePage(){
   const lang=getLanguage(useLocation().pathname),ro=lang==='ro';
-  return <div className="lb-page"><Header/><main>
-    <section className="lb-section lb-section-alt"><div className="lb-container">
-      <p className="lb-eyebrow">{ro?'Experiență și practică':'Practical work'}</p>
-      <h1 className="lb-headline">{ro?'Din teorie în practică.':'Practice over promises.'}</h1>
-      <p className="lb-summary">{ro?'Aici prezint lucrări publice, proiecte verificate și domenii tehnice în care îmi dezvolt experiența.':'This page focuses on publicly verifiable projects, practical engineering work and professional development.'}</p>
-    </div></section>
-    <section className="lb-section"><div className="lb-container">
-      <h2 className="lb-headline">{ro?'Lucrările mele.':'Selected engineering work.'}</h2>
-      <div className="lb-feature-grid">
-        <div className="lb-feature"><h3>ZebraByte</h3><p>{ro?'Securitate cibernetică și platforme defensive.':'Cybersecurity and defensive security platforms.'}</p>
-        <a className="lb-text-link" href={portfolio.links.zebrabyte} target="_blank" rel="noopener noreferrer">ZebraByte ↗</a></div>
-        <div className="lb-feature"><h3>Threat Intelligence</h3><p>{ro?'Monitorizare defensivă și corelare de semnalări publice.':'Defensive monitoring and correlation of public threat reports.'}</p></div>
-        <div className="lb-feature"><h3>PKI / ACME</h3><p>{ro?'Automatizare a certificatelor TLS și validare DNS.':'TLS certificate lifecycle and DNS validation automation.'}</p></div>
-      </div>
-      <div className="lb-actions"><Link to={localizedPath('/projects',lang)} className="mzp-c-button">{ro?'Explorează proiectele':'Explore projects'}</Link></div>
-      <p className="lb-privacy-note" style={{marginTop:35}}>{ro?'Nu public experiențe profesionale neconfirmate sau joburi fictive.':'No unverified employment roles or fictional client work are listed.'}</p>
-    </div></section>
-  </main><Footer/></div>;
+  return <>
+    <NordlysPageHeading eyebrow={ro?'Profil profesional':'Career profile'} title={ro?'CV / Experiență':'Resume & experience'} intro={ro?'Experiență relevantă în IT, infrastructură, suport și securitate cibernetică.':'Practical background in IT support, web infrastructure and security engineering, alongside cybersecurity studies and labs.'}/>
+    <div className="nordlys-post-list">{roles.map(role=><section className="nordlys-list-item" key={role.en}><h2 className="nordlys-item-title">{role.en}</h2><p className="nordlys-item-meta">{role.where} · {role.when}</p><p className="nordlys-item-description">{role.description}</p></section>)}</div>
+    <section className="nordlys-section nordlys-article"><h2>{ro?'Proiecte și competențe':'Projects and credentials'}</h2>
+      <p>{ro?'Poți consulta':'Explore'} <Link className="nordlys-inline-link" to={localizedPath('/projects',lang)}>{ro?'proiectele tehnice':'technical projects'}</Link> {ro?'și':'and'} <Link className="nordlys-inline-link" to={localizedPath('/accreditations',lang)}>{ro?'certificările':'credentials'}</Link> {ro?'pentru informații verificabile.':'for supporting details.'}</p>
+      <h2>{ro?'Solicită CV-ul':'Request my CV'}</h2>
+      <p>{ro?'CV-ul actualizat este disponibil la cerere, nu printr-un link public.':'A current CV is available on request rather than through an unprotected public download.'}</p>
+      <div className="nordlys-actions"><Link className="nordlys-btn" to={localizedPath('/contact',lang)}>{ro?'Solicită CV':'Request CV'}</Link><a className="nordlys-btn nordlys-btn-outline" href={portfolio.links.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div>
+    </section>
+  </>;
 }

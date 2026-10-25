@@ -1,37 +1,23 @@
-import { Image } from '@/components/ui/image';
-import { Link, useLocation } from 'react-router-dom';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { getLanguage, localizedPath, portfolio } from '@/lib/portfolio';
-
-const focus = [
-  ['Ethical hacking & assessment','Vulnerability validation, attack surfaces, practical remediations'],
-  ['Digital forensics & incident investigation','Preserving evidence and analysing security events'],
-  ['Threat intelligence','Evidence-based monitoring of exposed data and ransomware reporting'],
-  ['Security engineering','Authentication, least privilege, auditability, secure APIs'],
-  ['PKI, TLS & internet infrastructure','ACME automation, DNS validation and certificate lifecycle'],
-  ['Vulnerability research','Exploitability, security impact and mitigations']
-] as const;
+import {Link,useLocation} from 'react-router-dom';
+import {getLanguage,localizedPath,portfolio} from '@/lib/portfolio';
+import {NordlysPageHeading} from '@/components/nordlys/NordlysFrame';
+const topics=[
+  ['Ethical hacking','Authorised security testing and attack-surface analysis'],
+  ['Digital forensics','Evidence-led investigation of security events'],
+  ['Threat intelligence','Public reporting, verification and risk context'],
+  ['Cloud & network security','DNS, identity, authentication, TLS and secure configuration'],
+  ['Vulnerability research','Risk assessment and actionable mitigations']
+];
 export default function AboutPage(){
   const lang=getLanguage(useLocation().pathname),ro=lang==='ro';
-  return <div className="lb-page"><Header/><main>
-    <section className="lb-section lb-section-alt"><div className="lb-container">
-      <p className="lb-eyebrow">{ro?'Despre mine':'About me'}</p>
-      <h1 className="lb-headline">{ro?'Securitate prin înțelegere.':'Security through understanding.'}</h1>
-      <p className="lb-summary">{ro?'Sunt Liviu Bucel. Îmi dezvolt activitatea în ingineria securității, ethical hacking, investigații digitale și cercetarea vulnerabilităților.':'I’m Liviu Bucel. My work spans practical cybersecurity, security engineering, ethical hacking, digital investigation and vulnerability research.'}</p>
-    </div></section>
-    <section className="lb-section"><div className="lb-container lb-intro">
-      <div><p className="lb-eyebrow">Liviu Bucel</p>
-        <h2 className="lb-headline">{ro?'Dovezi, nu presupuneri.':'Evidence over assumptions.'}</h2>
-        <p className="lb-summary">{ro?'Îmi place să înțeleg cum funcționează atacurile, cum apar defecțiunile de securitate și cum pot fi investigate incidentele. Proiectele mele pun accentul pe rezultate verificabile, separarea responsabilităților și protecția datelor.':'I’m interested in how attacks work, why systems fail, and how incidents can be investigated. My work prioritises testable findings, secure boundaries and protecting real-world data.'}</p>
-        <div className="lb-actions"><Link className="mzp-c-button" to={localizedPath('/projects',lang)}>{ro?'Vezi proiectele':'View my work'}</Link></div>
-      </div>
-      <Image src={portfolio.media.portrait} alt={ro?'Portret Liviu Bucel':'Liviu Bucel portrait'} loading="lazy"/>
-    </div></section>
-    <section className="lb-section lb-section-alt"><div className="lb-container">
-      <p className="lb-eyebrow">{ro?'Domenii de interes':'Technical focus'}</p><h2 className="lb-headline">{ro?'Cum lucrez.':'What I work on.'}</h2>
-      <div className="lb-feature-grid">{focus.map(([title,summary])=><div className="lb-feature" key={title}><h3>{title}</h3><p>{summary}</p></div>)}</div>
-      <p className="lb-privacy-note" style={{marginTop:30}}>{ro?'Datele clienților, credențialele și detaliile operaționale sensibile rămân private.':'Customer data, credentials and sensitive production operations remain private by design.'}</p>
-    </div></section>
-  </main><Footer/></div>;
+  return <>
+    <NordlysPageHeading eyebrow={ro?'Cine sunt':'About'} title={ro?'Despre mine':'About me'} intro={ro?'Sunt Liviu Bucel și mă concentrez pe securitate cibernetică, investigații digitale și inginerie de securitate.':'I’m Liviu Bucel, focused on practical cybersecurity, digital investigation and security engineering.'}/>
+    <div className="nordlys-article"><p>{ro?'Îmi place să înțeleg de ce apar vulnerabilitățile, cum sunt analizate incidentele și cum reducem riscurile reale. Îmi prezint aici lucrările tehnice, pregătirea și experiența.':'My work emphasises understanding why systems fail, how security events can be investigated and how evidence leads to practical risk reduction. This website contains my projects, learning and professional experience.'}</p>
+      <p>{ro?'Mai multe despre parcursul meu profesional:':'Explore my professional background:'} <Link className="nordlys-inline-link" to={localizedPath('/experience',lang)}>{ro?'CV și experiență':'Resume and experience'}</Link>, <Link className="nordlys-inline-link" to={localizedPath('/accreditations',lang)}>{ro?'certificări':'credentials'}</Link>.</p>
+      <h2>{ro?'Domenii principale':'Technical focus'}</h2>
+      <div className="nordlys-post-list">{topics.map(([title,desc])=><div className="nordlys-list-item" key={title}><h3 className="nordlys-item-title">{title}</h3><p className="nordlys-item-description">{desc}</p></div>)}</div>
+      <h2>{ro?'Colaborări':'Work together'}</h2><p>{ro?'Pentru proiecte autorizate de cybersecurity și colaborări profesionale, poți':'For authorised security projects and professional collaboration, you can'} <Link className="nordlys-inline-link" to={localizedPath('/services',lang)}>{ro?'vedea serviciile':'explore services'}</Link> {ro?'sau mă poți contacta.':'or contact me.'}</p>
+      <p><a className="nordlys-inline-link" href={portfolio.links.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></p>
+    </div>
+  </>;
 }
