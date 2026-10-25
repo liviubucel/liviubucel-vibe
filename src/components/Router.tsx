@@ -1,6 +1,7 @@
 import { MemberProvider } from '@/integrations';
-import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { ScrollToTop } from '@/lib/scroll-to-top';
+import {NordlysProvider,NordlysFrame} from '@/components/nordlys/NordlysFrame';
 import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
 import HomePage from '@/components/pages/HomePage';
 import AboutPage from '@/components/pages/AboutPage';
@@ -14,13 +15,19 @@ import ContactPage from '@/components/pages/ContactPage';
 import PrivacyPage from '@/components/pages/PrivacyPage';
 import RomaniaCyberMonitorPage from '@/components/pages/RomaniaCyberMonitorPage';
 import LegacySectionPage from '@/components/pages/LegacySectionPage';
+import ServicesPage from '@/components/pages/ServicesPage';
+import SearchPage from '@/components/pages/SearchPage';
+import ToolsPage from '@/components/pages/ToolsPage';
 
 function Layout() {
-  return <><ScrollToTop /><Outlet /></>;
+  return <><ScrollToTop /><NordlysFrame /></>;
 }
 
 const pages = [
   { path: 'about', element: <AboutPage />, identifier: 'about' },
+  { path: 'services', element: <ServicesPage />, identifier: 'services' },
+  { path: 'search', element: <SearchPage />, identifier: 'search' },
+  { path: 'tools', element: <ToolsPage />, identifier: 'tools' },
   { path: 'projects', element: <ProjectsPage />, identifier: 'projects' },
   { path: 'projects/:id', element: <ProjectDetailPage />, identifier: 'project-detail' },
   { path: 'accreditations', element: <AccreditationsPage />, identifier: 'accreditations' },
@@ -51,5 +58,5 @@ const router = createBrowserRouter([{
 }], { basename: import.meta.env.BASE_NAME });
 
 export default function AppRouter() {
-  return <MemberProvider><RouterProvider router={router} /></MemberProvider>;
+  return <MemberProvider><NordlysProvider><RouterProvider router={router} /></NordlysProvider></MemberProvider>;
 }

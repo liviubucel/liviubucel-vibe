@@ -1,80 +1,29 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { getLanguage, localizedPath } from '@/lib/portfolio';
-import { getPublishedBlogPosts, type NativeBlogPost } from '@/lib/wix-blog';
-
-export default function BlogPage() {
-  const lang = getLanguage(useLocation().pathname);
-  const [items, setItems] = useState<NativeBlogPost[]>([]);
-  const [query, setQuery] = useState('');
-  const [languageFilter, setLanguageFilter] = useState<'all' | 'en' | 'ro'>('all');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let active = true;
-    getPublishedBlogPosts()
-      .then(posts => { if (active) setItems(posts); })
-      .catch(() => { if (active) setError(lang === 'ro' ? 'Articolele nu au putut fi încărcate.' : 'Could not load the articles.'); })
-      .finally(() => { if (active) setLoading(false); });
-    return () => { active = false; };
-  }, [lang]);
-
-  const filtered = useMemo(() =>
-    items.filter(post => (languageFilter === 'all' || post.language === languageFilter)
-      && (post.title || '').toLocaleLowerCase().includes(query.toLocaleLowerCase())),
-    [items,languageFilter,query]);
-
-  return <div className="lb-page">
-    <Header/>
-    <main>
-      <section className="lb-section lb-section-alt">
-        <div className="lb-container">
-          <div className="lb-eyebrow">{lang === 'ro' ? 'Articole și analize' : 'Writing & research'}</div>
-          <h1 className="lb-headline">{lang === 'ro' ? 'Blog și cercetare' : 'Security writing'}</h1>
-          <p className="lb-summary">{lang === 'ro'
-            ? 'Analize, explicații și observații despre vulnerabilități, incidente și securitate cibernetică.'
-            : 'Original analysis and technical notes on vulnerabilities, incident response, and security engineering.'}</p>
-        </div>
-      </section>
-      <section className="lb-section">
-        <div className="lb-container">
-          <div style={{display:'flex',flexWrap:'wrap',gap:18,alignItems:'center',justifyContent:'space-between',marginBottom:36}}>
-            <label htmlFor="blog-search" style={{display:'block',width:'min(100%,560px)'}}>
-              <span className="lb-eyebrow" style={{display:'block',marginBottom:9}}>{lang === 'ro' ? 'Caută un articol' : 'Find an article'}</span>
-              <input id="blog-search" className="lb-search" value={query} onChange={event=>setQuery(event.target.value)}
-                placeholder={lang==='ro'?'Caută după titlu…':'Search article titles…'} type="search" />
-            </label>
-            <div role="group" aria-label="Article language" className="lb-actions" style={{marginTop:0}}>
-              {(['all','en','ro'] as const).map(choice=><button key={choice}
-                type="button" className={'mzp-c-button' + (languageFilter!==choice?' mzp-t-secondary':'')}
-                aria-pressed={languageFilter===choice} onClick={()=>setLanguageFilter(choice)}>
-                {choice==='all'?(lang==='ro'?'Toate':'All'):choice.toUpperCase()}
-              </button>)}
-            </div>
-          </div>
-          {loading && <p role="status">{lang==='ro'?'Se încarcă articolele…':'Loading articles…'}</p>}
-          {error && <div className="lb-notice" role="alert">{error}</div>}
-          {!loading && !error && filtered.length === 0 && <p>{lang==='ro'?'Niciun articol pentru această căutare.':'No articles match this search.'}</p>}
-          <div className="lb-cards">
-            {filtered.map(post=><article key={post._id||post.id} className="mzp-c-card mzp-c-card-medium">
-              <Link className="lb-card" to={localizedPath('/blog/'+(post.slug||post._id||post.id),lang)}>
-                <div className="lb-card-meta">
-                  {post.language?.toUpperCase()}
-                  {post.firstPublishedDate && <> · <time dateTime={String(post.firstPublishedDate)}>{new Date(post.firstPublishedDate).toLocaleDateString(lang==='ro'?'ro-RO':'en-GB',{year:'numeric',month:'long',day:'numeric'})}</time></>}
-                </div>
-                <h2 className="lb-card-title">{post.title}</h2>
-                <p>{post.excerpt || (lang==='ro'?'Citește articolul integral.':'Read the full article.')}</p>
-                <span className="lb-text-link" aria-hidden="true">{lang==='ro'?'Citește articolul →':'Read article →'}</span>
-              </Link>
-            </article>)}
-          </div>
-          <p className="lb-privacy-note" style={{marginTop:32}}>{lang==='ro'?'Articolele se editează în aplicația Wix Blog.':'Articles are published and managed in the native Wix Blog app.'}</p>
-        </div>
-      </section>
-    </main>
-    <Footer/>
-  </div>;
+import {useEffect,useMemo,useState} from 'react';
+import {Link,useLocation} from 'react-router-dom';
+import {getPublishedBlogPosts,type NativeBlogPost} from '@/lib/wix-blog';
+import {getLanguage,localizedPath} from '@/lib/portfolio';
+import {NordlysPageHeading} from '@/components/nordlys/NordlysFrame';
+const PAGE_SIZE=5;
+export default function BlogPage(){
+  const lang=getLanguage(useLocation().pathname),ro=lang==='ro';
+  const [all,setAll]=useState<NativeBlogPost[]>([]);
+  const [loading,setLoading]=useState(true),[error,setError]=useState(false);
+  const [query,setQuery]=useState(''),[page,setPage]=useState(0);
+  useEffect(()=>{let active=true;getPublishedBlogPosts().then(v=>{if(active)setAll(v)}).catch(()=>{if(active)setError(true)}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[]);
+  const filtered=useMemo(()=>all.filter(p=>[p.title,p.excerpt].join(' ').toLowerCase().includes(query.toLowerCase())),[all,query]);
+  const total=Math.max(1,Math.ceil(filtered.length/PAGE_SIZE));
+  const items=filtered.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);
+  return <>
+    <NordlysPageHeading eyebrow={ro?'Cercetare și articole':'Writing & research'} title="Blog" intro={ro?'Note, analize și articole din domeniul securității cibernetice.':'Technical writing, research notes and cybersecurity analysis.'}/>
+    <label className="nordlys-field" htmlFor="n-search-posts"><span className="nordlys-kicker">{ro?'Caută în articole':'Search articles'}</span><input className="nordlys-search" id="n-search-posts" type="search" value={query} onChange={e=>{setQuery(e.target.value);setPage(0)}} placeholder={ro?'Titlu sau cuvânt cheie':'Title or keyword'} /></label>
+    {loading&&<p role="status">{ro?'Se încarcă…':'Loading articles…'}</p>}
+    {error&&<p role="alert">{ro?'Articolele nu sunt disponibile.':'Articles are currently unavailable.'}</p>}
+    <div className="nordlys-post-list">{items.map(post=><Link className="nordlys-list-item" to={localizedPath('/blog/'+(post.slug||post.id||post._id),lang)} key={post.id||post._id}>
+      <h2 className="nordlys-item-title">{post.title}</h2>
+      <p className="nordlys-item-meta">{post.firstPublishedDate?new Date(post.firstPublishedDate).toLocaleDateString(ro?'ro-RO':'en-GB',{day:'numeric',month:'long',year:'numeric'}):''}{post.minutesToRead?' · '+post.minutesToRead+' min':''}</p>
+      <p className="nordlys-item-description">{post.excerpt}</p>
+    </Link>)}</div>
+    {!loading&&!error&&filtered.length===0&&<p>{ro?'Niciun articol găsit.':'No matching posts.'}</p>}
+    {total>1&&<div className="nordlys-pager"><button disabled={page===0} onClick={()=>setPage(p=>Math.max(0,p-1))}>← {ro?'Anterior':'Previous'}</button><span>{page+1} / {total}</span><button disabled={page>=total-1} onClick={()=>setPage(p=>p+1)}>{ro?'Următor':'Next'} →</button></div>}
+  </>;
 }
