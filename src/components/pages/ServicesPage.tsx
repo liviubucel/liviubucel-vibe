@@ -15,6 +15,6 @@ export default function ServicesPage(){
       <h2 className="nordlys-item-title">{ro?service.ro:service.en}</h2><p className="nordlys-item-description">{service.detail}</p>
     </div>)}</div>
     <p className="nordlys-notice">{ro?'Nicio testare activă nu este efectuată fără autorizarea proprietarului sistemului și un domeniu de aplicare convenit în scris.':'Active testing requires system-owner authorisation and an agreed written scope.'}</p>
-    <div className="nordlys-actions"><Link to={localizedPath('/contact',lang)} className="nordlys-btn">{ro?'Solicită o discuție':'Discuss a project'}</Link><Link to={localizedPath('/projects',lang)} className="nordlys-btn nordlys-btn-outline">{ro?'Vezi proiectele':'View projects'}</Link></div>
+    <div className="nordlys-actions"><Link viewTransition to={localizedPath('/contact',lang)} className="nordlys-btn">{ro?'Solicită o discuție':'Discuss a project'}</Link><Link viewTransition to={localizedPath('/projects',lang)} className="nordlys-btn nordlys-btn-outline">{ro?'Vezi proiectele':'View projects'}</Link></div>
   </>;
 }
