@@ -128,3 +128,15 @@
 .nordlys-upstream-tag-index a:hover{opacity:1;}
 .nordlys-upstream-tag-index span{opacity:.7;}
 @media(prefers-reduced-motion:reduce){.nordlys-upstream-tag-index a{transition:none}}
+
+/* Original Nordlys Header.astro: py-4 on mobile and py-8 on desktop;
+   the separator belongs immediately after the header row. */
+.nordlys-navbar {padding:0;}
+.nordlys-navbar .nordlys-nav-row {padding:16px 0;}
+.nordlys-navbar .nordlys-separator {margin-top:0!important;}
+.nordlys-footer-row {min-height:0;padding:16px 0;}
+.nordlys-footer-row .nordlys-iconlink svg {width:24px;height:24px;}
+@media(min-width:640px){
+  .nordlys-navbar .nordlys-nav-row {padding:32px 0;}
+  .nordlys-footer-row {padding:32px 0;}
+}
