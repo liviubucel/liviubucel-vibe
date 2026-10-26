@@ -1,0 +1,44 @@
+---
+import {posts,tags} from '@wix/blog';
+import PageLayout from '@/layouts/PageLayout.astro';
+import PostsList from '@/components/posts/PostsList.astro';
+import ProjectsList from '@/components/projects/ProjectsList.astro';
+import {getNativeProjects,projectTechnologies} from '@/lib/wix-portfolio';
+import type {CollectionEntry} from 'astro:content';
+import type {NativeBlogPost} from '@/lib/wix-blog';
+export const prerender=false;
+const slug=Astro.params.tag||'';
+let matchingPosts:NativeBlogPost[]=[];
+let matchingProjects:Awaited<ReturnType<typeof getNativeProjects>>=[];
+let title=slug;
+let failed=false;
+try{
+  const [t,p,projects]=await Promise.all([tags.queryTags().find(),posts.listPosts({paging:{limit:100}}),getNativeProjects()]);
+  const tag=(t.items||[]).find(x=>x.slug===slug);
+  if(tag){
+    title=tag.label||slug;
+    matchingPosts=((p.posts||[]) as NativeBlogPost[]).filter(x=>x.tagIds?.includes(tag._id!));
+  }
+  matchingProjects=projects.filter(x=>(projectTechnologies(x)||'').split(',').some(t=>t.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')===slug));
+  if(matchingProjects.length&&title===slug)title=projectTechnologies(matchingProjects[0])?.split(',').find(t=>t.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')===slug)?.trim()||slug;
+}catch(e){failed=true;console.error('[nordlys-native-tag]',e instanceof Error?e.message:'Wix content unavailable')}
+const nativePosts=matchingPosts.map(p=>({
+  id:p.slug||p._id||p.id||'',
+  data:{title:p.title||'',description:p.excerpt||'',publishedDate:new Date(p.firstPublishedDate||0),tags:[],previewImage:undefined}
+})) as unknown as CollectionEntry<'posts'>[];
+const nativeProjects=matchingProjects.map(p=>({
+  id:p.slug||p._id||p.id||'',
+  data:{title:p.title||'',url:'/projects/'+encodeURIComponent(p.slug||p._id||p.id||'')+'/',tags:(projectTechnologies(p)||'').split(',').filter(Boolean),wixDescription:p.description||''}
+})) as unknown as CollectionEntry<'projects'>[];
+const frontmatter={title:'Tag: '+title,activeHeaderLink:'Tags'};
+---
+<PageLayout {frontmatter}>
+  <div slot="top" class="mt-4"><a href="/tags/" class="clickable flex w-fit items-center gap-1"><span class="iconify tabler--arrow-left text-xl"></span>Back to all tags</a></div>
+  <h1><span class="iconify tabler--tag align-middle text-5xl sm:text-6xl"></span><span>{title}</span></h1>
+  {failed&&<p role="alert">Tags are temporarily unavailable.</p>}
+  {!!nativePosts.length&&<h2>Posts</h2>}
+  <PostsList posts={nativePosts}/>
+  {!!nativeProjects.length&&<h2>Projects</h2>}
+  <ProjectsList projects={nativeProjects}/>
+  {!failed&&!nativeProjects.length&&!nativePosts.length&&<p>No published content for this tag.</p>}
+</PageLayout>

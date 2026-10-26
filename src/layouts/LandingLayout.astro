@@ -16,7 +16,7 @@ export type Props = BaseLayoutProps &
 
 const { frontmatter } = Astro.props
 
-const latestPost = (await getPosts())[0]
+const latestPost = frontmatter.showLatestPost ? (await getPosts())[0] : undefined
 ---
 
 <BaseLayout frontmatter={frontmatter}>

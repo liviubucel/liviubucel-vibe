@@ -1,0 +1,14 @@
+---
+import LandingLayout from '@/layouts/LandingLayout.astro';
+const frontmatter={
+  title:'Liviu Bucel',
+  description:'Cybersecurity, digital investigations and technical projects',
+  background:true,logo:true,showLatestPost:false
+};
+---
+<LandingLayout {frontmatter}>
+  A cybersecurity and digital investigation portfolio.
+  Explore my <a href="/blog/">blog</a>, <a href="/projects/">projects</a>,
+  <a href="/experience/">resume</a> and <a href="/services/">professional services</a>.
+  Learn more <a href="/about/">about me</a> or <a href="/contact/">get in touch</a>.
+</LandingLayout>

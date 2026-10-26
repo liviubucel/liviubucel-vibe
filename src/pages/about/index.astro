@@ -1,0 +1,29 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import logo from '@/assets/logo.svg';
+import { Image } from 'astro:assets';
+const frontmatter={title:'About',description:'About Liviu Bucel and cybersecurity work',activeHeaderLink:'About'};
+---
+<PageLayout {frontmatter}>
+  <h1>About</h1>
+  <p>I'm Liviu Bucel. I focus on cybersecurity, vulnerability research and practical digital investigations.</p>
+  <p>This is my personal space for technical writing, projects and professional experience. I'm interested in how systems work, why vulnerabilities emerge, and how evidence-led security work can reduce real risks.</p>
+  <div class="mt-16 flex items-center justify-center">
+    <div class="relative w-1/3 md:w-1/6">
+      <span class="bg-accent/90 absolute inset-0 -z-10 rounded-full blur-3xl" />
+      <Image src={logo} class="mt-0 mb-0 h-auto w-full" alt="Liviu Bucel aurora mark" loading="eager" />
+    </div>
+  </div>
+  <h2>Explore this website</h2>
+  <p>Read my <a href="/blog/">articles</a>, explore my <a href="/projects/">projects</a>, review my <a href="/experience/">resume and experience</a>, and explore the <a href="/tools/">tools</a> used in practical security work.</p>
+  <h2>Areas of focus</h2>
+  <ul>
+    <li>Authorised security testing and attack-surface analysis</li>
+    <li>Digital forensics and incident response</li>
+    <li>Threat intelligence and vulnerability research</li>
+    <li>Network, DNS, TLS and cloud security</li>
+  </ul>
+  <h2>Professional work</h2>
+  <p>For authorised security projects and professional enquiries, see my <a href="/services/">services</a> or <a href="/contact/">get in touch</a>.</p>
+  <p><a href="https://www.linkedin.com/in/liviubucel/" rel="noopener noreferrer" target="_blank">LinkedIn</a></p>
+</PageLayout>
