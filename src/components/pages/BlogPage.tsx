@@ -1,6 +1,6 @@
 import {useEffect,useState} from 'react';
 import {Link,useLocation} from 'react-router-dom';
-import {getPublishedBlogPosts,type NativeBlogPost} from '@/lib/wix-blog';
+import {getPublishedBlogPosts,getPublishedBlogTags,type NativeBlogPost,type NativeBlogTag} from '@/lib/wix-blog';
 import {getLanguage,localizedPath} from '@/lib/portfolio';
 import NordlysNewsletter from '@/components/nordlys/NordlysNewsletter';
 
@@ -17,14 +17,15 @@ export default function BlogPage(){
   const lang=getLanguage(useLocation().pathname);
   const ro=lang==='ro';
   const [posts,setPosts]=useState<NativeBlogPost[]>([]);
+  const [tags,setTags]=useState<NativeBlogTag[]>([]);
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState(false);
   const [page,setPage]=useState(0);
 
   useEffect(()=>{
     let active=true;
-    getPublishedBlogPosts()
-      .then(items=>{if(active)setPosts(items)})
+    Promise.all([getPublishedBlogPosts(),getPublishedBlogTags().catch(()=>[] as NativeBlogTag[])])
+      .then(([items,realTags])=>{if(active){setPosts(items);setTags(realTags)}})
       .catch(()=>{if(active)setError(true)})
       .finally(()=>{if(active)setLoading(false)});
     return()=>{active=false};
@@ -57,6 +58,9 @@ export default function BlogPage(){
                 {new Date(post.firstPublishedDate).toLocaleDateString(ro?'ro-RO':'en-GB',{day:'numeric',month:'short',year:'numeric'})}
               </time>}
             </div>
+            {!!post.tagIds?.length&&<div className="nordlys-upstream-tags">
+              {tags.filter(tag=>post.tagIds?.includes(tag.id)).map(tag=><Link viewTransition className="nordlys-upstream-tag" key={tag.id} to={localizedPath('/tags/'+tag.slug,lang)}>{tag.label}</Link>)}
+            </div>}
             {!!post.excerpt&&<p className="nordlys-upstream-description">{post.excerpt}</p>}
           </div>
         </article>
