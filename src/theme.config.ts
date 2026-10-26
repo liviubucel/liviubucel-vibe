@@ -1,52 +1,42 @@
 import { defineThemeConfig } from './types'
 
+// The FjellOverflow/Nordlys original configuration, with identity,
+// menu targets, metadata and social destination personalized ONLY.
 export default defineThemeConfig({
-  site: 'https://nordlys.fjelloverflow.dev',
-  title: 'Nordlys',
-  description: 'A minimal Astro blog theme',
-  author: 'FjellOverflow',
+  site: 'https://www.liviubucel.com',
+  title: 'Liviu Bucel',
+  description: 'Cybersecurity, digital investigations and technical projects',
+  author: 'Liviu Bucel',
   navbarItems: [
-    { label: 'Blog', href: '/posts/' },
+    { label: 'Blog', href: '/blog/' },
     { label: 'Projects', href: '/projects/' },
     { label: 'Tags', href: '/tags/' },
     {
       label: 'Other pages',
       children: [
-        { label: 'Photos', href: '/photos/' },
-        { label: 'Tools', href: '/tools/' }
+        { label: 'Services', href: '/services/' },
+        { label: 'Resume', href: '/experience/' },
+        { label: 'Tools', href: '/tools/' },
+        { label: 'Contact', href: '/contact/' }
       ]
     },
     { label: 'About', href: '/about/' }
   ],
   footerItems: [
-    {
-      icon: 'tabler--brand-github',
-      href: 'https://github.com/FjellOverflow/nordlys',
-      label: 'Github'
-    },
-    {
-      icon: 'tabler--rss',
-      href: '/feed.xml',
-      label: 'RSS feed'
-    }
+    {icon:'tabler--brand-github',href:'https://github.com/liviubucel/liviubucel-vibe',label:'Github'},
+    {icon:'tabler--rss',href:'/rss.xml',label:'RSS feed'}
   ],
-
-  // optional settings
-  locale: 'en',
-  mode: 'dark',
-  modeToggle: true,
-  colorScheme: 'scheme-mono',
-  openGraphImage: undefined,
-  postsPerPage: 5,
-  postsView: 'list',
-  projectsPerPage: 3,
-  projectsView: 'list',
-  scrollProgress: false,
-  scrollToTop: true,
-  tagIcons: {
-    tailwindcss: 'tabler--brand-tailwind',
-    astro: 'tabler--brand-astro',
-    documentation: 'tabler--book'
-  },
-  expressiveCodeThemes: ['vitesse-light', 'vitesse-black']
+  locale:'en',
+  mode:'dark',
+  modeToggle:true,
+  colorScheme:'scheme-mono',
+  openGraphImage:undefined,
+  postsPerPage:5,
+  postsView:'list',
+  projectsPerPage:3,
+  projectsView:'list',
+  scrollProgress:false,
+  scrollToTop:true,
+  tagIcons:{},
+  expressiveCodeThemes:['vitesse-light','vitesse-black']
 })

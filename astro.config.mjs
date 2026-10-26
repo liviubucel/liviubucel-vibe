@@ -1,6 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
-import tailwind from "@astrojs/tailwind";
+import tailwindcss from "@tailwindcss/vite";
 import cloudProviderFetchAdapter from "@wix/cloud-provider-fetch-adapter";
 import wix from "@wix/astro";
 import monitoring from "@wix/monitoring-astro";
@@ -30,7 +30,6 @@ export default defineConfig({
         },
       },
     },
-    tailwind(),
     wix({
       htmlEmbeds: isBuild,
       auth: true,
@@ -41,7 +40,7 @@ export default defineConfig({
     }),
   ],
   vite: {
-    plugins: [customErrorOverlayPlugin()],
+    plugins: [customErrorOverlayPlugin(), tailwindcss()],
     cacheDir: 'node_modules/.cache/.vite',
     optimizeDeps: {
       include: [
