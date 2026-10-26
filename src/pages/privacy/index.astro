@@ -1,0 +1,26 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+const frontmatter={title:'Privacy policy',description:'How this personal website processes contact and technical information',activeHeaderLink:'Privacy'};
+const sections=[
+  ['Controller and scope','This independent personal website, including Romania Cyber Monitor, is operated by Liviu Bucel. It describes data processing through contact, updates and technical operations.'],
+  ['Contact and form data','The native Wix Forms app processes the name, email address, subject and message you choose to send. Wix Contacts may retain contact details and a reply is sent only for the enquiry you make.'],
+  ['Security updates','The Security Updates form captures email address and an explicit email-subscription choice using Wix Forms and Wix Contacts. Email campaigns are not sent until the relevant confirmation, delivery and unsubscribe systems are configured.'],
+  ['Purpose and lawful bases','Contact replies are handled in response to your enquiry. Optional email marketing depends on consent. Technical logs support availability, abuse prevention and security. We do not sell personal data.'],
+  ['Providers','The new site uses Wix for hosting, forms, portfolio content and native blog content. Parts of the former Cloudflare infrastructure remain active until migration and verification are completed.'],
+  ['CV and retention','A professional CV is supplied only after a direct request, not by a publicly downloadable unprotected URL. Information is retained only where needed for the stated purpose and lawful operation.'],
+  ['Cyber Monitor','Public threat-intelligence source reports are distinguished from independently confirmed incidents. A ransomware listing is not proof of an actual compromise. You may request correction.'],
+  ['Your rights','Depending on applicable law, you may request access, correction, deletion, restriction, portability, objection or consent withdrawal. Contact us for a privacy enquiry.']
+] as const;
+---
+<PageLayout {frontmatter}>
+  <h1>Privacy policy</h1>
+  <p>Updated 22 October 2026</p>
+  {sections.map(([title,description],i)=>(
+    <section>
+      <h2>{i+1}. {title}</h2>
+      <p>{description}</p>
+    </section>
+  ))}
+  <h2>Privacy contact</h2>
+  <p><a href="mailto:contact@liviubucel.com">contact@liviubucel.com</a></p>
+</PageLayout>
