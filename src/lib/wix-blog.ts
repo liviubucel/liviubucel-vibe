@@ -11,6 +11,7 @@ export interface NativeBlogPost {
   richContent?: { nodes?: RichNode[] };
   contentText?: string;
   minutesToRead?: number;
+  tagIds?: string[];
 }
 export interface RichNode {
   type: string;
@@ -45,4 +46,18 @@ export async function getPublishedBlogPost(slugOrId: string): Promise<NativeBlog
   if (!response.ok) throw new Error('Wix Blog post request failed (' + response.status + ')');
   const data = await response.json() as { post?: NativeBlogPost };
   return data.post;
+}
+
+/** Native Wix Blog tag taxonomy. Labels and counts originate in Wix. */
+export interface NativeBlogTag {
+  id: string;
+  label: string;
+  slug: string;
+  publishedPostCount: number;
+}
+export async function getPublishedBlogTags(): Promise<NativeBlogTag[]> {
+  const response = await fetch('/api/blog/tags', {credentials:'same-origin'});
+  if (!response.ok) throw new Error('Wix Blog tags unavailable (' + response.status + ')');
+  const data = await response.json() as {tags?:NativeBlogTag[]};
+  return data.tags || [];
 }
