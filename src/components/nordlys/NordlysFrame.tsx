@@ -79,9 +79,8 @@ export function NordlysBottom({landing=false}:{landing?:boolean}){
   return <footer className={landing?'nordlys-landing-footer':'nordlys-footer'}>
     <hr className="nordlys-separator"/>
     <div className={landing?'nordlys-bottom-bar':'nordlys-footer-row'}>
-      {!landing&&<span>© {new Date().getFullYear()} {portfolio.name}</span>}
-      <ExternalLinks/><span className="nordlys-grow"/>
-      <LanguageSwitch lang={lang}/><NordlysModeToggle/>
+      {landing?<><ExternalLinks/><span className="nordlys-grow"/><LanguageSwitch lang={lang}/><NordlysModeToggle/></>:
+        <><span>© {new Date().getFullYear()} {portfolio.name}</span><span className="nordlys-grow"/><ExternalLinks/><LanguageSwitch lang={lang}/></>}
     </div>
   </footer>;
 }
