@@ -62,6 +62,9 @@ const frontmatter={
 };
 ---
 <PageLayout {frontmatter}>
+  <div slot="aside" class="border-accent mt-24 hidden border-r pr-4 opacity-75 transition duration-500 ease-in-out hover:opacity-100 2xl:block">
+    {post && headings.length>0 && <ToC headings={headings} open />}
+  </div>
   <div slot="top" class="mt-4">
     <a href="/blog/" class="clickable flex w-fit items-center gap-1">
       <span class="iconify tabler--arrow-left text-xl"></span>
@@ -84,11 +87,6 @@ const frontmatter={
         {' '}<a class="clickable" href="/about/">Liviu Bucel</a>
         {post.minutesToRead&&<> · <span class="whitespace-nowrap opacity-75">{post.minutesToRead} min read</span></>}
       </div>
-      {headings.length>0&&(
-        <div slot="aside" class="border-accent mt-24 hidden border-r pr-4 opacity-75 transition duration-500 ease-in-out hover:opacity-100 2xl:block">
-          <ToC headings={headings} open />
-        </div>
-      )}
       {headings.length>0&&(
         <div class="mt-8 w-fit rounded-sm border 2xl:hidden"><ToC headings={headings}/></div>
       )}
