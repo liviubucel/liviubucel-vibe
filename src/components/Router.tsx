@@ -18,6 +18,7 @@ import LegacySectionPage from '@/components/pages/LegacySectionPage';
 import ServicesPage from '@/components/pages/ServicesPage';
 import SearchPage from '@/components/pages/SearchPage';
 import ToolsPage from '@/components/pages/ToolsPage';
+import TagsPage from '@/components/pages/TagsPage';
 
 function Layout() {
   return <><ScrollToTop /><NordlysFrame /></>;
@@ -28,6 +29,8 @@ const pages = [
   { path: 'services', element: <ServicesPage />, identifier: 'services' },
   { path: 'search', element: <SearchPage />, identifier: 'search' },
   { path: 'tools', element: <ToolsPage />, identifier: 'tools' },
+  { path: 'tags', element: <TagsPage />, identifier: 'tags' },
+  { path: 'tags/:tag', element: <TagsPage />, identifier: 'tag-detail' },
   { path: 'projects', element: <ProjectsPage />, identifier: 'projects' },
   { path: 'projects/:id', element: <ProjectDetailPage />, identifier: 'project-detail' },
   { path: 'accreditations', element: <AccreditationsPage />, identifier: 'accreditations' },
