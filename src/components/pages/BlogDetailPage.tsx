@@ -3,7 +3,7 @@ import {Link,useLocation,useParams} from 'react-router-dom';
 import {ZoomIn} from 'lucide-react';
 import {openNordlysPhotoSwipe} from '@/components/nordlys/PhotoSwipeViewer';
 import {getLanguage,localizedPath} from '@/lib/portfolio';
-import {getPublishedBlogPost,getPublishedBlogPosts,type NativeBlogPost,type RichNode} from '@/lib/wix-blog';
+import {getPublishedBlogPost,getPublishedBlogPosts,getPublishedBlogTags,type NativeBlogPost,type NativeBlogTag,type RichNode} from '@/lib/wix-blog';
 import {NordlysTableOfContents} from '@/components/nordlys/NordlysArticleInteractions';
 import {setNordlysDocumentSEO} from '@/components/nordlys/NordlysSeo';
 
@@ -84,13 +84,14 @@ export default function BlogDetailPage(){
   const lang=getLanguage(useLocation().pathname),ro=lang==='ro';
   const [article,setArticle]=useState<NativeBlogPost>();
   const [allPosts,setAllPosts]=useState<NativeBlogPost[]>([]);
+  const [tags,setTags]=useState<NativeBlogTag[]>([]);
   const [loading,setLoading]=useState(true),[error,setError]=useState('');
   const [imageError,setImageError]=useState(false);
   useEffect(()=>{
     let active=true;if(!id){setLoading(false);return;}
     setLoading(true);setError('');setImageError(false);
-    Promise.all([getPublishedBlogPost(id),getPublishedBlogPosts()])
-      .then(([post,list])=>{if(active){setArticle(post);setAllPosts(list)}})
+    Promise.all([getPublishedBlogPost(id),getPublishedBlogPosts(),getPublishedBlogTags().catch(()=>[] as NativeBlogTag[])])
+      .then(([post,list,realTags])=>{if(active){setArticle(post);setAllPosts(list);setTags(realTags)}})
       .catch(()=>{if(active)setError(ro?'Articolul nu a putut fi încărcat.':'Article could not be loaded.')})
       .finally(()=>{if(active)setLoading(false)});
     return()=>{active=false};
@@ -128,6 +129,9 @@ export default function BlogDetailPage(){
     <div className="nordlys-upstream-back"><Link viewTransition to={localizedPath('/blog',lang)}>← {ro?'Înapoi la toate articolele':'Back to all posts'}</Link></div>
     {loading?<p role="status">{ro?'Se încarcă…':'Loading article…'}</p>:article?<><header className="nordlys-upstream-postdetail-head">
       <h1 className="nordlys-page-title">{article.title}</h1>
+      {!!article.tagIds?.length&&<div className="nordlys-upstream-tags">
+        {tags.filter(tag=>article.tagIds?.includes(tag.id)).map(tag=><Link viewTransition className="nordlys-upstream-tag" key={tag.id} to={localizedPath('/tags/'+tag.slug,lang)}>{tag.label}</Link>)}
+      </div>}
       <p className="nordlys-upstream-meta">
         {ro?'Publicat la ':'Published on '}
         {article.firstPublishedDate&&<time dateTime={new Date(article.firstPublishedDate).toISOString()}>{new Date(article.firstPublishedDate).toLocaleDateString(ro?'ro-RO':'en-GB',{day:'numeric',month:'short',year:'numeric'})}</time>}
