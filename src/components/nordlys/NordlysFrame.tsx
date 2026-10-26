@@ -81,7 +81,6 @@ export function NordlysBottom({landing=false}:{landing?:boolean}){
     <div className={landing?'nordlys-bottom-bar':'nordlys-footer-row'}>
       {!landing&&<span>© {new Date().getFullYear()} {portfolio.name}</span>}
       <ExternalLinks/><span className="nordlys-grow"/>
-      <a className="nordlys-source-link" href="/nordlys-source.zip" title="GPL-3.0 corresponding source">Source</a>
       <LanguageSwitch lang={lang}/><NordlysModeToggle/>
     </div>
   </footer>;

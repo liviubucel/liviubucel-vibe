@@ -351,5 +351,3 @@ html.theme-switching ::view-transition-old(root){z-index:1;}
 .nordlys-newsletter-consent{display:flex;align-items:flex-start;gap:11px;font-size:.92rem;color:var(--n-muted);margin:20px 0;line-height:1.55;cursor:pointer;}
 .nordlys-newsletter-consent input{width:17px;height:17px;margin-top:3px;accent-color:var(--n-accent);}
 
-.nordlys-source-link {color:var(--n-muted)!important;font-size:.78rem;opacity:.76;text-decoration:none;transition:opacity .5s ease-in-out;}
-.nordlys-source-link:hover,.nordlys-source-link:focus-visible{opacity:1;text-decoration:underline;}

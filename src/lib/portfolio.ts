@@ -6,7 +6,7 @@ export const portfolio = {
   email: 'contact@liviubucel.com',
   timeZone: 'Europe/London',
   links: {
-    github: 'https://github.com/liviubucel',
+    github: 'https://github.com/liviubucel/liviubucel-vibe',
     linkedin: 'https://www.linkedin.com/in/liviubucel/',
     twitter: 'https://x.com/liviubucel',
     youtube: 'https://www.youtube.com/@liviubucel',
