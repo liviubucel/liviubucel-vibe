@@ -114,22 +114,26 @@ export default function BlogDetailPage(){
   const prev=idx>0?allPosts[idx-1]:undefined;
   const next=idx>=0&&idx<allPosts.length-1?allPosts[idx+1]:undefined;
   const linkTo=(p:NativeBlogPost)=>localizedPath('/blog/'+(p.slug||p._id||p.id),lang);
-  return <article>
+  return <article className="nordlys-upstream-postdetail">
     <ArticleProgress/>
-    <p className="nordlys-item-meta"><Link viewTransition className="nordlys-inline-link" to={localizedPath('/blog',lang)}>← {ro?'Toate articolele':'Back to all posts'}</Link></p>
-    {loading?<p role="status">{ro?'Se încarcă…':'Loading article…'}</p>:article?<><header className="nordlys-section">
+    <div className="nordlys-upstream-back"><Link viewTransition to={localizedPath('/blog',lang)}>← {ro?'Înapoi la toate articolele':'Back to all posts'}</Link></div>
+    {loading?<p role="status">{ro?'Se încarcă…':'Loading article…'}</p>:article?<><header className="nordlys-upstream-postdetail-head">
       <h1 className="nordlys-page-title">{article.title}</h1>
-      <p className="nordlys-page-lead">{article.excerpt}</p>
-      <p className="nordlys-item-meta">{article.firstPublishedDate&&new Date(article.firstPublishedDate).toLocaleDateString(ro?'ro-RO':'en-GB',{day:'numeric',month:'long',year:'numeric'})} · Liviu Bucel{article.minutesToRead?' · '+article.minutesToRead+' min':''}</p>
+      <p className="nordlys-upstream-meta">
+        {ro?'Publicat la ':'Published on '}
+        {article.firstPublishedDate&&<time dateTime={new Date(article.firstPublishedDate).toISOString()}>{new Date(article.firstPublishedDate).toLocaleDateString(ro?'ro-RO':'en-GB',{day:'numeric',month:'short',year:'numeric'})}</time>}
+        {ro?' de ':' by '}<Link viewTransition to={localizedPath('/about',lang)} className="nordlys-upstream-author">Liviu Bucel</Link>
+        {article.minutesToRead?' · '+article.minutesToRead+' min':''}
+      </p>
     </header>
     {headings.length>2&&<NordlysTableOfContents headings={headings.map(h=>({id:h.id,label:h.text,level:h.level}))}/>}
     <div className="nordlys-article">{article.richContent?.nodes?.length?
       article.richContent.nodes.map((node,index)=>renderNode(node,index,(src:string)=>{void openNordlysPhotoSwipe(photos,photos.findIndex(p=>p.src===src)).catch(()=>setImageError(true))})):
       <p>{article.contentText||article.excerpt}</p>}
     </div>
-    <nav className="nordlys-adjacent-posts" aria-label="Adjacent posts">
-      <div>{prev&&<Link viewTransition to={linkTo(prev)}><span className="nordlys-item-meta">← {ro?'Anterior':'Previous'}</span><span>{prev.title}</span></Link>}</div>
-      <div>{next&&<Link viewTransition to={linkTo(next)}><span className="nordlys-item-meta">{ro?'Următor':'Next'} →</span><span>{next.title}</span></Link>}</div>
+    <nav className="nordlys-upstream-adjacent" aria-label={ro?'Articole învecinate':'Adjacent posts'}>
+      <div>{next&&<Link viewTransition to={linkTo(next)}><span>← {ro?'Articolul următor':'Next post'}</span><strong>{next.title}</strong></Link>}</div>
+      <div>{prev&&<Link viewTransition to={linkTo(prev)}><span>{ro?'Articolul precedent':'Previous post'} →</span><strong>{prev.title}</strong></Link>}</div>
     </nav>
     {imageError&&<p className="nordlys-feedback" role="alert">{ro?'Vizualizarea imaginii nu este disponibilă momentan.':'Image viewer is currently unavailable.'}</p>}
     </>:<p role={error?'alert':'status'}>{error||(ro?'Articolul nu există.':'Post not found.')}</p>}
