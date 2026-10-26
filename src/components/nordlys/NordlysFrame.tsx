@@ -112,7 +112,7 @@ export function NordlysNavigation(){
   // Same compact hierarchy as Nordlys Header.astro:
   // Blog, Projects, an Other pages dropdown, then About.
   const mainItems=[
-    ['/blog','Blog'],['/projects',ro?'Proiecte':'Projects']
+    ['/blog','Blog'],['/projects',ro?'Proiecte':'Projects'],['/tags',ro?'Etichete':'Tags']
   ] as const;
   const moreItems=[
     ['/services',ro?'Servicii':'Services'],['/experience',ro?'CV / Experiență':'Resume'],
