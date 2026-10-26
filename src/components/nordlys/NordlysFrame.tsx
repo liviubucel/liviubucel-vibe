@@ -110,13 +110,15 @@ export function NordlysNavigation(){
   const loc=useLocation(),lang=getLanguage(loc.pathname),ro=lang==='ro';
   const [open,setOpen]=useState(false);
   useEffect(()=>setOpen(false),[loc.pathname]);
+  // Same compact hierarchy as Nordlys Header.astro:
+  // Blog, Projects, an Other pages dropdown, then About.
   const mainItems=[
-    ['/blog','Blog'],['/projects',ro?'Proiecte':'Projects'],['/services',ro?'Servicii':'Services']
+    ['/blog','Blog'],['/projects',ro?'Proiecte':'Projects']
   ] as const;
   const moreItems=[
-    ['/experience',ro?'CV / Experiență':'Resume'],['/tools',ro?'Instrumente':'Tools'],
-    ['/accreditations',ro?'Certificări':'Credentials'],['/romania-cyber-monitor','Cyber Monitor'],
-    ['/about',ro?'Despre':'About'],['/contact','Contact']
+    ['/services',ro?'Servicii':'Services'],['/experience',ro?'CV / Experiență':'Resume'],
+    ['/tools',ro?'Instrumente':'Tools'],['/accreditations',ro?'Certificări':'Credentials'],
+    ['/romania-cyber-monitor','Cyber Monitor'],['/contact','Contact']
   ].map(([path,label])=>({path:localizedPath(path,lang),label}));
   return <header className="nordlys-navbar">
     <a href="#main" className="nordlys-skip">Skip to main content</a>
@@ -124,7 +126,8 @@ export function NordlysNavigation(){
       <Link viewTransition className="nordlys-logo-link" to={localizedPath('/',lang)}><AuroraMark/> {portfolio.name}</Link>
       <nav className="nordlys-navlinks" aria-label={ro?'Navigare principală':'Main navigation'}>
         {mainItems.map(([path,label])=><Link viewTransition key={path} to={localizedPath(path,lang)} aria-current={loc.pathname===localizedPath(path,lang)?'page':undefined}>{label}</Link>)}
-        <NordlysDropdown items={moreItems} label={ro?'Mai mult':'More'}/>
+        <NordlysDropdown items={moreItems} label={ro?'Alte pagini':'Other pages'}/>
+        <Link viewTransition to={localizedPath('/about',lang)} aria-current={loc.pathname===localizedPath('/about',lang)?'page':undefined}>{ro?'Despre':'About'}</Link>
         <Link viewTransition to={localizedPath('/search',lang)} aria-label={ro?'Căutare':'Search'}><Search size={19}/></Link>
         <NordlysModeToggle/>
       </nav>
@@ -138,7 +141,7 @@ export function NordlysNavigation(){
     <div id="nordlys-mobile-nav" className="nordlys-mobile-panel" data-open={open} aria-hidden={!open}>
       <div className="nordlys-mobile-panel-inner">
         <nav aria-label={ro?'Meniu mobil':'Mobile navigation'}>
-          {[...mainItems.map(([path,label])=>({path:localizedPath(path,lang),label})),...moreItems].map(item=>
+          {[...mainItems.map(([path,label])=>({path:localizedPath(path,lang),label})),...moreItems,{path:localizedPath('/about',lang),label:ro?'Despre':'About'}].map(item=>
             <Link viewTransition tabIndex={open?0:-1} to={item.path} key={item.path} aria-current={loc.pathname===item.path?'page':undefined}>{item.label}</Link>
           )}
         </nav>
