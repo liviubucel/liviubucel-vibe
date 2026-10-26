@@ -2,6 +2,7 @@ import {useEffect,useState} from 'react';
 import {Link,useLocation,useParams} from 'react-router-dom';
 import {getPublishedBlogPosts,getPublishedBlogTags,type NativeBlogPost,type NativeBlogTag} from '@/lib/wix-blog';
 import {getLanguage,localizedPath} from '@/lib/portfolio';
+import {setNordlysDocumentSEO} from '@/components/nordlys/NordlysSeo';
 
 /**
  * Nordlys Tags index and tag detail, using the live Wix Blog taxonomy.
@@ -27,6 +28,7 @@ export default function TagsPage(){
   },[]);
 
   const tag=slug?tags.find(t=>t.slug===slug):undefined;
+  useEffect(()=>{if(tag)setNordlysDocumentSEO(tag.label,ro?'Articole din categoria '+tag.label:'Published articles tagged '+tag.label);},[tag?.id,tag?.label,ro]);
   const filtered=tag?posts.filter(post=>post.tagIds?.includes(tag.id)):[];
   return <section className="nordlys-upstream-tags-page">
     {slug&&<p className="nordlys-upstream-back"><Link viewTransition to={localizedPath('/tags',lang)}>← {ro?'Toate etichetele':'All tags'}</Link></p>}
