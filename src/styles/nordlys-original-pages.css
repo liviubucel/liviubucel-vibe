@@ -108,3 +108,16 @@
   }
   .nordlys-upstream-postdetail .nordlys-article-toc:hover{opacity:1;}
 }
+
+/* Original Nordlys landing layout geometry */
+.nordlys-landing {padding:64px 16px 0;display:flex;flex-direction:column;justify-content:flex-start;min-height:100svh;}
+.nordlys-landing-content {padding:0;}
+.nordlys-landing-footer {margin-top:32px;}
+.nordlys-landing .nordlys-brand {margin-bottom:32px;}
+.nordlys-landing .nordlys-bottom-bar {min-height:unset;padding:16px 0;}
+.nordlys-landing .nordlys-iconlink svg,.nordlys-landing .nordlys-icon-button svg {width:30px;height:30px;}
+@media(min-width:640px) {
+  .nordlys-landing {padding:144px 48px 0;}
+  .nordlys-landing .nordlys-iconlink svg,.nordlys-landing .nordlys-icon-button svg {width:48px;height:48px;}
+  .nordlys-landing .nordlys-bottom-bar {padding:32px 0;}
+}
