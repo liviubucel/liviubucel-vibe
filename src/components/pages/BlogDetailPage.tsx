@@ -97,7 +97,16 @@ export default function BlogDetailPage(){
   },[id,ro]);
   useEffect(()=>{if(article?.title)setNordlysDocumentSEO(article.title,article.excerpt||'Cybersecurity analysis by Liviu Bucel');},[article]);
   const headings=useMemo<Heading[]>(()=>article?.richContent?.nodes
-    ?.map((node,i)=>node.type==='HEADING'?{id:safeId(node,i),level:Number(node.headingData?.level)||2,text:textOf(node)}:null)
+    ?.map((node,i)=>{
+      if(node.type==='HEADING')return {id:safeId(node,i),level:Number(node.headingData?.level)||2,text:textOf(node)};
+      // Some imported Wix Blog articles contain literal Markdown headings.
+      // Use the same identifier as renderNode so the table of contents works.
+      if(node.type==='PARAGRAPH'){
+        const match=/^(#{2,5})\s+(.+)$/.exec(textOf(node).trim());
+        if(match)return {id:'legacy-'+String(node.id||i).replace(/[^a-zA-Z0-9_-]/g,'').slice(0,70),level:Math.min(match[1].length,4),text:match[2]};
+      }
+      return null;
+    })
     .filter((h):h is Heading=>!!h)||[],[article]);
   const photos=useMemo<ImageEntry[]>(()=>article?.richContent?.nodes?.flatMap(node=>{
     const images:ImageEntry[]=[];
