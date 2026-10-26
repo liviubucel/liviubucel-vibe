@@ -1,4 +1,3 @@
-import { posts } from '@wix/blog';
 
 /** Official Wix Blog is the single source for all published articles. */
 export interface NativeBlogPost {
@@ -29,17 +28,21 @@ export const legacySlugs: Record<string,string> = {
     'vulnerabilitate-critic-wordpress-cve-2026-23550-permite-preluarea-complet-a-site-urilor-prin-pluginu',
 };
 
+/** Published content comes from the official Wix Blog SDK via our
+ * Wix-hosted same-origin Astro endpoint; never access Wix auth in the browser.
+ */
 export async function getPublishedBlogPosts(): Promise<NativeBlogPost[]> {
-  const response = await posts.listPosts({ paging: { limit: 100 } });
-  return (response.posts ?? []) as NativeBlogPost[];
+  const response = await fetch('/api/blog/posts', { credentials: 'same-origin' });
+  if (!response.ok) throw new Error('Wix Blog posts request failed (' + response.status + ')');
+  const data = await response.json() as { posts?: NativeBlogPost[] };
+  return data.posts ?? [];
 }
 
 export async function getPublishedBlogPost(slugOrId: string): Promise<NativeBlogPost | undefined> {
   const resolvedSlug = legacySlugs[slugOrId] || slugOrId;
-  const all = await getPublishedBlogPosts();
-  const entry = all.find(item => item.slug === resolvedSlug || item._id === resolvedSlug || item.id === resolvedSlug);
-  const postId = entry?._id || entry?.id;
-  if (!postId) return undefined;
-  const response = await posts.getPost(postId, {fieldsets: ['RICH_CONTENT', 'URL']});
-  return (response.post || entry) as NativeBlogPost;
+  const response = await fetch('/api/blog/post?slug='+encodeURIComponent(resolvedSlug), { credentials: 'same-origin' });
+  if (response.status === 404) return undefined;
+  if (!response.ok) throw new Error('Wix Blog post request failed (' + response.status + ')');
+  const data = await response.json() as { post?: NativeBlogPost };
+  return data.post;
 }

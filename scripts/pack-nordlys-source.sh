@@ -4,7 +4,7 @@ cd "$(dirname "$0")/.."
 out=public/nordlys-source.zip
 rm -f "$out"
 zip -q -r "$out" \
-  src integrations scripts public package.json tsconfig.json \
+  src integrations scripts public package.json package-lock.json tsconfig.json \
   astro.config.mjs postcss.config.mjs tailwind.config.mjs \
   eslint.config.ts vitest.config.ts vitest.setup.ts \
   vite-error-overlay-plugin.js \
