@@ -121,3 +121,10 @@
   .nordlys-landing .nordlys-iconlink svg,.nordlys-landing .nordlys-icon-button svg {width:48px;height:48px;}
   .nordlys-landing .nordlys-bottom-bar {padding:32px 0;}
 }
+
+/* Nordlys Tags index: inline linked labels and post counts */
+.nordlys-upstream-tag-index{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;margin:14px 0 35px;}
+.nordlys-upstream-tag-index a{opacity:.75;display:inline-flex;gap:6px;align-items:baseline;font-size:1rem;transition:opacity .5s ease-in-out;}
+.nordlys-upstream-tag-index a:hover{opacity:1;}
+.nordlys-upstream-tag-index span{opacity:.7;}
+@media(prefers-reduced-motion:reduce){.nordlys-upstream-tag-index a{transition:none}}
