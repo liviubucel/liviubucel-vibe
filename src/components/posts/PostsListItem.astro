@@ -10,6 +10,7 @@ export interface Props {
 }
 
 const { id, data } = Astro.props.post
+const localePrefix=Astro.url.pathname === '/ro' || Astro.url.pathname.startsWith('/ro/') ? '/ro' : ''
 ---
 
 <div class="mb-8 flex flex-col gap-4 md:mb-4 md:flex-row md:gap-8">
@@ -23,7 +24,7 @@ const { id, data } = Astro.props.post
   )}
   <div class="flex w-full flex-col gap-2">
     <div class="flex flex-col justify-between sm:flex-row sm:items-center">
-      <a class="text-xl font-normal" href={`/blog/${id}/`} data-astro-prefetch>
+      <a class="text-xl font-normal" href={localePrefix+"/blog/"+id+"/"} data-astro-prefetch>
         <span>{data.title}</span>
       </a>
       <time

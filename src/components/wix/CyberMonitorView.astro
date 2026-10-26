@@ -8,6 +8,8 @@ interface Incident{
 }
 interface Props{category?:string;slug?:string}
 const {category,slug}=Astro.props;
+const ro=Astro.url.pathname === '/ro' || Astro.url.pathname.startsWith('/ro/');
+const localePrefix=ro?'/ro':'';
 const sections=[
   {slug:'ransomware',kind:'ransomware_claim',label:'Ransomware'},
   {slug:'breaches',kind:'verified_breach',label:'Breaches'},
@@ -34,27 +36,27 @@ const frontmatter={
 ---
 <PageLayout {frontmatter}>
   <h1>Romania Cyber Monitor</h1>
-  <p>Public reports linked to Romania. Threat-actor claims are not evidence that a victim was actually compromised.</p>
-  <p>Historical records may contain unverified claims, not independently confirmed incidents.</p>
+  <p>{ro?'Raportări publice despre amenințări cu legătură documentată cu România. Afirmațiile atacatorilor nu sunt confirmarea incidentului.':'Public reports linked to Romania. Threat-actor claims are not evidence that a victim was actually compromised.'}</p>
+  <p>{ro?'Înregistrările istorice pot conține semnalări neverificate, nu incidente confirmate independent.':'Historical records may contain unverified claims, not independently confirmed incidents.'}</p>
   <nav aria-label="Monitor categories" class="flex flex-wrap gap-4">
-    <a class="clickable" href="/romania-cyber-monitor/">All</a>
+    <a class="clickable" href={localePrefix+"/romania-cyber-monitor/"}>{ro?'Toate':'All'}</a>
     {sections.map(s=>(
-      <a class="clickable" href={'/romania-cyber-monitor/'+s.slug+'/'} aria-current={category===s.slug?'page':undefined}>{s.label}</a>
+      <a class="clickable" href={localePrefix+'/romania-cyber-monitor/'+s.slug+'/'} aria-current={category===s.slug?'page':undefined}>{s.label}</a>
     ))}
   </nav>
-  {slug&&<p><a class="clickable" href="/romania-cyber-monitor/">← All reports</a></p>}
-  {!slug&&<label class="mt-4 flex flex-col gap-2">Search reports
-    <input id="monitor-search" type="search" placeholder="Organisation or title…" class="border-accent rounded-sm border p-3"/>
+  {slug&&<p><a class="clickable" href={localePrefix+"/romania-cyber-monitor/"}>← {ro?'Toate rapoartele':'All reports'}</a></p>}
+  {!slug&&<label class="mt-4 flex flex-col gap-2">{ro?'Caută rapoarte':'Search reports'}
+    <input id="monitor-search" type="search" placeholder={ro?'Organizație sau titlu…':'Organisation or title…'} class="border-accent rounded-sm border p-3"/>
   </label>}
   {error&&<p role="alert">{error}</p>}
-  {!error&&!reports.length&&<p role="status">No published reports match this selection.</p>}
+  {!error&&!reports.length&&<p role="status">{ro?'Nu există rapoarte publicate pentru această selecție.':'No published reports match this selection.'}</p>}
   <div id="monitor-results">
     {reports.map(report=>(
       <article data-monitor-entry data-search={(report.title||'')+' '+(report.organisation||'')+' '+(report.summary||'')}>
         <p class="opacity-75">{report.recordType?.replace(/_/g,' ')} · {report.verificationStatus?.replace(/_/g,' ')}</p>
-        <h2>{report.slug&&!slug?<a href={'/romania-cyber-monitor/incidents/'+encodeURIComponent(report.slug)+'/'}>{report.title||report.organisation}</a>:report.title||report.organisation}</h2>
+        <h2>{report.slug&&!slug?<a href={localePrefix+'/romania-cyber-monitor/incidents/'+encodeURIComponent(report.slug)+'/'}>{report.title||report.organisation}</a>:report.title||report.organisation}</h2>
         <p>{(report.summary||'').replace(/<[^>]*>/g,'')}</p>
-        <p class="opacity-75">{report.independentlyConfirmed?'Independently confirmed':'Unverified claim'}</p>
+        <p class="opacity-75">{report.independentlyConfirmed?(ro?'Confirmat independent':'Independently confirmed'):(ro?'Afirmație neconfirmată':'Unverified claim')}</p>
         {report.sourceName&&report.sourceLanding?.startsWith('https://')&&<p>Feed source: <a href={report.sourceLanding} target="_blank" rel="noopener noreferrer">{report.sourceName}</a></p>}
       </article>
     ))}

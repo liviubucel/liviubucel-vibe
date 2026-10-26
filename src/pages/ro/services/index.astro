@@ -1,0 +1,22 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+const frontmatter={title:'Services',description:'Authorised cybersecurity assessments and advisory services',activeHeaderLink:'Services'};
+const services=[
+  {title:'Security assessments',detail:'Scope-based reviews of exposed services, web applications, authentication and secure configuration. No testing without written authorisation.'},
+  {title:'DNS, TLS and Cloudflare hardening',detail:'Review of certificate lifecycles, DNS security, access policies, WAF settings and secure web infrastructure.'},
+  {title:'Vulnerability review',detail:'Assess the relevance of publicly reported vulnerabilities and prioritise realistic remediation.'},
+  {title:'Incident triage and defensive guidance',detail:'Initial technical assessment, evidence-preservation guidance, containment planning and escalation recommendations.'}
+];
+---
+<PageLayout {frontmatter}>
+  <h1>Servicii</h1>
+  <p>Cybersecurity assistance and security reviews within a written, authorised scope.</p>
+  {services.map(service=>(
+    <section>
+      <h2>{service.title}</h2>
+      <p>{service.detail}</p>
+    </section>
+  ))}
+  <p>Active testing requires system-owner authorisation and an agreed written scope.</p>
+  <p><a class="clickable" href="/ro/contact/">Discuss a project</a> · <a class="clickable" href="/ro/projects/">View projects</a></p>
+</PageLayout>

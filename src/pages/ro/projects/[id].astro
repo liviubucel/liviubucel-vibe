@@ -1,0 +1,37 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import TagsBar from '@/components/TagsBar.astro';
+import {resolveTags} from '@/util/tags';
+import {getNativeProject,projectTechnologies,projectExternalLink} from '@/lib/wix-portfolio';
+export const prerender=false;
+let unavailable=false;
+let project;
+try{project=await getNativeProject(Astro.params.id||'')}catch(e){unavailable=true;console.error('[nordlys-wix-project]',e instanceof Error?e.message:'Portfolio unavailable')}
+if(!project)Astro.response.status=unavailable?503:404;
+const technologies=(project?projectTechnologies(project):'')?.split(',').map(x=>x.trim()).filter(Boolean)||[];
+const link=project?projectExternalLink(project):undefined;
+const frontmatter={title:project?.title||'Project not found',activeHeaderLink:'Projects',description:project?.description||'Technical project by Liviu Bucel'};
+---
+<PageLayout {frontmatter}>
+  <div slot="top" class="mt-4">
+    <a class="clickable flex w-fit items-center gap-1" href="/ro/projects/">
+      <span class="iconify tabler--arrow-left text-xl"></span>
+      Back to all projects
+    </a>
+  </div>
+  {project?(
+    <>
+      <h1 class="mt-2 mb-2 sm:my-4">{project.title}</h1>
+      <TagsBar tags={resolveTags(technologies)}/>
+      <p>{project.description}</p>
+      {project.details?.filter(d=>d.label!=='Technologies'&&d.label!=='Project link').map(detail=>(
+        <section>
+          {detail.label&&<h2>{detail.label}</h2>}
+          {detail.text&&<p class="whitespace-pre-line">{detail.text}</p>}
+          {detail.link?.url?.startsWith('https://')&&<p><a href={detail.link.url} rel="noopener noreferrer" target="_blank">{detail.link.text||'Open link'}</a></p>}
+        </section>
+      ))}
+      {link&&<p><a class="clickable" href={link} rel="noopener noreferrer" target="_blank">Open project <span class="iconify tabler--external-link align-middle"></span></a></p>}
+    </>
+  ):<p>{unavailable?'Portfolio temporarily unavailable.':'Project not found.'}</p>}
+</PageLayout>

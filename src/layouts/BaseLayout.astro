@@ -59,7 +59,7 @@ const openGraphImageUrl = new URL(resolvedOgImage, Astro.site).href
 ---
 
 <!doctype html>
-<html lang={config.locale} class={config.colorScheme || 'scheme-mono'}>
+<html lang={Astro.url.pathname === '/ro' || Astro.url.pathname.startsWith('/ro/') ? 'ro' : config.locale} class={config.colorScheme || 'scheme-mono'}>
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

@@ -20,6 +20,14 @@ const { activeHeaderLink } = Astro.props
 
 const isNavItem = (item: HeaderItemType): item is NavItemType =>
   Object.hasOwn(item, 'href')
+const isRomanian = Astro.url.pathname === '/ro' || Astro.url.pathname.startsWith('/ro/')
+const localePrefix = isRomanian ? '/ro' : ''
+const navTranslate=(label:string)=>isRomanian ? ({Projects:'Proiecte',Tags:'Etichete','Other pages':'Alte pagini',About:'Despre',Services:'Servicii',Resume:'CV',Tools:'Instrumente'} as Record<string,string>)[label] || label : label
+const localizedNavbarItems = config.navbarItems.map((item) =>
+  isNavItem(item) ? {...item,label:navTranslate(item.label),href:localePrefix+item.href} :
+  {...item,label:navTranslate(item.label),children:[...item.children.map((child)=>({...child,label:navTranslate(child.label),href:localePrefix+child.href})),
+    {label:isRomanian?'English':'Română',href:isRomanian?'/':'/ro/'}]}
+)
 ---
 
 <header>
@@ -28,7 +36,7 @@ const isNavItem = (item: HeaderItemType): item is NavItemType =>
   </a>
   <div class="flex justify-between py-4 sm:py-8">
     <a
-      href="/"
+      href={localePrefix||"/"}
       class="text-accent flex gap-2 text-2xl font-semibold"
       transition:name="branding"
     >
@@ -42,7 +50,7 @@ const isNavItem = (item: HeaderItemType): item is NavItemType =>
     </a>
     <nav class="hidden flex-col justify-end sm:flex">
       <ul class="flex gap-6">
-        {config.navbarItems.map((item) => (
+        {localizedNavbarItems.map((item) => (
           <li class="flex flex-col justify-center">
             {isNavItem(item) ? (
               <HeaderItem
@@ -58,7 +66,7 @@ const isNavItem = (item: HeaderItemType): item is NavItemType =>
           </li>
         ))}
         <li class="text-2xl">
-          <a href="/search/" class="flex items-center" aria-label="Search">
+          <a href={localePrefix+"/search/"} class="flex items-center" aria-label="Search">
             <span class="clickable iconify tabler--search"></span>
           </a>
         </li>
@@ -67,7 +75,7 @@ const isNavItem = (item: HeaderItemType): item is NavItemType =>
     </nav>
     <div class="flex items-center justify-center gap-4 text-2xl sm:hidden">
       {config.modeToggle && <ModeToggle />}
-      <a href="/search/" aria-label="Search">
+      <a href={localePrefix+"/search/"} aria-label="Search">
         <span class="clickable iconify tabler--search text-xl"></span>
       </a>
       <MobileNavToggle />
@@ -81,7 +89,7 @@ const isNavItem = (item: HeaderItemType): item is NavItemType =>
     <div class="min-h-0 overflow-hidden">
       <nav class="flex-col justify-end py-6">
         <ul class="flex flex-col items-center gap-2">
-          {config.navbarItems.map((item) => (
+          {localizedNavbarItems.map((item) => (
             <li class="flex flex-col justify-center">
               {isNavItem(item) ? (
                 <HeaderItem

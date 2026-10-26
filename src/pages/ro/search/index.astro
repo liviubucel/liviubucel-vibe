@@ -1,0 +1,51 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+const frontmatter={title:'Search',activeHeaderLink:'/search',description:'Search articles and projects published by Liviu Bucel'};
+---
+<PageLayout {frontmatter}>
+  <h1>Căutare</h1>
+  <search-input class="flex w-full items-center justify-center gap-8">
+    <input type="text" placeholder="Introdu termenul de căutare" aria-label="Caută pe site" class="border-accent w-full rounded-sm border p-4 sm:w-[50%]" />
+    <button id="search-clear" type="button" class="clickable invisible text-xl">Clear</button>
+  </search-input>
+  <h2 id="results-heading">Introdu termenul de căutare</h2>
+  <ul id="results-list" class="list-none p-0" aria-live="polite"></ul>
+</PageLayout>
+<script>
+  type SearchItem={title:string;excerpt:string;url:string;type:'Blog'|'Project'};
+  class SearchInput extends HTMLElement {
+    connectedCallback(){
+      const input=this.querySelector<HTMLInputElement>('input');
+      const clear=this.querySelector<HTMLButtonElement>('button');
+      const heading=document.querySelector<HTMLElement>('#results-heading');
+      const list=document.querySelector<HTMLElement>('#results-list');
+      if(!input||!clear||!heading||!list)return;
+      let records:SearchItem[]=[];
+      let failed=false;
+      const paint=()=>{
+        const query=input.value.trim().toLocaleLowerCase();
+        clear.classList.toggle('invisible',!query);
+        list.replaceChildren();
+        if(!query){heading.textContent='Introdu termenul de căutare';return}
+        if(failed){heading.textContent='Search temporarily unavailable';return}
+        const hits=records.filter(x=>(x.title+' '+x.excerpt).toLocaleLowerCase().includes(query));
+        heading.textContent=hits.length?'Results ('+hits.length+')':'No Results';
+        for(const result of hits.slice(0,15)){
+          const li=document.createElement('li');
+          li.className='mb-6';
+          const a=document.createElement('a');a.className='text-xl font-normal';a.href='/ro'+result.url;a.textContent=result.title;
+          const div=document.createElement('div');div.className='opacity-75 mt-4';div.textContent=result.excerpt;
+          li.append(a,div);list.append(li);
+        }
+        if(hits.length>15){const more=document.createElement('li');more.textContent='... and '+(hits.length-15)+' more';list.append(more)}
+      };
+      input.addEventListener('input',paint);
+      clear.addEventListener('click',()=>{input.value='';paint();input.focus()});
+      fetch('/api/search',{credentials:'same-origin'})
+        .then(async response=>{if(!response.ok)throw new Error('Search unavailable');return response.json() as Promise<{items:SearchItem[]}>})
+        .then(data=>{records=Array.isArray(data.items)?data.items:[];paint()})
+        .catch(()=>{failed=true;paint()});
+    }
+  }
+  if(!customElements.get('search-input'))customElements.define('search-input',SearchInput);
+</script>

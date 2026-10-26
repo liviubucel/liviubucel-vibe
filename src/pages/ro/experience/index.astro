@@ -1,0 +1,25 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+const frontmatter={title:'Resume & experience',description:'Liviu Bucel professional experience and cybersecurity learning',activeHeaderLink:'Resume'};
+const roles=[
+  {title:'Technical Support Specialist',org:'ZebraByte',period:'April 2022 – January 2024 · United Kingdom',description:'Web hosting support, cPanel, DNS, email troubleshooting, SSL certificate renewals, WordPress connectivity and Cloudflare protection basics.'},
+  {title:'IT Technician',org:'Intact Media Group',period:'November 2019 – September 2020 · Bucharest, Romania',description:'Level 1 IT support in a media environment: workstations, Windows applications, email, networks and escalation of infrastructure issues.'},
+  {title:'Practical cybersecurity labs and projects',org:'Independent practice and learning',period:'Ongoing',description:'Defensive threat-analysis simulations, security-awareness training, Python and security labs covering Linux, Windows, enumeration, incident response and network security.'}
+];
+---
+<PageLayout {frontmatter}>
+  <h1>CV și experiență</h1>
+  <p>Practical background in IT support, web infrastructure and security engineering, alongside cybersecurity studies and labs.</p>
+  {roles.map(role=>(
+    <section>
+      <h2>{role.title}</h2>
+      <p class="opacity-75">{role.org} · {role.period}</p>
+      <p>{role.description}</p>
+    </section>
+  ))}
+  <h2>Projects and credentials</h2>
+  <p>Explore <a href="/ro/projects/">technical projects</a> and <a href="/ro/accreditations/">credentials</a> for supporting details.</p>
+  <h2>Request my CV</h2>
+  <p>A current CV is available on request rather than through an unprotected public download.</p>
+  <p><a class="clickable" href="/ro/contact/">Request CV</a> · <a class="clickable" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/liviubucel/">LinkedIn</a></p>
+</PageLayout>
