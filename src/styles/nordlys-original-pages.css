@@ -97,3 +97,15 @@
 @media(prefers-reduced-motion:reduce){
   .nordlys-upstream-back a,.nordlys-upstream-project-links a,.nordlys-upstream-external {transition:none;}
 }
+
+/* Nordlys PostLayout: desktop TOC floats to the left of the reading column
+   at 2xl widths; tablet/mobile use the original collapsible inline panel. */
+@media(min-width:1536px){
+  .nordlys-upstream-postdetail .nordlys-article-toc{
+    position:fixed;left:max(12px,calc(50% - 700px));top:96px;width:245px;
+    max-height:calc(100vh - 120px);overflow:auto;z-index:3;
+    border-right:1px solid var(--n-line);border-top:0;border-bottom:0;border-left:0;
+    border-radius:0;padding:0 16px 0 0;opacity:.75;transition:opacity .5s ease-in-out;
+  }
+  .nordlys-upstream-postdetail .nordlys-article-toc:hover{opacity:1;}
+}
