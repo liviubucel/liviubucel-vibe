@@ -1,6 +1,5 @@
 ---
 import logo from '@/assets/logo.svg'
-import { Image } from 'astro:assets'
 
 export interface Props {
   frontmatter: Partial<{
@@ -31,10 +30,12 @@ const { background, logo: showLogo } = Astro.props.frontmatter
       transition:name="branding"
     >
       {showLogo && (
-        <Image
+        <img
           loading="eager"
           alt="Nordlys logo, simplified northern lights aurora visualization"
-          src={logo}
+          src={logo.src}
+          width={logo.width}
+          height={logo.height}
           class="h-12 w-fit object-scale-down sm:h-24"
         />
       )}

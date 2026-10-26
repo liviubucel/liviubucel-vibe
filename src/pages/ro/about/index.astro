@@ -1,7 +1,7 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
 import logo from '@/assets/logo.svg';
-import {Image} from 'astro:assets';
+
 const frontmatter={title:'Despre',description:'Despre Liviu Bucel și activitatea în securitate cibernetică',activeHeaderLink:'About'};
 ---
 <PageLayout {frontmatter}>
@@ -11,7 +11,7 @@ const frontmatter={title:'Despre',description:'Despre Liviu Bucel și activitate
   <div class="mt-16 flex items-center justify-center">
     <div class="relative w-1/3 md:w-1/6">
       <span class="bg-accent/90 absolute inset-0 -z-10 rounded-full blur-3xl"/>
-      <Image src={logo} class="mt-0 mb-0 h-auto w-full" alt="Emblema Liviu Bucel" loading="eager"/>
+      <img src={logo.src} width={logo.width} height={logo.height} class="mt-0 mb-0 h-auto w-full" alt="Emblema Liviu Bucel" loading="eager"/>
     </div>
   </div>
   <h2>Ce găsești aici</h2>
