@@ -53,7 +53,7 @@ const postLink=(p:NativeBlogPost)=>'/ro/blog/'+encodeURIComponent(p.slug||p._id|
 const frontmatter={
   title:post?.title||(unavailable?'Blog unavailable':'Article not found'),
   author:'Liviu Bucel',
-  description:post?.excerpt||'Cybersecurity articles by Liviu Bucel',
+  description:post?.excerpt||'Cybersecurity articles de Liviu Bucel',
   activeHeaderLink:'Blog',
   scrollProgress:!!post,
   publishedDate:validDate,

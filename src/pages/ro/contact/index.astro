@@ -5,19 +5,19 @@ const frontmatter={title:'Contact',description:'Contact Liviu Bucel for authoris
 <PageLayout {frontmatter}>
   <h1>Contact</h1>
   <p>Pentru proiecte de securitate cibernetică, oportunități profesionale și colaborări.</p>
-  <form id="nordlys-contact" class="flex flex-col gap-4" aria-label="Contact form">
-    <label class="flex flex-col gap-2">Name <input required name="name" autocomplete="name" minlength="2" maxlength="120" class="border-accent rounded-sm border p-3 bg-transparent" /></label>
+  <form id="nordlys-contact" class="flex flex-col gap-4" aria-label="Formular de contact">
+    <label class="flex flex-col gap-2">Nume <input required name="name" autocomplete="name" minlength="2" maxlength="120" class="border-accent rounded-sm border p-3 bg-transparent" /></label>
     <label class="flex flex-col gap-2">Email <input required name="email" type="email" autocomplete="email" maxlength="254" class="border-accent rounded-sm border p-3 bg-transparent" /></label>
-    <label class="flex flex-col gap-2">Subject <input required name="subject" minlength="3" maxlength="180" class="border-accent rounded-sm border p-3 bg-transparent" /></label>
-    <label class="flex flex-col gap-2">Message <textarea required name="message" minlength="10" maxlength="6000" rows="7" class="border-accent rounded-sm border p-3 bg-transparent"></textarea></label>
+    <label class="flex flex-col gap-2">Subiect <input required name="subject" minlength="3" maxlength="180" class="border-accent rounded-sm border p-3 bg-transparent" /></label>
+    <label class="flex flex-col gap-2">Mesaj <textarea required name="message" minlength="10" maxlength="6000" rows="7" class="border-accent rounded-sm border p-3 bg-transparent"></textarea></label>
     <div class="hidden" aria-hidden="true"><label>Website <input type="text" name="website" autocomplete="off" tabindex="-1" /></label></div>
-    <p class="text-sm opacity-75">Messages are processed through Wix Forms as described in the <a href="/ro/privacy/">privacy policy</a>.</p>
-    <button type="submit" class="clickable self-start rounded-sm border p-3">Send message</button>
+    <p class="text-sm opacity-75">Datele din mesaje sunt prelucrate prin Wix Forms conform <a href="/ro/privacy/">politicii de confidențialitate</a>.</p>
+    <button type="submit" class="clickable self-start rounded-sm border p-3">Trimite mesajul</button>
     <p id="nordlys-contact-result" role="status" aria-live="polite"></p>
   </form>
   <h2>Alte metode de contact</h2>
   <p><a href="mailto:contact@liviubucel.com">contact@liviubucel.com</a> · <a href="https://www.linkedin.com/in/liviubucel/" rel="noopener noreferrer" target="_blank">LinkedIn</a></p>
-  <p>Pentru CV, folosește subiectul “CV Request”.</p>
+  <p>Pentru CV, folosește subiectul „Solicitare CV”.</p>
 </PageLayout>
 <script>
   function bindContact(){
@@ -30,17 +30,17 @@ const frontmatter={title:'Contact',description:'Contact Liviu Bucel for authoris
       event.preventDefault();
       if(!form.reportValidity()||!button)return;
       button.disabled=true;
-      button.textContent='Sending…';
+      button.textContent='Se trimite…';
       if(result)result.textContent='';
       try{
         const data=Object.fromEntries(new FormData(form).entries());
         const response=await fetch('/api/contact',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(data)});
         if(!response.ok)throw new Error('Submission unavailable');
         form.reset();
-        if(result)result.textContent='Message sent. Thank you!';
+        if(result)result.textContent='Mesajul a fost trimis. Mulțumesc!';
       }catch{
-        if(result)result.textContent='Message could not be sent. Please email contact@liviubucel.com instead.';
-      }finally{button.disabled=false;button.textContent='Send message'}
+        if(result)result.textContent='Mesajul nu a putut fi trimis. Scrie direct la contact@liviubucel.com.';
+      }finally{button.disabled=false;button.textContent='Trimite mesajul'}
     });
   }
   document.addEventListener('astro:page-load',bindContact);

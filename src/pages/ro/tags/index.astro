@@ -40,6 +40,7 @@ const frontmatter={title:'Etichete',activeHeaderLink:'Tags'};
 ---
 <PageLayout {frontmatter}>
   <h1>Etichete</h1>
+  <p>Explorează articole și proiecte după subiect. Sunt afișate doar etichete din Wix Blog și tehnologii asociate proiectelor reale.</p>
   {!available&&<p role="alert">Tags are temporarily unavailable.</p>}
   <div class="flex flex-wrap justify-between gap-4 sm:gap-8">
     {native.map(({slug,label,count})=>(

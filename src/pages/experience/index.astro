@@ -1,25 +1,20 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
-const frontmatter={title:'Resume & experience',description:'Liviu Bucel professional experience and cybersecurity learning',activeHeaderLink:'Resume'};
-const roles=[
-  {title:'Technical Support Specialist',org:'ZebraByte',period:'April 2022 – January 2024 · United Kingdom',description:'Web hosting support, cPanel, DNS, email troubleshooting, SSL certificate renewals, WordPress connectivity and Cloudflare protection basics.'},
-  {title:'IT Technician',org:'Intact Media Group',period:'November 2019 – September 2020 · Bucharest, Romania',description:'Level 1 IT support in a media environment: workstations, Windows applications, email, networks and escalation of infrastructure issues.'},
-  {title:'Practical cybersecurity labs and projects',org:'Independent practice and learning',period:'Ongoing',description:'Defensive threat-analysis simulations, security-awareness training, Python and security labs covering Linux, Windows, enumeration, incident response and network security.'}
-];
+import ToC from '@/components/ToC.astro';
+const frontmatter={title:"Resume & experience",description:"My path combines IT support and web infrastructure with a developing specialisation in cybersecurity, digital investigation and security operations.",activeHeaderLink:'Resume',scrollProgress:true};
+const headings=[{"depth": 2, "slug": "education", "text": "Education"}, {"depth": 2, "slug": "experience", "text": "Professional experience"}, {"depth": 2, "slug": "hands-on", "text": "Hands-on security work"}, {"depth": 2, "slug": "skills", "text": "Technical skills"}, {"depth": 2, "slug": "learning", "text": "Learning and credentials"}, {"depth": 2, "slug": "cv", "text": "CV and contact"}];
 ---
 <PageLayout {frontmatter}>
-  <h1>Resume &amp; experience</h1>
-  <p>Practical background in IT support, web infrastructure and security engineering, alongside cybersecurity studies and labs.</p>
-  {roles.map(role=>(
-    <section>
-      <h2>{role.title}</h2>
-      <p class="opacity-75">{role.org} · {role.period}</p>
-      <p>{role.description}</p>
-    </section>
-  ))}
-  <h2>Projects and credentials</h2>
-  <p>Explore <a href="/projects/">technical projects</a> and <a href="/accreditations/">credentials</a> for supporting details.</p>
-  <h2>Request my CV</h2>
-  <p>A current CV is available on request rather than through an unprotected public download.</p>
-  <p><a class="clickable" href="/contact/">Request CV</a> · <a class="clickable" target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/liviubucel/">LinkedIn</a></p>
+  <div slot="aside" class="border-accent mt-24 hidden border-r pr-4 opacity-75 transition duration-500 ease-in-out hover:opacity-100 2xl:block"><ToC {headings} open /></div>
+  <h1>Resume & experience</h1>
+  <p>My path combines IT support and web infrastructure with a developing specialisation in cybersecurity, digital investigation and security operations.</p>
+  <div class="mt-6 w-fit rounded-sm border 2xl:hidden"><ToC {headings}/></div>
+  <article>
+    <section id="resume-education"><h2 id="education">Education</h2><p><strong>BSc (Hons) Cyber Security</strong> — De Montfort University, Leicester, UK</p><p>2024–2027 (expected). Coursework and practical work include network security, authorised security testing, incident analysis, digital forensics, and cyber-physical systems security.</p></section>
+    <section id="resume-experience"><h2 id="experience">Professional experience</h2><h3>ZebraByte — web infrastructure and technical support</h3><p class="opacity-75">April 2022 – January 2024 · United Kingdom</p><p>Supported website infrastructure, DNS records, TLS certificates, hosting and email delivery. Worked with cPanel, WordPress, Cloudflare and practical troubleshooting, including configuration reviews and protective controls.</p><h3>Intact Media Group — IT Technician</h3><p class="opacity-75">November 2019 – September 2020 · Bucharest, Romania</p><p>First-line IT support for Windows workstations, office applications, connectivity, email and escalation of infrastructure issues in an operational media environment.</p></section>
+    <section id="resume-hands-on"><h2 id="hands-on">Hands-on security work</h2><p><strong>Application testing:</strong> controlled labs with Burp Suite, OWASP methodology, Nmap and web application assessment.</p><p><strong>Network investigation:</strong> capturing and interpreting network traffic in Wireshark, exploring how protocol behaviour can reveal misconfiguration or suspicious activity.</p><p><strong>Cloud and web protection:</strong> configuration work involving DNS, TLS, Cloudflare WAF, rate limiting, headers and access security.</p><p><strong>Security engineering:</strong> Linux/Windows environments, TypeScript/Python/Bash scripting and security-focused software projects documented in <a href="/projects/">Projects</a>.</p></section>
+    <section id="resume-skills"><h2 id="skills">Technical skills</h2><p><strong>Security:</strong> vulnerability assessment, incident response fundamentals, evidence preservation, threat analysis and log interpretation.</p><p><strong>Networking:</strong> DNS, TCP/IP, TLS/HTTPS, routing fundamentals, firewall policy and traffic analysis.</p><p><strong>Platforms:</strong> Linux, Windows, Cloudflare, hosting control panels, GitHub and cloud-deployed applications.</p><p><strong>Tools:</strong> Nmap, Wireshark, Burp Suite, Kali Linux, Python and Bash. Explore <a href="/tools/">how I use each tool</a>.</p></section>
+    <section id="resume-learning"><h2 id="learning">Learning and credentials</h2><p>I develop my skills through De Montfort University coursework, cybersecurity labs and continuing practical study. <a href="/accreditations/">Credentials and learning</a> lists recorded activities and credentials separately; certifications in progress are not presented as completed.</p></section>
+    <section id="resume-cv"><h2 id="cv">CV and contact</h2><p>A current CV is available on request. For technical opportunities, authorised collaborations and professional enquiries, <a href="/contact/">get in touch</a> or connect with me on <a href="https://www.linkedin.com/in/liviubucel/" target="_blank" rel="noopener noreferrer">LinkedIn</a>.</p></section>
+  </article>
 </PageLayout>

@@ -1,0 +1,17 @@
+---
+const path=Astro.url.pathname;
+const romanian=path==='/ro'||path.startsWith('/ro/');
+const normalized=romanian?(path.slice(3)||'/'):path;
+const other=romanian?normalized:'/ro'+(normalized==='/'?'/':normalized);
+---
+<details class="relative text-base" id="locale-switch">
+  <summary class="clickable flex cursor-pointer list-none items-center gap-1" aria-label={romanian?'Alege limba':'Choose language'} title={romanian?'Alege limba':'Choose language'}>
+    <span class="iconify tabler--world text-2xl" aria-hidden="true"></span>
+    <span class="text-sm">{romanian?'RO':'EN'}</span>
+    <span class="iconify tabler--chevron-down text-sm" aria-hidden="true"></span>
+  </summary>
+  <div class="absolute right-0 bottom-full z-30 mb-2 min-w-32 rounded-sm border border-current/20 bg-accent-bg p-3 shadow-lg">
+    <a class="clickable block py-1" href={romanian?other:normalized} lang="en" hreflang="en" aria-current={!romanian?'page':undefined}>English</a>
+    <a class="clickable block py-1" href={romanian?path:other} lang="ro" hreflang="ro" aria-current={romanian?'page':undefined}>Română</a>
+  </div>
+</details>

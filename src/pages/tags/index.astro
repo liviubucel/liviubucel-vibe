@@ -40,6 +40,7 @@ const frontmatter={title:'Tags',activeHeaderLink:'Tags'};
 ---
 <PageLayout {frontmatter}>
   <h1>Tags</h1>
+  <p>Browse technical articles and projects by topic. Only published Wix Blog tags and real project technologies are listed here.</p>
   {!available&&<p role="alert">Tags are temporarily unavailable.</p>}
   <div class="flex flex-wrap justify-between gap-4 sm:gap-8">
     {native.map(({slug,label,count})=>(

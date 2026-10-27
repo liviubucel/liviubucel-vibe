@@ -1,5 +1,5 @@
 ---
-import logo from '@/assets/logo.svg'
+const logoUrl = 'https://static.wixstatic.com/media/a4f45c_7fb5025a965f4edf813cf097cb85783e~mv2.png'
 import Dropdown from '@/components/Dropdown.astro'
 import HeaderItem from '@/components/layout/HeaderItem.astro'
 import MobileNavToggle from '@/components/layout/MobileNavToggle.astro'
@@ -40,9 +40,11 @@ const localizedNavbarItems = config.navbarItems.map((item) =>
       transition:name="branding"
     >
       <img
-        alt="Nordlys logo, simplified northern lights aurora visualization"
-        src={logo.src}
+        alt="Liviu Bucel original LB logo"
+        src={logoUrl}
         width={24}
+        height={26}
+        class="h-6 w-6 object-contain dark:invert"
         height={24}
         loading="eager"
       />

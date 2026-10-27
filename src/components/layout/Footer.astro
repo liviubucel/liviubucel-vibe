@@ -2,6 +2,7 @@
 import FooterItem from '@/components/layout/FooterItem.astro'
 import Separator from '@/components/layout/Separator.astro'
 import config from '@/theme.config'
+import LocaleSwitch from '@/components/layout/LocaleSwitch.astro'
 
 const currentYear = new Date().getFullYear()
 ---
@@ -17,5 +18,6 @@ const currentYear = new Date().getFullYear()
     {config.footerItems.map((item) => (
       <FooterItem {item} />
     ))}
+    <LocaleSwitch />
   </div>
 </footer>

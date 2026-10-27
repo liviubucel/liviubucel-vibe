@@ -2,6 +2,7 @@
 /** Original Nordlys ProjectsList / ProjectsListItem, with native Wix Portfolio data. */
 import PageLayout from '@/layouts/PageLayout.astro';
 import ProjectsList from '@/components/projects/ProjectsList.astro';
+import {projectStories} from '@/lib/project-stories';
 import Pagination from '@/components/Pagination.astro';
 import {getNativeProjects,projectTechnologies} from '@/lib/wix-portfolio';
 import type {CollectionEntry} from 'astro:content';
@@ -20,7 +21,7 @@ const entries=visible.map(p=>({
     title:p.title||'Untitled',
     url:'/projects/'+encodeURIComponent(p.slug||p._id||p.id||'')+'/',
     tags:(projectTechnologies(p)||'').split(',').map(x=>x.trim()).filter(Boolean),
-    previewImage:undefined,
+    previewImage:projectStories[p.slug||'']?.screenshot,
     wixDescription:p.description||''
   }
 })) as unknown as CollectionEntry<'projects'>[];

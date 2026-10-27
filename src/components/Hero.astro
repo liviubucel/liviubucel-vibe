@@ -1,5 +1,5 @@
 ---
-import logo from '@/assets/logo.svg'
+const logoUrl = 'https://static.wixstatic.com/media/a4f45c_7fb5025a965f4edf813cf097cb85783e~mv2.png'
 
 export interface Props {
   frontmatter: Partial<{
@@ -32,11 +32,11 @@ const { background, logo: showLogo } = Astro.props.frontmatter
       {showLogo && (
         <img
           loading="eager"
-          alt="Nordlys logo, simplified northern lights aurora visualization"
-          src={logo.src}
-          width={logo.width}
-          height={logo.height}
-          class="h-12 w-fit object-scale-down sm:h-24"
+          alt="Liviu Bucel original LB logo"
+          src={logoUrl}
+          width={182}
+          height={195}
+          class="h-12 w-12 shrink-0 object-contain dark:invert sm:h-24 sm:w-24"
         />
       )}
       <h1>

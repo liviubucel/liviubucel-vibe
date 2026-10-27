@@ -1,22 +1,22 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
-const frontmatter={title:'Services',description:'Authorised cybersecurity assessments and advisory services',activeHeaderLink:'Services'};
-const services=[
-  {title:'Security assessments',detail:'Scope-based reviews of exposed services, web applications, authentication and secure configuration. No testing without written authorisation.'},
-  {title:'DNS, TLS and Cloudflare hardening',detail:'Review of certificate lifecycles, DNS security, access policies, WAF settings and secure web infrastructure.'},
-  {title:'Vulnerability review',detail:'Assess the relevance of publicly reported vulnerabilities and prioritise realistic remediation.'},
-  {title:'Incident triage and defensive guidance',detail:'Initial technical assessment, evidence-preservation guidance, containment planning and escalation recommendations.'}
-];
+const frontmatter={title:"Servicii profesionale",description:"Asistență practică pentru securitate cibernetică și infrastructură web, cu obiective clare, autorizare scrisă și rezultate documentate.",activeHeaderLink:'Services'};
 ---
 <PageLayout {frontmatter}>
-  <h1>Servicii</h1>
-  <p>Cybersecurity assistance and security reviews within a written, authorised scope.</p>
-  {services.map(service=>(
-    <section>
-      <h2>{service.title}</h2>
-      <p>{service.detail}</p>
-    </section>
-  ))}
-  <p>Active testing requires system-owner authorisation and an agreed written scope.</p>
-  <p><a class="clickable" href="/ro/contact/">Discuss a project</a> · <a class="clickable" href="/ro/projects/">View projects</a></p>
+  <h1>Servicii profesionale</h1>
+  <p>Asistență practică pentru securitate cibernetică și infrastructură web, cu obiective clare, autorizare scrisă și rezultate documentate.</p>
+  <h2>Cu ce te pot ajuta</h2>
+    <section id="scoped-security"><h3>Evaluări de securitate</h3><p class="font-medium">Verificări autorizate ale aplicațiilor web, autentificării și serviciilor expuse public.</p><p>Stabilirea domeniului de testare și a regulilor; analiza configurării și vulnerabilităților; evaluarea riscului și recomandări de remediere prioritizate.</p></section>
+  <section id="cloudflare-managed"><h3>Cloudflare Managed</h3><p class="font-medium">Configurare, administrare și optimizare continuă Cloudflare pentru site-uri, domenii și API-uri.</p><p>DNS și DNSSEC; SSL/TLS și antete de securitate; reguli WAF; protecție bot și rate limiting; optimizare CDN/cache; monitorizare și revizuirea configurației. Funcționalitățile depind de planul Cloudflare și de serviciile contractate.</p></section>
+  <section id="hosting"><h3>Securizarea site-urilor și hostingului</h3><p class="font-medium">Măsuri tehnice pentru infrastructuri web, găzduire și email.</p><p>DNS, certificate digitale, antete HTTP, restricționarea originului, politici de acces, actualizări, backup și depanare.</p></section>
+  <section id="vulnerability"><h3>Analiza vulnerabilităților</h3><p class="font-medium">Transformarea alertelor și vulnerabilităților raportate într-un plan de acțiune.</p><p>Verificarea relevanței în scopul aprobat, evaluarea impactului, prioritizarea corecțiilor și validarea remedierii.</p></section>
+  <section id="incident"><h3>Evaluare inițială a incidentelor</h3><p class="font-medium">Asistență defensivă inițială când există suspiciunea compromiterii unui site ori serviciu.</p><p>Recomandări de izolare, păstrarea probelor, analiza indicatorilor disponibili și planificarea etapelor de investigație ori recuperare.</p></section>
+  <h2>Cum lucrăm</h2>
+    <section><h3>01 — Definire</h3><p>Stabilim sistemele vizate, obiectivele, accesul și autorizarea explicită.</p></section>
+  <section><h3>02 — Analiză</h3><p>Documentăm configurația și verificăm observațiile, fără presupuneri neconfirmate.</p></section>
+  <section><h3>03 — Remediere</h3><p>Aplicăm modificări aprobate sau întocmim recomandări tehnice concrete.</p></section>
+  <section><h3>04 — Verificare</h3><p>Validăm rezultatul și documentăm configurația predată.</p></section>
+  <p class="text-sm opacity-75">Servicii independente; nu reprezintă o ofertă oficială Cloudflare Professional Services și nu implică o certificare Cloudflare.</p>
+  <p class="font-medium">Testarea activă se face exclusiv cu acord scris și domeniu definit.</p>
+  <p><a class="clickable" href="/ro/contact/">Discută proiectul</a> · <a class="clickable" href="/ro/projects/">Vezi proiectele</a></p>
 </PageLayout>

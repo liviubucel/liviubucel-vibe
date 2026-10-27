@@ -7,7 +7,8 @@ import BaseLayout, {
   type Props as BaseLayoutProps
 } from '@/layouts/BaseLayout.astro'
 import config from '@/theme.config'
-import { getPosts } from '@/util/posts'
+import { posts } from '@wix/blog'
+import LocaleSwitch from '@/components/layout/LocaleSwitch.astro'
 
 export type Props = BaseLayoutProps &
   HeroProps & {
@@ -16,7 +17,14 @@ export type Props = BaseLayoutProps &
 
 const { frontmatter } = Astro.props
 
-const latestPost = frontmatter.showLatestPost ? (await getPosts())[0] : undefined
+let latestPost: {title?:string;slug?:string;excerpt?:string}|undefined;
+if(frontmatter.showLatestPost){
+  try{
+    const fetched=await posts.listPosts({paging:{limit:30}});
+    latestPost=[...(fetched.posts||[])].sort((a,b)=>new Date(b.firstPublishedDate||0).valueOf()-new Date(a.firstPublishedDate||0).valueOf())[0];
+  }catch(error){console.error('[nordlys-home-latest]',error instanceof Error?error.message:'Wix Blog unavailable')}
+}
+const ro=Astro.url.pathname==='/ro'||Astro.url.pathname.startsWith('/ro/');
 ---
 
 <BaseLayout frontmatter={frontmatter}>
@@ -32,8 +40,8 @@ const latestPost = frontmatter.showLatestPost ? (await getPosts())[0] : undefine
           {latestPost && frontmatter.showLatestPost && (
             <div class="mt-8">
               <span class="text-2xl sm:text-3xl">
-                Read my latest post{' '}
-                <a href={`/posts/${latestPost.id}/`}>{latestPost.data.title}</a>
+                {ro?'Ultimul articol: ':'Latest article: '}
+                <a href={(ro?'/ro':'')+'/blog/'+encodeURIComponent(latestPost.slug||'')+'/'}>{latestPost.title}</a>
               </span>
             </div>
           )}
@@ -48,6 +56,7 @@ const latestPost = frontmatter.showLatestPost ? (await getPosts())[0] : undefine
 
           <div class="grow"></div>
 
+          <LocaleSwitch />
           {config.modeToggle && <ModeToggle />}
         </div>
       </footer>

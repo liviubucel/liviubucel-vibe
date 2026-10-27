@@ -1,28 +1,31 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
-import logo from '@/assets/logo.svg';
-
-const frontmatter={title:'Despre',description:'Despre Liviu Bucel și activitatea în securitate cibernetică',activeHeaderLink:'About'};
+const portrait='https://static.wixstatic.com/media/a4f45c_3af2a1300a6d440191dfab00029b44c3~mv2.jpg';
+const frontmatter={title:'Despre mine',description:'Liviu Bucel — studii în securitate cibernetică, proiecte tehnice și investigații digitale',activeHeaderLink:'About'};
 ---
 <PageLayout {frontmatter}>
   <h1>Despre mine</h1>
-  <p>Sunt Liviu Bucel și mă concentrez pe securitatea cibernetică, analiza vulnerabilităților și investigații digitale.</p>
-  <p>Acest site reunește proiectele mele, articolele tehnice și experiența profesională. Îmi place să înțeleg cum funcționează tehnologia, de ce apar problemele de securitate și cum pot fi reduse riscurile.</p>
-  <div class="mt-16 flex items-center justify-center">
-    <div class="relative w-1/3 md:w-1/6">
-      <span class="bg-accent/90 absolute inset-0 -z-10 rounded-full blur-3xl"/>
-      <img src={logo.src} width={logo.width} height={logo.height} class="mt-0 mb-0 h-auto w-full" alt="Emblema Liviu Bucel" loading="eager"/>
-    </div>
-  </div>
-  <h2>Ce găsești aici</h2>
-  <p>Poți citi <a href="/ro/blog/">articolele</a>, explora <a href="/ro/projects/">proiectele</a>, consulta <a href="/ro/experience/">CV-ul și experiența mea</a> și <a href="/ro/tools/">instrumentele</a> utilizate în activitatea tehnică.</p>
-  <h2>Domenii de interes</h2>
-  <ul>
-    <li>Testare de securitate autorizată și analiză a suprafeței de atac</li>
-    <li>Investigații digitale și răspuns la incidente</li>
-    <li>Threat intelligence și cercetarea vulnerabilităților</li>
-    <li>Securitatea rețelelor, DNS, TLS și cloud</li>
-  </ul>
-  <h2>Colaborări</h2>
-  <p>Pentru colaborări profesionale, consultă <a href="/ro/services/">serviciile</a> sau <a href="/ro/contact/">contactează-mă</a>. Îmi poți vedea și <a href="/ro/accreditations/">certificările și pregătirea</a>.</p>
+  <img src={portrait} width="960" height="960" alt="Fotografie cu Liviu Bucel" loading="eager" class="float-right mb-5 ml-6 h-40 w-40 rounded-sm object-cover sm:h-56 sm:w-56" />
+  <p>Sunt Liviu Bucel și studiez securitatea cibernetică la <a href="https://www.dmu.ac.uk/" target="_blank" rel="noopener noreferrer">De Montfort University</a>, în Leicester, Regatul Unit. Mă interesează cum apar vulnerabilitățile, cum sunt detectate atacurile și cum putem investiga incidentele pe baza dovezilor tehnice.</p>
+  <p>Experiența mea combină suportul IT, infrastructura web și lucrul practic cu mecanisme de securitate. Prin <a href="https://www.zebrabyte.ro/" target="_blank" rel="noopener noreferrer">ZebraByte</a> dezvolt și administrez servicii tehnice, cu atenție la găzduire, DNS, TLS și securizare.</p>
+  <p>Acest site reflectă ceea ce construiesc, testez și învăț, nu doar o listă de tehnologii.</p>
+  <div class="clear-both"></div>
+
+  <h2>Direcțiile mele</h2>
+  <p><strong>Securitatea aplicațiilor.</strong> Analiza vulnerabilităților web, a autentificării și a configurărilor, cu testare autorizată și recomandări de remediere.</p>
+  <p><strong>Investigații defensive.</strong> Analiza traficului de rețea, a logurilor și a indicatorilor relevanți pentru răspunsul la incidente și criminalistica digitală.</p>
+  <p><strong>Infrastructură securizată.</strong> Linux, Windows, DNS, HTTPS/TLS, Cloudflare WAF, limitarea cererilor și protecția aplicațiilor web.</p>
+
+  <h2>Studii și practică</h2>
+  <p>Urmez BSc (Hons) Cyber Security la De Montfort University (2024–2027, absolvire estimată). În laboratoare lucrez cu evaluări de securitate autorizate, analiza traficului, răspuns la incidente și instrumente tehnice.</p>
+  <p>Folosesc Nmap, Wireshark, Burp Suite, Kali Linux și scripting pentru a înțelege comportamentul real al sistemelor. Exercițiile din laborator sunt prezentate ca exerciții, nu ca proiecte comerciale.</p>
+
+  <h2>Proiecte și articole</h2>
+  <p>În secțiunea <a href="/ro/projects/">Proiecte</a> explic ce am construit, ce tehnologii am folosit și ce problemă rezolvă fiecare aplicație. În <a href="/ro/blog/">Blog</a> public cercetări și analize tehnice.</p>
+
+  <h2>Experiență și colaborări</h2>
+  <p>Poți consulta <a href="/ro/experience/">CV-ul și experiența mea</a> sau <a href="/ro/tools/">instrumentele folosite</a>. Pentru evaluări de securitate autorizate, administrare Cloudflare ori colaborări tehnice, vezi <a href="/ro/services/">serviciile</a> și <a href="/ro/contact/">pagina de contact</a>.</p>
+
+  <h2>Profiluri</h2>
+  <p><a href="https://www.linkedin.com/in/liviubucel/" target="_blank" rel="noopener noreferrer">LinkedIn</a> · <a href="https://github.com/liviubucel" target="_blank" rel="noopener noreferrer">GitHub</a> · <a href="https://x.com/liviubucel" target="_blank" rel="noopener noreferrer">X</a></p>
 </PageLayout>

@@ -1,29 +1,32 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
-import logo from '@/assets/logo.svg';
-import { Image } from 'astro:assets';
-const frontmatter={title:'About',description:'About Liviu Bucel and cybersecurity work',activeHeaderLink:'About'};
+const portrait='https://static.wixstatic.com/media/a4f45c_3af2a1300a6d440191dfab00029b44c3~mv2.jpg';
+const frontmatter={title:'About',description:'Liviu Bucel — cybersecurity student, technical projects, infrastructure and digital investigations',activeHeaderLink:'About'};
 ---
 <PageLayout {frontmatter}>
-  <h1>About</h1>
-  <p>I'm Liviu Bucel. I focus on cybersecurity, vulnerability research and practical digital investigations.</p>
-  <p>This is my personal space for technical writing, projects and professional experience. I'm interested in how systems work, why vulnerabilities emerge, and how evidence-led security work can reduce real risks.</p>
-  <div class="mt-16 flex items-center justify-center">
-    <div class="relative w-1/3 md:w-1/6">
-      <span class="bg-accent/90 absolute inset-0 -z-10 rounded-full blur-3xl" />
-      <img src={logo.src} width={logo.width} height={logo.height} class="mt-0 mb-0 h-auto w-full" alt="Liviu Bucel aurora mark" loading="eager" />
-    </div>
-  </div>
-  <h2>Explore this website</h2>
-  <p>Read my <a href="/blog/">articles</a>, explore my <a href="/projects/">projects</a>, review my <a href="/experience/">resume and experience</a>, and explore the <a href="/tools/">tools</a> used in practical security work.</p>
-  <h2>Areas of focus</h2>
-  <ul>
-    <li>Authorised security testing and attack-surface analysis</li>
-    <li>Digital forensics and incident response</li>
-    <li>Threat intelligence and vulnerability research</li>
-    <li>Network, DNS, TLS and cloud security</li>
-  </ul>
-  <h2>Professional work</h2>
-  <p>For authorised security projects and professional enquiries, see my <a href="/services/">services</a> or <a href="/contact/">get in touch</a>.</p>
-  <p><a href="https://www.linkedin.com/in/liviubucel/" rel="noopener noreferrer" target="_blank">LinkedIn</a></p>
+  <h1>About me</h1>
+  <img src={portrait} width="960" height="960" alt="Portrait of Liviu Bucel" loading="eager" class="float-right mb-5 ml-6 h-40 w-40 rounded-sm object-cover sm:h-56 sm:w-56" />
+  <p>I'm Liviu Bucel, a cybersecurity student at <a href="https://www.dmu.ac.uk/" target="_blank" rel="noopener noreferrer">De Montfort University</a> in Leicester, UK. I study how systems fail, how attacks can be detected, and how to investigate incidents using technical evidence.</p>
+  <p>My background combines IT support, web infrastructure and hands-on security work. I also build and maintain technical services through <a href="https://www.zebrabyte.ro/" target="_blank" rel="noopener noreferrer">ZebraByte</a>, with a focus on reliable hosting, DNS, TLS and practical security hardening.</p>
+  <p>Here I publish what I am building, learning and testing — not just a list of technologies.</p>
+  <div class="clear-both"></div>
+
+  <h2>What I focus on</h2>
+  <p><strong>Application security.</strong> Understanding web vulnerabilities, authentication boundaries, misconfigurations and responsible remediation using tools such as Burp Suite and OWASP guidance.</p>
+  <p><strong>Defensive investigation.</strong> Analysing network traffic, interpreting logs and following the evidence through incident response and digital forensics exercises.</p>
+  <p><strong>Infrastructure security.</strong> Working with Linux, Windows, DNS, HTTPS/TLS, Cloudflare WAF, rate limiting and practical protection for production websites.</p>
+
+  <h2>Learning and hands-on practice</h2>
+  <p>I'm studying BSc (Hons) Cyber Security at De Montfort University (2024–2027 expected). My practical learning includes authorised security assessments, network analysis, incident-response exercises and security-focused technical labs.</p>
+  <p>I use Nmap, Wireshark, Burp Suite, Kali Linux and scripting to learn by investigating real system behaviour. Lab exercises are identified as exercises; I do not present them as client engagements or claim unearned qualifications.</p>
+
+  <h2>Projects and technical writing</h2>
+  <p>My <a href="/projects/">projects</a> include infrastructure tooling and security-focused applications. Each project page explains what the system does, the technologies involved and the practical problem it addresses. I document research and observations in the <a href="/blog/">blog</a>.</p>
+
+  <h2>Experience and collaboration</h2>
+  <p>Before specialising in cybersecurity, I worked with IT support and infrastructure in operational environments. You can see my <a href="/experience/">experience and resume</a> and the <a href="/tools/">tools I actually work with</a>.</p>
+  <p>For authorised security assessments, managed Cloudflare configuration or technical collaboration, see <a href="/services/">services</a> or <a href="/contact/">contact me</a>.</p>
+
+  <h2>Find me online</h2>
+  <p><a href="https://www.linkedin.com/in/liviubucel/" target="_blank" rel="noopener noreferrer">LinkedIn</a> · <a href="https://github.com/liviubucel" target="_blank" rel="noopener noreferrer">GitHub</a> · <a href="https://x.com/liviubucel" target="_blank" rel="noopener noreferrer">X</a></p>
 </PageLayout>

@@ -24,6 +24,7 @@ const PageDescription = undefined
   <link rel="stylesheet" href="/tools.css" />
 
   <h1>{frontmatter.title}</h1>
+  <p>Choose a tool to see how I use it in practical work, research and authorised labs.</p>
 
   {PageDescription && <PageDescription />}
 
@@ -51,6 +52,9 @@ const PageDescription = undefined
                 style={`--highlight-color: ${item.highlightColor}`}
                 class="group/item flex cursor-pointer flex-col items-center gap-2"
                 data-active="false"
+                aria-pressed="false"
+                title={item.description}
+                aria-label={item.title + String.fromCharCode(58,32) + item.description}
                 data-title={item.title}
                 data-icon={item.icon}
                 data-highlight-color={item.highlightColor}
@@ -126,6 +130,7 @@ const PageDescription = undefined
           if (isActive) return
 
           button.dataset.active = 'true'
+          button.setAttribute('aria-pressed','true')
 
           const details = this.getDetails()
 
@@ -174,7 +179,7 @@ const PageDescription = undefined
     }
 
     onClose() {
-      this.getButtons().forEach((button) => (button.dataset.active = 'false'))
+      this.getButtons().forEach((button) => {button.dataset.active = 'false';button.setAttribute('aria-pressed','false')})
     }
   }
 

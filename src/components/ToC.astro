@@ -15,6 +15,7 @@ export interface Props {
 }
 
 const { headings, open = false } = Astro.props
+const romanian=Astro.url.pathname==="/ro"||Astro.url.pathname.startsWith("/ro/")
 
 function appendHeading(headings: ProcessedHeading[], newHeading: Heading) {
   const previousHeading = headings[headings.length - 1]
@@ -50,10 +51,10 @@ function renderList(headings: ProcessedHeading[]): string {
 
 <div class="overflow-x-hidden p-4">
   <Prose>
-    <h2 class="no-anchor mb-2">Table of Contents</h2>
+    <h2 class="no-anchor mb-2">{romanian ? 'Cuprins' : 'Table of Contents'}</h2>
 
     <details {open}>
-      <summary>Show more</summary>
+      <summary>{romanian ? 'Arată secțiunile' : 'Show more'}</summary>
       <Fragment set:html={renderList(processedHeadings)} />
     </details>
   </Prose>
