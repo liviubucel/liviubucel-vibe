@@ -1,0 +1,118 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import {serviceOfferings,type Locale,type ServiceOffering} from '@/lib/professional-services';
+import {getServiceMedia} from '@/lib/service-media';
+interface Props{locale:Locale;entry?:ServiceOffering}
+const {locale,entry}=Astro.props;
+const ro=locale==='ro';
+const prefix=ro?'/ro':'';
+const info=entry?.[locale];
+const visual=entry?getServiceMedia(entry.slug):undefined;
+if(!entry) Astro.response.status=404;
+const contact=prefix+'/contact/?service='+encodeURIComponent(entry?.slug||'');
+const next=serviceOfferings.filter(s=>s.slug!==entry?.slug).slice(0,3);
+const frontmatter={title:info?.name||'Service not found',description:info?.lead||'',activeHeaderLink:'Services',wide:true};
+---
+<PageLayout {frontmatter}>
+  <div class="not-prose">
+    <a class="clickable my-7 inline-flex items-center gap-2 text-sm" href={prefix+'/services/'}><span class="iconify tabler--arrow-left text-lg" aria-hidden="true"></span>{ro?'Toate serviciile':'All services'}</a>
+    {entry&&info?(
+      <>
+      <section class="border-b border-current/20 pb-10 sm:pb-14">
+        <div class="grid items-center gap-8 lg:grid-cols-[1.45fr_0.85fr] lg:gap-12">
+          <div>
+            <div class="mb-6 flex items-center gap-3">
+              <span class="flex h-12 w-12 items-center justify-center rounded-sm border border-current/25">
+                <span class={'iconify '+entry.icon+' text-3xl'} aria-hidden="true"></span>
+              </span>
+              <span class="text-xs font-semibold uppercase tracking-[0.12em] opacity-70">{ro?'SERVICII / CONSULTANȚĂ':'SERVICES / CONSULTING'}</span>
+            </div>
+            <h1 class="max-w-[21ch] text-4xl font-bold leading-tight tracking-tight sm:text-5xl">{info.name}</h1>
+            <p class="mt-6 max-w-2xl text-lg leading-relaxed opacity-80">{info.lead}</p>
+            <div class="mt-8 flex flex-wrap items-center gap-3">
+              <a href={contact} class="inline-flex items-center gap-2 rounded-sm bg-accent px-5 py-3 font-semibold text-accent-bg no-underline transition duration-300 hover:opacity-75">
+                {ro?'Solicită o consultație':'Request a consultation'}
+                <span class="iconify tabler--arrow-up-right text-xl" aria-hidden="true"></span>
+              </a>
+              <a href={prefix+'/projects/'} class="clickable inline-flex items-center gap-2 rounded-sm border border-current/35 px-5 py-3 no-underline">
+                {ro?'Vezi proiectele':'Explore projects'} <span class="iconify tabler--arrow-right" aria-hidden="true"></span>
+              </a>
+            </div>
+            <p class="mt-5 text-sm opacity-60">{ro?'Scop și ofertă stabilite individual. Fără prețuri sau rezultate promise înainte de evaluare.':'Scope and proposal agreed individually. No promised outcome before the initial review.'}</p>
+          </div>
+          <div class="rounded-sm border border-current/20 p-6 sm:p-8">
+            <p class="text-xs font-semibold uppercase tracking-wider opacity-60">{ro?'REZUMATUL SERVICIULUI':'AT A GLANCE'}</p>
+            <h2 class="mt-5 text-xl font-semibold">{ro?'Pentru cine este potrivit':'Who it is for'}</h2>
+            <ul class="mt-5 space-y-4">
+              {info.forWhom.map(x=><li class="flex items-start gap-3 text-base"><span class="iconify tabler--check mt-0.5 shrink-0 text-xl opacity-70" aria-hidden="true"></span><span>{x}</span></li>)}
+            </ul>
+            <p class="mt-7 border-t border-current/20 pt-5 text-sm leading-relaxed opacity-70">{ro?'Evaluare inițială → scop definit → execuție aprobată → rezultate documentate':'Initial review → agreed scope → authorised work → documented outcomes'}</p>
+          </div>
+        </div>
+      </section>
+
+      {visual&&<figure class="my-8 sm:my-12">
+        <img src={visual.url} alt={visual.alt[locale]} width="1400" height="933"
+          class:list={['w-full rounded-sm border border-current/20',visual.kind==='public-site'?'max-h-[450px] object-contain':'aspect-[16/8] max-h-[450px] object-cover']}
+          loading="lazy" decoding="async" />
+        <figcaption class="mt-2 text-sm opacity-65">{visual.caption[locale]}</figcaption>
+      </figure>}
+
+      <section class="grid gap-8 border-b border-current/20 py-12 sm:py-16 lg:grid-cols-[0.65fr_1fr] lg:gap-16">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest opacity-60">{ro?'DESPRE SERVICIU':'THE SERVICE'}</p>
+          <h2 class="mt-3 text-3xl font-semibold tracking-tight">{ro?'Ce rezolvăm':'What this addresses'}</h2>
+        </div>
+        <p class="max-w-2xl text-lg leading-relaxed opacity-80">{info.introduction}</p>
+      </section>
+
+      <section class="border-b border-current/20 py-12 sm:py-16">
+        <div class="mb-8 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div><p class="text-xs font-semibold uppercase tracking-widest opacity-60">{ro?'LIVRABILE':'DELIVERABLES'}</p>
+            <h2 class="mt-3 text-3xl font-semibold tracking-tight">{ro?'Ce primești':'What is included'}</h2>
+          </div>
+          <p class="max-w-sm text-sm leading-relaxed opacity-65">{ro?'Conținutul final se adaptează infrastructurii și scopului convenit.':'The final scope is tailored to your environment and agreed requirements.'}</p>
+        </div>
+        <div class="grid gap-3 md:grid-cols-2">
+          {info.deliverables.map((x,i)=><div class="flex items-start gap-4 rounded-sm border border-current/20 p-5 transition duration-300 hover:border-current/55">
+            <span class="mt-0.5 text-sm font-semibold opacity-55">{String(i+1).padStart(2,'0')}</span>
+            <p class="text-base leading-relaxed">{x}</p>
+          </div>)}
+        </div>
+      </section>
+
+      <section class="border-b border-current/20 py-12 sm:py-16">
+        <p class="text-xs font-semibold uppercase tracking-widest opacity-60">{ro?'MOD DE LUCRU':'OUR APPROACH'}</p>
+        <h2 class="mt-3 text-3xl font-semibold tracking-tight">{ro?'Cum decurge colaborarea':'How we work together'}</h2>
+        <div class="mt-8 grid gap-4 sm:grid-cols-2">
+          {info.process.map((x,i)=><div class="border-t border-current/35 pt-5">
+            <p class="text-3xl font-semibold opacity-35">{String(i+1).padStart(2,'0')}</p>
+            <p class="mt-4 text-base leading-relaxed">{x}</p>
+          </div>)}
+        </div>
+      </section>
+
+      <section class="my-12 rounded-sm border border-current/25 p-7 sm:my-16 sm:p-10">
+        <div class="grid items-start gap-8 md:grid-cols-[1fr_auto]">
+          <div><p class="text-xs font-semibold uppercase tracking-widest opacity-60">{ro?'URMĂTORUL PAS':'NEXT STEP'}</p>
+            <h2 class="mt-3 text-3xl font-semibold tracking-tight">{ro?'Ai un proiect de discutat?':'Let’s discuss your project'}</h2>
+            <p class="mt-4 max-w-xl text-base leading-relaxed opacity-75">{ro?'Trimite o scurtă descriere a sistemului și a rezultatului dorit. Îți răspund cu întrebările necesare și pașii posibili.':'Describe the system and the outcome you need. I will reply with questions and practical next steps.'}</p>
+          </div>
+          <a href={contact} class="inline-flex shrink-0 items-center gap-2 rounded-sm bg-accent px-5 py-3 font-semibold text-accent-bg no-underline transition duration-300 hover:opacity-75">{ro?'Contactează-mă':'Get in touch'}<span class="iconify tabler--arrow-up-right text-xl" aria-hidden="true"></span></a>
+        </div>
+      </section>
+      <p class="mb-12 text-sm leading-relaxed opacity-65">{info.scopeNote}</p>
+
+      <section class="mb-14">
+        <h2 class="mb-6 text-2xl font-semibold">{ro?'Alte servicii':'Explore other services'}</h2>
+        <div class="grid gap-3 sm:grid-cols-3">
+          {next.map(service=><a href={prefix+'/services/'+service.slug+'/'} class="group flex items-start justify-between gap-3 rounded-sm border border-current/20 p-4 no-underline transition duration-300 hover:border-current/60">
+            <span class="text-base font-semibold">{service[locale].name}</span>
+            <span class="iconify tabler--arrow-up-right shrink-0 text-xl opacity-60 transition duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"></span>
+          </a>)}
+        </div>
+      </section>
+      </>
+    ):<h1>{ro?'Serviciu negăsit':'Service not found'}</h1>}
+  </div>
+</PageLayout>

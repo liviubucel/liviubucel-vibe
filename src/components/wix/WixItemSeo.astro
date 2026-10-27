@@ -1,0 +1,32 @@
+---
+/**
+ * Wix-managed SEO for dynamic Blog and Portfolio items.
+ * Wix SEO & GEO is the source of truth; no handwritten title/canonical/OG tags.
+ */
+import {SEO} from '@wix/seo/components';
+import {loadSEOTagsServiceConfig} from '@wix/seo/services';
+import {seoTags} from '@wix/seo';
+
+interface Props{
+  kind:'blog'|'portfolio';
+  slug:string;
+}
+const {kind,slug}=Astro.props;
+const forwarded=Astro.request.headers.get('x-wix-forwarded-url');
+const publicUrl=forwarded&&URL.canParse(forwarded)&&/^https?:$/.test(new URL(forwarded).protocol)
+  ? forwarded : Astro.url.href;
+const itemType=kind==='blog'?seoTags.ItemType.BLOG_POST:seoTags.ItemType.PORTFOLIO_PROJECTS;
+let config:Awaited<ReturnType<typeof loadSEOTagsServiceConfig>>|undefined;
+if(slug){
+  try{
+    config=await loadSEOTagsServiceConfig({
+      pageUrl:publicUrl,
+      itemType,
+      itemData:{slug}
+    });
+  }catch(error){
+    console.error('[wix-native-item-seo]',kind,slug,error instanceof Error?error.message:'Unavailable');
+  }
+}
+---
+{config&&<SEO.Tags seoTagsServiceConfig={config}/>}

@@ -1,0 +1,10 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import ContactExperience from '@/components/wix/ContactExperience.astro';
+const frontmatter={title:'Contact',description:'Contactează-l pe Liviu Bucel pentru proiecte de cybersecurity, Cloudflare Managed și consultații tehnice',activeHeaderLink:'Contact'};
+---
+<PageLayout {frontmatter}>
+  <h1>Contact</h1>
+  <p>Povestește-mi despre proiectul tău, problema tehnică sau oportunitatea de colaborare. Înainte de orice evaluare de securitate, stabilim un scop clar și realist.</p>
+  <ContactExperience locale="ro"/>
+</PageLayout>

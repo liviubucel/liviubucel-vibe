@@ -1,0 +1,16 @@
+---
+---
+
+<script>
+  document.addEventListener('astro:page-load', async () => {
+    const images = document.querySelectorAll<HTMLImageElement>(
+      'main#main img[data-action="zoom"]'
+    )
+
+    if (!images.length) return
+
+    const { createZoomableImage } = await import('./photoSwipePlugin')
+
+    images.forEach((image) => createZoomableImage(image))
+  })
+</script>

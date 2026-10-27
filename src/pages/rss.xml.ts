@@ -1,15 +1,21 @@
 import type {APIRoute} from 'astro';
 import {posts} from '@wix/blog';
+
 export const prerender=false;
 const esc=(v:string)=>v.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
-export const GET:APIRoute=async()=>{
+export const GET:APIRoute=async({request})=>{
   try{
     const response=await posts.listPosts({paging:{limit:100}});
     const entries=response.posts||[];
-    const base='https://www.liviubucel.com';
+    // Follow the actual Wix request origin, not the legacy Cloudflare site.
+    const forwarded=request.headers.get('x-wix-forwarded-url');
+    const requested=forwarded && URL.canParse(forwarded) ? new URL(forwarded) : new URL(request.url);
+    const configured=new URL('https://my-site-p444dlue-zebrabyte.wix-vibe-site.com');
+    const allowed=new Set(['my-site-p444dlue-zebrabyte.wix-vibe-site.com','www.liviubucel.com','liviubucel.com']);
+    const base=requested.protocol==='https:' && allowed.has(requested.hostname) ? requested.origin : configured.origin;
     const items=entries.slice(0,100).map(p=>{
       const title=esc(p.title||'Untitled');
-      const link=base+'/blog/'+encodeURIComponent(p.slug||p.id||p._id||'');
+      const link=base+'/blog/'+encodeURIComponent(p.slug||p.id||p._id||'')+'/';
       const description=esc(p.excerpt||'');
       const date=p.firstPublishedDate?new Date(p.firstPublishedDate).toUTCString():'';
       return '<item><title>'+title+'</title><link>'+esc(link)+'</link><guid>'+esc(link)+'</guid><description>'+description+'</description>'+(date?'<pubDate>'+date+'</pubDate>':'')+'</item>';

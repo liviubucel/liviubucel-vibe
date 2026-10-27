@@ -1,0 +1,105 @@
+---
+/**
+ * Native Nordlys-styled contact area.
+ * Form submits through the existing Wix Forms adapter.
+ * Bookings are read from the ACTUAL connected Wix Bookings service registry;
+ * never invent a calendar, availability, schedule or booking link.
+ */
+import {services} from '@wix/bookings';
+import {serviceOfferings,lookupService} from '@/lib/professional-services';
+export interface Props {locale:'en'|'ro'}
+const {locale}=Astro.props;
+const ro=locale==='ro';
+const search=Astro.url.searchParams.get('service')||'';
+const selected=lookupService(search);
+const initialSubject=selected?(ro?'Solicitare consultație: ':'Consultation enquiry: ')+selected[locale].name:'';
+type Bookable={id:string;name:string;url:string};
+let bookable:Bookable[]=[];
+try{
+ const response=await services.queryServices({paging:{limit:50}});
+ bookable=(response.services||[])
+   .filter(s=>!s.hidden&&s.onlineBooking?.enabled&&s.urls?.bookingPage)
+   .flatMap(s=>{
+     const name=s.name||'Wix consultation';
+     const target=s.urls?.bookingPage||'';
+     try{const url=new URL(target);if(url.protocol!=='https:')return [];return [{id:s._id||name,name,url:url.href}]}catch{return []}
+   });
+}catch(e){
+ console.error('[liviu-wix-bookings] Booking service registry unavailable:',e instanceof Error?e.message:'SDK error');
+}
+---
+<div class="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-9">
+  <section aria-labelledby="contact-message-title" class="min-w-0">
+    <h2 id="contact-message-title" class="mt-0">{ro?'Trimite un mesaj':'Send an enquiry'}</h2>
+    <p>{ro?'Spune-mi pe scurt ce sistem ai, ce problemă dorești să rezolvi și ce rezultat urmărești.':'Describe your project, system or security concern and the outcome you are looking for.'}</p>
+    <form id="nordlys-contact" class="flex flex-col gap-4 text-base" aria-label={ro?'Formular de contact':'Contact form'}>
+      <label class="flex flex-col gap-2">{ro?'Nume':'Name'} <input required name="name" autocomplete="name" minlength="2" maxlength="120" class="border-accent rounded-sm border bg-transparent p-3" /></label>
+      <label class="flex flex-col gap-2">Email <input required name="email" type="email" autocomplete="email" maxlength="254" class="border-accent rounded-sm border bg-transparent p-3" /></label>
+      <label class="flex flex-col gap-2">{ro?'Subiect':'Subject'} <input required name="subject" value={initialSubject} minlength="3" maxlength="180" class="border-accent rounded-sm border bg-transparent p-3" /></label>
+      <label class="flex flex-col gap-2">{ro?'Mesaj':'Message'} <textarea required name="message" minlength="10" maxlength="6000" rows="5" class="border-accent rounded-sm border bg-transparent p-3"></textarea></label>
+      <div class="hidden" aria-hidden="true"><label>Website <input type="text" name="website" autocomplete="off" tabindex="-1" /></label></div>
+      <p class="text-sm opacity-75">{ro?'Formularul folosește Wix Forms. Vezi':'Submissions use Wix Forms. Read the'} <a href={ro?'/ro/privacy/':'/privacy/'}>{ro?'politica de confidențialitate':'privacy policy'}</a>.</p>
+      <button type="submit" class="clickable self-start rounded-sm border px-4 py-3">{ro?'Trimite mesajul':'Send message'}</button>
+      <p id="nordlys-contact-result" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+  <aside class="min-w-0" aria-labelledby="consultation-title">
+    <h2 id="consultation-title" class="mt-0">{ro?'Consultație online':'Online consultation'}</h2>
+    <p>{ro?'Pentru a discuta cerințele înainte de o evaluare tehnică sau de un proiect Cloudflare.':'A conversation to scope a security review, Cloudflare work or a technical project.'}</p>
+    {bookable.length>0?(
+      <div class="flex flex-col gap-4">
+        <p>{ro?'Alege un serviciu Wix Bookings disponibil:':'Select an available Wix Bookings service:'}</p>
+        {bookable.map(item=>(
+          <a class="clickable flex items-center gap-2 rounded-sm border px-4 py-3" href={item.url} rel="noopener noreferrer" target="_blank">
+            <span class="iconify tabler--calendar-event text-xl" aria-hidden="true"></span>
+            {item.name}
+            <span class="iconify tabler--arrow-up-right ml-auto" aria-hidden="true"></span>
+          </a>
+        ))}
+        <p class="text-sm opacity-75">{ro?'Programările și disponibilitatea sunt gestionate direct de Wix Bookings.':'Scheduling and real-time appointment selection are handled by Wix Bookings.'}</p>
+      </div>
+    ):(
+      <div class="flex flex-col gap-4">
+        <p class="text-sm opacity-75">{ro?'Programările directe nu sunt disponibile momentan. Trimite o solicitare și îți voi răspunde pentru a stabili o oră potrivită.':'Online booking is not open yet. Send me a consultation request and I will reply to arrange a suitable time.'}</p>
+        <a class="clickable flex w-fit items-center gap-2 rounded-sm border px-4 py-3" href="#contact-message-title">
+          <span class="iconify tabler--calendar-plus text-xl" aria-hidden="true"></span>
+          {ro?'Solicită o consultație prin formular':'Request a consultation by form'}
+        </a>
+      </div>
+    )}
+    <h3>{ro?'Alte modalități de contact':'Other contact options'}</h3>
+    <p><a href="mailto:contact@liviubucel.com">contact@liviubucel.com</a></p>
+    <p><a href="https://www.linkedin.com/in/liviubucel/" target="_blank" rel="noopener noreferrer">LinkedIn</a> · <a href="https://github.com/liviubucel" target="_blank" rel="noopener noreferrer">GitHub</a></p>
+    <p>{ro?'Pentru evaluări de securitate este necesar acordul scris al proprietarului sistemului.':'Active security testing requires written system-owner authorisation.'}</p>
+    <h3>{ro?'Subiecte frecvente':'Common enquiries'}</h3>
+    <ul>{serviceOfferings.slice(0,3).map(item=><li><a href={(ro?'/ro':'')+'/services/'+item.slug+'/'}>{item[locale].name}</a></li>)}</ul>
+  </aside>
+</div>
+<script>
+  function bindContact(){
+    const form=document.querySelector<HTMLFormElement>('#nordlys-contact');
+    if(!form||form.dataset.ready==='true')return;
+    form.dataset.ready='true';
+    const ro=window.location.pathname.startsWith('/ro/');
+    const result=document.querySelector<HTMLElement>('#nordlys-contact-result');
+    const button=form.querySelector<HTMLButtonElement>('button[type=submit]');
+    form.addEventListener('submit',async event=>{
+      event.preventDefault();
+      if(!form.reportValidity()||!button)return;
+      button.disabled=true;
+      button.textContent=ro?'Se trimite…':'Sending…';
+      if(result)result.textContent='';
+      try{
+        const data=Object.fromEntries(new FormData(form).entries());
+        const response=await fetch('/api/contact',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(data)});
+        if(!response.ok)throw new Error('Submission unavailable');
+        form.reset();
+        if(result)result.textContent=ro?'Mesajul a fost trimis. Mulțumesc!':'Message sent. Thank you!';
+      }catch{
+        if(result)result.textContent=ro?'Mesajul nu a putut fi trimis. Scrie direct la contact@liviubucel.com.':'Message could not be sent. Please email contact@liviubucel.com.';
+      }finally{button.disabled=false;button.textContent=ro?'Trimite mesajul':'Send message'}
+    });
+  }
+  document.addEventListener('astro:page-load',bindContact);
+  bindContact();
+</script>

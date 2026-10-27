@@ -1,23 +1,40 @@
 import {Link,useLocation} from 'react-router-dom';
+import {AuroraMark} from '@/components/nordlys/NordlysFrame';
 import {getLanguage,localizedPath,portfolio} from '@/lib/portfolio';
-import {NordlysPageHeading} from '@/components/nordlys/NordlysFrame';
-const topics=[
-  ['Ethical hacking','Authorised security testing and attack-surface analysis'],
-  ['Digital forensics','Evidence-led investigation of security events'],
-  ['Threat intelligence','Public reporting, verification and risk context'],
-  ['Cloud & network security','DNS, identity, authentication, TLS and secure configuration'],
-  ['Vulnerability research','Risk assessment and actionable mitigations']
-];
+
+/**
+ * Nordlys About: native markdown-like prose in the original PageLayout
+ * with its characteristic centered aurora mark and blurred accent glow.
+ * Replace only the example author's biography with the owner's real content.
+ */
 export default function AboutPage(){
   const lang=getLanguage(useLocation().pathname),ro=lang==='ro';
-  return <>
-    <NordlysPageHeading eyebrow={ro?'Cine sunt':'About'} title={ro?'Despre mine':'About me'} intro={ro?'Sunt Liviu Bucel și mă concentrez pe securitate cibernetică, investigații digitale și inginerie de securitate.':'I’m Liviu Bucel, focused on practical cybersecurity, digital investigation and security engineering.'}/>
-    <div className="nordlys-article"><p>{ro?'Îmi place să înțeleg de ce apar vulnerabilitățile, cum sunt analizate incidentele și cum reducem riscurile reale. Îmi prezint aici lucrările tehnice, pregătirea și experiența.':'My work emphasises understanding why systems fail, how security events can be investigated and how evidence leads to practical risk reduction. This website contains my projects, learning and professional experience.'}</p>
-      <p>{ro?'Mai multe despre parcursul meu profesional:':'Explore my professional background:'} <Link viewTransition className="nordlys-inline-link" to={localizedPath('/experience',lang)}>{ro?'CV și experiență':'Resume and experience'}</Link>, <Link viewTransition className="nordlys-inline-link" to={localizedPath('/accreditations',lang)}>{ro?'certificări':'credentials'}</Link>.</p>
-      <h2>{ro?'Domenii principale':'Technical focus'}</h2>
-      <div className="nordlys-post-list">{topics.map(([title,desc])=><div className="nordlys-list-item" key={title}><h3 className="nordlys-item-title">{title}</h3><p className="nordlys-item-description">{desc}</p></div>)}</div>
-      <h2>{ro?'Colaborări':'Work together'}</h2><p>{ro?'Pentru proiecte autorizate de cybersecurity și colaborări profesionale, poți':'For authorised security projects and professional collaboration, you can'} <Link viewTransition className="nordlys-inline-link" to={localizedPath('/services',lang)}>{ro?'vedea serviciile':'explore services'}</Link> {ro?'sau mă poți contacta.':'or contact me.'}</p>
-      <p><a className="nordlys-inline-link" href={portfolio.links.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></p>
+  return <div className="nordlys-article nordlys-upstream-about">
+    <h1 className="nordlys-page-title">{ro?'Despre mine':'About'}</h1>
+    <p>{ro
+      ?'Sunt Liviu Bucel și mă concentrez pe securitatea cibernetică, analiza vulnerabilităților și investigații digitale.'
+      :'I’m Liviu Bucel. I focus on cybersecurity, vulnerability research and practical digital investigations.'}</p>
+    <p>{ro
+      ?'Acest site reunește proiectele mele, articolele tehnice și experiența profesională. Îmi place să înțeleg cum funcționează tehnologia, de ce apar problemele de securitate și cum pot fi reduse riscurile.'
+      :'This is my personal space for technical writing, projects and professional experience. I’m interested in how systems work, why vulnerabilities emerge, and how evidence-led security work can reduce real risks.'}</p>
+
+    <div className="nordlys-upstream-about-logo" aria-label="Liviu Bucel logo">
+      <div className="nordlys-upstream-about-logo-inner"><AuroraMark size={130}/></div>
     </div>
-  </>;
+
+    <h2>{ro?'Ce găsești aici':'Explore this website'}</h2>
+    <p>{ro?<>Poți citi <Link viewTransition to={localizedPath('/blog',lang)}>articolele</Link>, explora <Link viewTransition to={localizedPath('/projects',lang)}>proiectele</Link>, consulta <Link viewTransition to={localizedPath('/experience',lang)}>CV-ul și experiența mea</Link>, precum și <Link viewTransition to={localizedPath('/tools',lang)}>instrumentele</Link> utilizate în activitatea tehnică.</>:<>You can read my <Link viewTransition to={localizedPath('/blog',lang)}>blog</Link>, explore my <Link viewTransition to={localizedPath('/projects',lang)}>projects</Link>, review my <Link viewTransition to={localizedPath('/experience',lang)}>resume and experience</Link>, and see the <Link viewTransition to={localizedPath('/tools',lang)}>tools</Link> I use in practical security work.</>}</p>
+
+    <h2>{ro?'Domenii de interes':'Areas of focus'}</h2>
+    <ul>
+      <li>{ro?'Testare de securitate autorizată și analiză a suprafeței de atac':'Authorised security testing and attack-surface analysis'}</li>
+      <li>{ro?'Investigații digitale și răspuns la incidente':'Digital forensics and incident response'}</li>
+      <li>{ro?'Threat intelligence și cercetarea vulnerabilităților':'Threat intelligence and vulnerability research'}</li>
+      <li>{ro?'Securitatea rețelelor, DNS, TLS și cloud':'Network, DNS, TLS and cloud security'}</li>
+    </ul>
+
+    <h2>{ro?'Colaborări':'Professional work'}</h2>
+    <p>{ro?<>Pentru colaborări profesionale, consultă pagina de <Link viewTransition to={localizedPath('/services',lang)}>servicii</Link> sau <Link viewTransition to={localizedPath('/contact',lang)}>contactează-mă</Link>. Îmi poți vedea și <Link viewTransition to={localizedPath('/accreditations',lang)}>certificările și pregătirea</Link>.</>:<>For authorised security projects and professional enquiries, see my <Link viewTransition to={localizedPath('/services',lang)}>services</Link> or <Link viewTransition to={localizedPath('/contact',lang)}>get in touch</Link>. My <Link viewTransition to={localizedPath('/accreditations',lang)}>credentials and learning</Link> are also available.</>}</p>
+    <p><a href={portfolio.links.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
+  </div>;
 }

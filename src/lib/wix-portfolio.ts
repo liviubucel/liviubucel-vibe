@@ -16,6 +16,7 @@ export interface NativeProject {
   description?:string;
   slug?:string;
   hidden?:boolean;
+  coverImage?:{imageInfo?:string|{id?:string;url?:string}};
   details?:Array<{label?:string;text?:string;link?:{text?:string;url?:string;target?:string}}>;
 }
 export async function getNativeProjects():Promise<NativeProject[]> {
@@ -32,4 +33,51 @@ export function projectExternalLink(project:NativeProject):string|undefined {
 }
 export function projectTechnologies(project:NativeProject):string|undefined {
   return project.details?.find(item=>item.label==='Technologies')?.text;
+}
+
+/** Resolve Wix Media Manager references to actual Wix CDN image URLs. */
+export function wixPortfolioImageUrl(imageInfo:unknown):string|undefined {
+  if(typeof imageInfo==='object' && imageInfo!==null){
+    const data=imageInfo as {url?:unknown;id?:unknown};
+    if(typeof data.url==='string' && data.url.startsWith('https://static.wixstatic.com/media/'))return data.url;
+    if(typeof data.id==='string')imageInfo='wix:image://v1/'+data.id;
+  }
+  if(typeof imageInfo!=='string')return undefined;
+  const match=/^wix:image:\/\/v1\/([^\/#?]+)/.exec(imageInfo);
+  const id=match?.[1];
+  return id&&/^[a-zA-Z0-9_-]+~mv2\.(?:png|jpe?g|webp|avif|gif)$/i.test(id)
+    ?'https://static.wixstatic.com/media/'+id
+    :undefined;
+}
+export const projectCoverUrl=(project:NativeProject):string|undefined=>
+  wixPortfolioImageUrl(project.coverImage?.imageInfo);
+
+export interface NativeProjectPhoto {
+  id:string;url:string;title:string;description:string;sortOrder:number;
+}
+/**
+ * Three verified SSL Generator gallery items from native Wix Portfolio.
+ * The current public Wix Data collection omits the project-reference field;
+ * use verified item IDs rather than mixing photographs from other projects.
+ * Updating existing photos in Wix Portfolio changes what the site displays.
+ */
+const verifiedProjectGalleryIds:Record<string,string[]>={
+  'ssl-certificate-generator-acme-automation-tool':[
+    '87b2dbb2-8af5-488a-991a-3e5010b303d9',
+    '167eca22-4d88-4083-b7ad-5b4059e49852',
+    '8d846d7f-0a0e-425e-af76-461f5502b5f5'
+  ]
+};
+export async function getNativeProjectGallery(slug:string):Promise<NativeProjectPhoto[]> {
+  const ids=verifiedProjectGalleryIds[slug];
+  if(!ids?.length)return [];
+  const response=await items.query('Portfolio/ProjectItems').limit(100).find();
+  return (response.items||[]).flatMap(row=>{
+    const r=row as unknown as {id?:string;_id?:string;image?:{imageInfo?:unknown};title?:string;description?:string;sortOrder?:number;type?:string};
+    const id=r.id||r._id||'';
+    const url=wixPortfolioImageUrl(r.image?.imageInfo);
+    return ids.includes(id)&&url&&r.type==='IMAGE'?[{
+      id,url,title:r.title||'Original project image',description:r.description||'',sortOrder:r.sortOrder||0
+    }]:[];
+  }).sort((a,b)=>a.sortOrder-b.sortOrder);
 }

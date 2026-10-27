@@ -1,0 +1,10 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import ContactExperience from '@/components/wix/ContactExperience.astro';
+const frontmatter={title:'Contact',description:'Contact Liviu Bucel about cybersecurity projects, Cloudflare Managed or a technical consultation',activeHeaderLink:'Contact'};
+---
+<PageLayout {frontmatter}>
+  <h1>Contact</h1>
+  <p>Tell me about your project, technical problem or professional opportunity. I can help define a realistic scope before any security work starts.</p>
+  <ContactExperience locale="en"/>
+</PageLayout>

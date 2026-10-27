@@ -1,0 +1,59 @@
+---
+import TagsBar from '@/components/TagsBar.astro'
+import { isAbsoluteUrl, toMonthString } from '@/util'
+import { resolveTags } from '@/util/tags'
+import { Image } from 'astro:assets'
+import { type CollectionEntry, render } from 'astro:content'
+
+export interface Props {
+  project: CollectionEntry<'projects'>
+}
+
+const { project } = Astro.props
+const isRomanian = Astro.url.pathname==='/ro' || Astro.url.pathname.startsWith('/ro/')
+const { data } = project
+const wixDescription = (data as unknown as {wixDescription?:string}).wixDescription
+const Content = wixDescription !== undefined ? undefined : (await render(project)).Content
+---
+
+<div class="mb-8 flex flex-col gap-4 md:mb-4 md:flex-row md:gap-8">
+  {typeof data.previewImage === 'string' && (
+    <img src={data.previewImage} width="360" height="240" loading="lazy" decoding="async" alt={data.title+(isRomanian?' — captură reală din Wix Portfolio':' — real image from Wix Portfolio')} class="mt-auto mb-auto aspect-[3/2] w-full rounded-sm border border-current/15 object-contain md:w-64 md:shrink-0" />
+  )}
+  {data.previewImage && typeof data.previewImage !== 'string' && (
+    <Image
+      src={data.previewImage}
+      height={208}
+      alt={`${data.title} preview`}
+      class="mt-auto mb-auto aspect-[3/2] w-full rounded-sm border border-current/15 object-contain md:w-64 md:shrink-0"
+    />
+  )}
+  <div class="flex h-fit w-full flex-col">
+    <div class="flex flex-col justify-between sm:flex-row sm:items-center">
+      {data.url && (
+        <a
+          class="mb-2 text-xl font-normal no-underline"
+          href={data.url}
+          target={isAbsoluteUrl(data.url) ? '_blank' : '_self'}
+        >
+          <span class="underline">{data.title}</span>
+          {data.url && isAbsoluteUrl(data.url) && (
+            <span class="iconify tabler--external-link align-middle" />
+          )}
+        </a>
+      )}
+      {!data.url && <span class="mb-2 text-xl">{data.title}</span>}
+      {data.startDate && (
+        <div class="my-2 text-sm opacity-75 sm:my-0">
+          <time>{toMonthString(data.startDate)}</time> -
+          {data.endDate && <time>{toMonthString(data.endDate)}</time>}
+          {!data.endDate && 'Now'}
+        </div>
+      )}
+    </div>
+    <TagsBar tags={resolveTags(data.tags)} />
+    <div class="opacity-75">
+      {Content ? <Content /> : wixDescription}
+    </div>
+  </div>
+</div>

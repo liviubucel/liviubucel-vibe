@@ -1,0 +1,25 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import {items} from '@wix/data';
+export const prerender=false;
+const frontmatter={title:'Certificări și formare',description:'Liviu Bucel verified cybersecurity learning and qualifications',activeHeaderLink:'Credentials'};
+type Credential={_id?:string;certificationName?:string;issuingOrganization?:string;description?:string;dateObtained?:string;verificationLink?:string};
+let records:Credential[]=[];
+let unavailable=false;
+try{const response=await items.query('acreditari').limit(100).find();records=(response.items||[]) as Credential[]}
+catch(e){unavailable=true;console.error('[nordlys-credentials]',e instanceof Error?e.message:'Wix data unavailable')}
+---
+<PageLayout {frontmatter}>
+  <h1>Certificări și studii</h1>
+  <p>Certificările sunt marcate distinct în funcție de status: obținute, în curs sau planificate.</p>
+  {unavailable&&<p role="alert">Certificările nu sunt disponibile temporar.</p>}
+  {records.map(record=>(
+    <section>
+      <h2>{record.certificationName}</h2>
+      <p class="opacity-75">{record.issuingOrganization} {record.dateObtained&&'· '+String(record.dateObtained).slice(0,10)}</p>
+      {record.description&&<p>{record.description}</p>}
+      {record.verificationLink?.startsWith('https://')&&<p><a class="clickable" href={record.verificationLink} rel="noopener noreferrer" target="_blank">Verifică certificarea</a></p>}
+    </section>
+  ))}
+  {!unavailable&&records.length===0&&<p>Nu sunt publicate încă certificări.</p>}
+</PageLayout>

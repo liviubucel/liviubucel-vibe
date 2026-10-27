@@ -1,0 +1,113 @@
+---
+const logoUrl = 'https://static.wixstatic.com/media/a4f45c_7fb5025a965f4edf813cf097cb85783e~mv2.png'
+import Dropdown from '@/components/Dropdown.astro'
+import HeaderItem from '@/components/layout/HeaderItem.astro'
+import MobileNavToggle from '@/components/layout/MobileNavToggle.astro'
+import Separator from '@/components/layout/Separator.astro'
+import ModeToggle from '@/components/mode/ModeToggle.astro'
+import config from '@/theme.config'
+import type {
+  HeaderItem as HeaderItemType,
+  NavItem as NavItemType
+} from '@/types'
+
+export interface Props {
+  activeHeaderLink?: string
+}
+
+const { activeHeaderLink } = Astro.props
+
+const isNavItem = (item: HeaderItemType): item is NavItemType =>
+  Object.hasOwn(item, 'href')
+const isRomanian = Astro.url.pathname === '/ro' || Astro.url.pathname.startsWith('/ro/')
+const localePrefix = isRomanian ? '/ro' : ''
+const navTranslate=(label:string)=>isRomanian ? ({Projects:'Proiecte',Tags:'Etichete','Other pages':'Alte pagini',About:'Despre',Services:'Servicii',Resume:'CV',Tools:'Instrumente'} as Record<string,string>)[label] || label : label
+const localizedNavbarItems = config.navbarItems.map((item) =>
+  isNavItem(item) ? {...item,label:navTranslate(item.label),href:localePrefix+item.href} :
+  {...item,label:navTranslate(item.label),children:item.children.map(child=>({...child,label:navTranslate(child.label),href:localePrefix+child.href}))}
+)
+---
+
+<header>
+  <a href="#main" class="absolute -top-full left-8 px-2 py-2 focus:top-8">
+    Skip to main content
+  </a>
+  <div class="flex items-center justify-between gap-4 py-4 sm:py-6">
+    <a
+      href={localePrefix||"/"}
+      class="text-accent flex shrink-0 items-center"
+      transition:name="branding"
+      aria-label={isRomanian ? "Liviu Bucel — Acasă" : "Liviu Bucel — Home"}
+      title="Liviu Bucel"
+    >
+      <img
+        alt="Liviu Bucel original LB logo"
+        src={logoUrl}
+        width={182}
+        height={195}
+        class="h-13 w-13 shrink-0 object-contain dark:invert sm:h-[68px] sm:w-[68px]"
+        loading="eager"
+      />
+    </a>
+    <nav class="hidden items-center sm:flex">
+      <ul class="flex items-center gap-5">
+        {localizedNavbarItems.map((item) => (
+          <li class="flex flex-col justify-center">
+            {isNavItem(item) ? (
+              <HeaderItem
+                {item}
+                isActive={
+                  activeHeaderLink === item.label ||
+                  activeHeaderLink === item.href
+                }
+              />
+            ) : (
+              <Dropdown {item} {activeHeaderLink} />
+            )}
+          </li>
+        ))}
+        <li class="text-2xl">
+          <a href={localePrefix+"/search/"} class="flex items-center" aria-label="Search">
+            <span class="clickable iconify tabler--search"></span>
+          </a>
+        </li>
+        <li class="text-2xl">{config.modeToggle && <ModeToggle />}</li>
+      </ul>
+    </nav>
+    <div class="flex items-center justify-center gap-4 text-2xl sm:hidden">
+      {config.modeToggle && <ModeToggle />}
+      <a href={localePrefix+"/search/"} aria-label="Search">
+        <span class="clickable iconify tabler--search text-xl"></span>
+      </a>
+      <MobileNavToggle />
+    </div>
+  </div>
+  <Separator />
+  <div
+    id="mobile-nav"
+    class="invisible grid grid-rows-[0fr] transition-[grid-template-rows,visibility] duration-300 sm:hidden"
+  >
+    <div class="min-h-0 overflow-hidden">
+      <nav class="flex-col justify-end py-6">
+        <ul class="flex flex-col items-center gap-2">
+          {localizedNavbarItems.map((item) => (
+            <li class="flex flex-col justify-center">
+              {isNavItem(item) ? (
+                <HeaderItem
+                  {item}
+                  isActive={
+                    activeHeaderLink === item.label ||
+                    activeHeaderLink === item.href
+                  }
+                />
+              ) : (
+                <Dropdown {item} {activeHeaderLink} />
+              )}
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <Separator />
+    </div>
+  </div>
+</header>

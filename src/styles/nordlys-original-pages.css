@@ -1,0 +1,142 @@
+/* Nordlys page-fidelity layer. Mirrors the spacing and unboxed editorial
+ * composition of FjellOverflow/nordlys PageLayout, PostsList,
+ * PostsListItem, ProjectsList and About (GPL-3.0-only).
+ * This stylesheet changes presentation only: content stays Wix-native.
+ */
+.nordlys-main-body { padding:24px 0 48px; }
+.nordlys-page-title {font-size:2.25rem;line-height:1.23;letter-spacing:-.028em;font-weight:700;margin:0 0 24px;}
+.nordlys-page-lead {font-size:1.125rem;line-height:1.7;color:var(--n-accent);margin:0 0 28px;}
+.nordlys-section {padding:0 0 25px;}
+.nordlys-upstream-index {margin:0;padding:0;list-style:none;}
+.nordlys-upstream-list-item {list-style:none;margin:0;padding:0;}
+.nordlys-upstream-post {
+  display:flex;flex-direction:column;gap:16px;margin-bottom:32px;
+  min-width:0;
+}
+.nordlys-upstream-post-body {min-width:0;width:100%;display:flex;flex-direction:column;gap:8px;}
+.nordlys-upstream-heading-row {display:flex;flex-direction:column;align-items:start;justify-content:space-between;gap:4px;}
+.nordlys-upstream-heading-row h2 {font-size:1.25rem;line-height:1.5;font-weight:400;letter-spacing:normal;margin:0;}
+.nordlys-upstream-heading-row a {text-decoration:none;transition:opacity .5s ease-in-out,color .5s ease-in-out;}
+.nordlys-upstream-heading-row a:hover {opacity:.75;}
+.nordlys-upstream-date {opacity:.75;font-size:.875rem;white-space:nowrap;line-height:1.6;}
+.nordlys-upstream-description {color:var(--n-accent);opacity:.75;font-size:1rem;line-height:1.55;margin:0;overflow-wrap:anywhere;}
+.nordlys-upstream-tags {display:flex;align-items:center;gap:12px 24px;flex-wrap:wrap;font-size:1rem;}
+.nordlys-upstream-tag {font-weight:400;opacity:.75;transition:opacity .5s ease-in-out;}
+.nordlys-upstream-tag:hover {opacity:1;}
+.nordlys-upstream-separator {border:0;border-top:1px solid var(--n-line);margin:24px 0;}
+.nordlys-upstream-preview {height:auto;max-height:208px;max-width:100%;object-fit:contain;border-radius:2px;}
+.nordlys-upstream-pagination {display:flex;align-items:center;justify-content:center;gap:16px;margin:20px 0 32px;font-size:1rem;}
+.nordlys-upstream-pagination button {border:0;background:none;padding:0;font:inherit;color:var(--n-accent);cursor:pointer;opacity:.75;transition:opacity .5s;}
+.nordlys-upstream-pagination button:disabled {opacity:.25;cursor:default;}
+.nordlys-upstream-pagination button:not(:disabled):hover {opacity:1;}
+.nordlys-article {font-size:1.125rem;line-height:1.72;}
+.nordlys-article h2 {font-weight:650;font-size:1.65rem;}
+.nordlys-article h3 {font-size:1.35rem;}
+.nordlys-upstream-about-logo {display:flex;justify-content:center;align-items:center;margin:64px 0 24px;}
+.nordlys-upstream-about-logo-inner {width:33.333%;max-width:142px;position:relative;}
+.nordlys-upstream-about-logo-inner:before {
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:var(--n-accent);filter:blur(48px);opacity:.5;z-index:0;
+}
+.nordlys-upstream-about-logo svg {width:100%;height:auto;position:relative;z-index:1;}
+.nordlys-upstream-project-detail h1 {margin-top:12px;}
+.nordlys-upstream-project-links {display:flex;flex-wrap:wrap;gap:20px;margin:30px 0;}
+.nordlys-upstream-postdetail-head {margin:12px 0 24px;}
+.nordlys-upstream-postdetail-head .nordlys-page-title{margin:12px 0;}
+.nordlys-upstream-postdetail-head .nordlys-page-lead {display:none;}
+.nordlys-upstream-meta {opacity:.75;font-size:1rem;line-height:1.5;}
+.nordlys-upstream-adjacent {margin:30px 0 12px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;}
+.nordlys-upstream-adjacent>div:first-child{grid-column:span 2;}
+.nordlys-upstream-adjacent>div:last-child{grid-column:4/span 2;text-align:right;}
+.nordlys-upstream-adjacent a{opacity:.75;transition:opacity .5s ease-in-out;display:flex;flex-direction:column;gap:9px;}
+.nordlys-upstream-adjacent a:hover{opacity:1;}
+.nordlys-upstream-adjacent a strong{text-decoration:underline;font-size:1.15rem;font-weight:400;}
+@media (min-width:640px) {
+  .nordlys-main-body{padding-top:48px;}
+  .nordlys-page-title{font-size:3rem;}
+  .nordlys-upstream-heading-row{flex-direction:row;align-items:center;gap:16px;}
+  .nordlys-upstream-post{flex-direction:row;gap:32px;margin-bottom:16px;}
+  .nordlys-upstream-preview {max-height:128px;max-width:210px;}
+  .nordlys-upstream-about-logo-inner{width:16.66667%;}
+}
+@media(max-width:639px){
+  .nordlys-upstream-adjacent>div:first-child,.nordlys-upstream-adjacent>div:last-child {grid-column:1/-1;text-align:left;}
+  .nordlys-upstream-adjacent>div:last-child {text-align:right;}
+}
+@media(prefers-reduced-motion:reduce){
+  .nordlys-upstream-heading-row a,.nordlys-upstream-tag,.nordlys-upstream-pagination button{transition:none;}
+}
+
+/* PageLayout details taken from Nordlys PostLayout and ProjectsList. */
+.nordlys-upstream-back {margin:16px 0 10px;}
+.nordlys-upstream-back a {opacity:.75;display:inline-flex;align-items:center;gap:6px;transition:opacity .5s ease-in-out;}
+.nordlys-upstream-back a:hover {opacity:1;}
+.nordlys-upstream-author {opacity:1!important;text-decoration:underline!important;text-underline-offset:4px;}
+.nordlys-upstream-postdetail {line-height:1.7;}
+.nordlys-upstream-postdetail-head {padding:0!important;}
+.nordlys-upstream-postdetail-head .nordlys-page-title {font-size:2.25rem;margin:16px 0;}
+.nordlys-upstream-postdetail .nordlys-article {margin-top:34px;}
+.nordlys-upstream-project-detail .nordlys-page-title {margin:16px 0;}
+.nordlys-upstream-project-detail .nordlys-upstream-tags {margin-bottom:20px;}
+.nordlys-upstream-project-detail .nordlys-upstream-tags span {font-size:1rem;}
+.nordlys-upstream-project-detail section {margin-top:40px;}
+.nordlys-upstream-project-detail section h2{font-size:1.55rem;}
+.nordlys-upstream-project-links a,.nordlys-upstream-external {
+  display:inline-flex;align-items:center;gap:5px;opacity:.75;transition:opacity .5s ease-in-out;
+}
+.nordlys-upstream-project-links a:hover,.nordlys-upstream-external:hover{opacity:1;}
+.nordlys-upstream-external {margin-left:auto;}
+.nordlys-upstream-about>.nordlys-page-title {margin-bottom:24px;}
+.nordlys-upstream-about p {margin-bottom:21px;}
+.nordlys-upstream-about h2 {margin-top:55px;}
+.nordlys-upstream-about-logo-inner svg {filter:drop-shadow(0 0 10px var(--n-accent-soft));}
+@media(min-width:640px){
+  .nordlys-upstream-postdetail-head .nordlys-page-title {font-size:3rem;}
+}
+@media(prefers-reduced-motion:reduce){
+  .nordlys-upstream-back a,.nordlys-upstream-project-links a,.nordlys-upstream-external {transition:none;}
+}
+
+/* Nordlys PostLayout: desktop TOC floats to the left of the reading column
+   at 2xl widths; tablet/mobile use the original collapsible inline panel. */
+@media(min-width:1536px){
+  .nordlys-upstream-postdetail .nordlys-article-toc{
+    position:fixed;left:max(12px,calc(50% - 700px));top:96px;width:245px;
+    max-height:calc(100vh - 120px);overflow:auto;z-index:3;
+    border-right:1px solid var(--n-line);border-top:0;border-bottom:0;border-left:0;
+    border-radius:0;padding:0 16px 0 0;opacity:.75;transition:opacity .5s ease-in-out;
+  }
+  .nordlys-upstream-postdetail .nordlys-article-toc:hover{opacity:1;}
+}
+
+/* Original Nordlys landing layout geometry */
+.nordlys-landing {padding:64px 16px 0;display:flex;flex-direction:column;justify-content:flex-start;min-height:100svh;}
+.nordlys-landing-content {padding:0;}
+.nordlys-landing-footer {margin-top:32px;}
+.nordlys-landing .nordlys-brand {margin-bottom:32px;}
+.nordlys-landing .nordlys-bottom-bar {min-height:unset;padding:16px 0;}
+.nordlys-landing .nordlys-iconlink svg,.nordlys-landing .nordlys-icon-button svg {width:30px;height:30px;}
+@media(min-width:640px) {
+  .nordlys-landing {padding:144px 48px 0;}
+  .nordlys-landing .nordlys-iconlink svg,.nordlys-landing .nordlys-icon-button svg {width:48px;height:48px;}
+  .nordlys-landing .nordlys-bottom-bar {padding:32px 0;}
+}
+
+/* Nordlys Tags index: inline linked labels and post counts */
+.nordlys-upstream-tag-index{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;margin:14px 0 35px;}
+.nordlys-upstream-tag-index a{opacity:.75;display:inline-flex;gap:6px;align-items:baseline;font-size:1rem;transition:opacity .5s ease-in-out;}
+.nordlys-upstream-tag-index a:hover{opacity:1;}
+.nordlys-upstream-tag-index span{opacity:.7;}
+@media(prefers-reduced-motion:reduce){.nordlys-upstream-tag-index a{transition:none}}
+
+/* Original Nordlys Header.astro: py-4 on mobile and py-8 on desktop;
+   the separator belongs immediately after the header row. */
+.nordlys-navbar {padding:0;}
+.nordlys-navbar .nordlys-nav-row {padding:16px 0;}
+.nordlys-navbar .nordlys-separator {margin-top:0!important;}
+.nordlys-footer-row {min-height:0;padding:16px 0;}
+.nordlys-footer-row .nordlys-iconlink svg {width:24px;height:24px;}
+@media(min-width:640px){
+  .nordlys-navbar .nordlys-nav-row {padding:32px 0;}
+  .nordlys-footer-row {padding:32px 0;}
+}

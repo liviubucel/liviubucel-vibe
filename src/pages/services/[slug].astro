@@ -1,0 +1,8 @@
+---
+import ServiceDetail from '@/components/services/ServiceDetail.astro';
+import {lookupService} from '@/lib/professional-services';
+export const prerender=false;
+const entry=lookupService(Astro.params.slug||'');
+if(!entry)Astro.response.status=404;
+---
+<ServiceDetail locale="en" {entry}/>

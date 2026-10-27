@@ -1,0 +1,48 @@
+---
+/** Original Nordlys PostsList and Pagination, fed only with published Wix Blog. */
+import {posts,tags} from '@wix/blog';
+import type {CollectionEntry} from 'astro:content';
+import type {Page} from 'astro';
+import PageLayout from '@/layouts/PageLayout.astro';
+import PostsList from '@/components/posts/PostsList.astro';
+import Pagination from '@/components/Pagination.astro';
+import type {NativeBlogPost} from '@/lib/wix-blog';
+export const prerender=false;
+let available=true;
+let native:NativeBlogPost[]=[];
+const labelById=new Map<string,string>();
+try{
+  const result=await posts.listPosts({paging:{limit:100}});
+  native=(result.posts||[]) as NativeBlogPost[];
+  const tagResult=await tags.queryTags().find();
+  for(const tag of tagResult.items||[])if(tag._id&&tag.label)labelById.set(tag._id,tag.label);
+}catch(e){available=false;console.error('[nordlys-posts-native]',e instanceof Error?e.message:'Wix Blog unavailable')}
+native.sort((a,b)=>new Date(b.firstPublishedDate||0).valueOf()-new Date(a.firstPublishedDate||0).valueOf());
+const pageNumber=Number(Astro.url.searchParams.get('page')||'1');
+const lastPage=Math.max(1,Math.ceil(native.length/5));
+const currentPage=Number.isInteger(pageNumber)?Math.min(Math.max(pageNumber,1),lastPage):1;
+const selected=native.slice((currentPage-1)*5,currentPage*5);
+const adapted=selected.map(p=>({
+  id:p.slug||p._id||p.id||'',
+  data:{
+    title:p.title||'Untitled',
+    description:p.excerpt||'',
+    publishedDate:p.firstPublishedDate?new Date(p.firstPublishedDate):new Date(0),
+    tags:(p.tagIds||[]).map(id=>labelById.get(id)).filter(Boolean),
+    previewImage:undefined
+  }
+})) as unknown as CollectionEntry<'posts'>[];
+const page={
+  currentPage,lastPage,
+  url:{prev:currentPage>1?'/ro/blog/?page='+(currentPage-1):undefined,next:currentPage<lastPage?'/ro/blog/?page='+(currentPage+1):undefined}
+} as unknown as Page;
+const frontmatter={title:'Articole',activeHeaderLink:'Blog',description:'Analize de securitate cibernetică, note tehnice și investigații'};
+---
+<PageLayout {frontmatter}>
+  <h1>Articole</h1>
+  <p>Note tehnice, cercetări de securitate cibernetică și analize ale incidentelor.</p>
+  {!available&&<p role="alert">Wix Blog nu este disponibil temporar.</p>}
+  {available&&native.length===0&&<p>Nu există încă articole publicate.</p>}
+  <PostsList posts={adapted}/>
+  <Pagination slot="bottom" {page}/>
+</PageLayout>

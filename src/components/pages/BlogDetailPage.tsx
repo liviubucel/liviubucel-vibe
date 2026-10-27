@@ -3,7 +3,7 @@ import {Link,useLocation,useParams} from 'react-router-dom';
 import {ZoomIn} from 'lucide-react';
 import {openNordlysPhotoSwipe} from '@/components/nordlys/PhotoSwipeViewer';
 import {getLanguage,localizedPath} from '@/lib/portfolio';
-import {getPublishedBlogPost,getPublishedBlogPosts,type NativeBlogPost,type RichNode} from '@/lib/wix-blog';
+import {getPublishedBlogPost,getPublishedBlogPosts,getPublishedBlogTags,type NativeBlogPost,type NativeBlogTag,type RichNode} from '@/lib/wix-blog';
 import {NordlysTableOfContents} from '@/components/nordlys/NordlysArticleInteractions';
 import {setNordlysDocumentSEO} from '@/components/nordlys/NordlysSeo';
 
@@ -84,20 +84,30 @@ export default function BlogDetailPage(){
   const lang=getLanguage(useLocation().pathname),ro=lang==='ro';
   const [article,setArticle]=useState<NativeBlogPost>();
   const [allPosts,setAllPosts]=useState<NativeBlogPost[]>([]);
+  const [tags,setTags]=useState<NativeBlogTag[]>([]);
   const [loading,setLoading]=useState(true),[error,setError]=useState('');
   const [imageError,setImageError]=useState(false);
   useEffect(()=>{
     let active=true;if(!id){setLoading(false);return;}
     setLoading(true);setError('');setImageError(false);
-    Promise.all([getPublishedBlogPost(id),getPublishedBlogPosts()])
-      .then(([post,list])=>{if(active){setArticle(post);setAllPosts(list)}})
+    Promise.all([getPublishedBlogPost(id),getPublishedBlogPosts(),getPublishedBlogTags().catch(()=>[] as NativeBlogTag[])])
+      .then(([post,list,realTags])=>{if(active){setArticle(post);setAllPosts(list);setTags(realTags)}})
       .catch(()=>{if(active)setError(ro?'Articolul nu a putut fi încărcat.':'Article could not be loaded.')})
       .finally(()=>{if(active)setLoading(false)});
     return()=>{active=false};
   },[id,ro]);
   useEffect(()=>{if(article?.title)setNordlysDocumentSEO(article.title,article.excerpt||'Cybersecurity analysis by Liviu Bucel');},[article]);
   const headings=useMemo<Heading[]>(()=>article?.richContent?.nodes
-    ?.map((node,i)=>node.type==='HEADING'?{id:safeId(node,i),level:Number(node.headingData?.level)||2,text:textOf(node)}:null)
+    ?.map((node,i)=>{
+      if(node.type==='HEADING')return {id:safeId(node,i),level:Number(node.headingData?.level)||2,text:textOf(node)};
+      // Some imported Wix Blog articles contain literal Markdown headings.
+      // Use the same identifier as renderNode so the table of contents works.
+      if(node.type==='PARAGRAPH'){
+        const match=/^(#{2,5})\s+(.+)$/.exec(textOf(node).trim());
+        if(match)return {id:'legacy-'+String(node.id||i).replace(/[^a-zA-Z0-9_-]/g,'').slice(0,70),level:Math.min(match[1].length,4),text:match[2]};
+      }
+      return null;
+    })
     .filter((h):h is Heading=>!!h)||[],[article]);
   const photos=useMemo<ImageEntry[]>(()=>article?.richContent?.nodes?.flatMap(node=>{
     const images:ImageEntry[]=[];
@@ -114,22 +124,29 @@ export default function BlogDetailPage(){
   const prev=idx>0?allPosts[idx-1]:undefined;
   const next=idx>=0&&idx<allPosts.length-1?allPosts[idx+1]:undefined;
   const linkTo=(p:NativeBlogPost)=>localizedPath('/blog/'+(p.slug||p._id||p.id),lang);
-  return <article>
+  return <article className="nordlys-upstream-postdetail">
     <ArticleProgress/>
-    <p className="nordlys-item-meta"><Link viewTransition className="nordlys-inline-link" to={localizedPath('/blog',lang)}>← {ro?'Toate articolele':'Back to all posts'}</Link></p>
-    {loading?<p role="status">{ro?'Se încarcă…':'Loading article…'}</p>:article?<><header className="nordlys-section">
+    <div className="nordlys-upstream-back"><Link viewTransition to={localizedPath('/blog',lang)}>← {ro?'Înapoi la toate articolele':'Back to all posts'}</Link></div>
+    {loading?<p role="status">{ro?'Se încarcă…':'Loading article…'}</p>:article?<><header className="nordlys-upstream-postdetail-head">
       <h1 className="nordlys-page-title">{article.title}</h1>
-      <p className="nordlys-page-lead">{article.excerpt}</p>
-      <p className="nordlys-item-meta">{article.firstPublishedDate&&new Date(article.firstPublishedDate).toLocaleDateString(ro?'ro-RO':'en-GB',{day:'numeric',month:'long',year:'numeric'})} · Liviu Bucel{article.minutesToRead?' · '+article.minutesToRead+' min':''}</p>
+      {!!article.tagIds?.length&&<div className="nordlys-upstream-tags">
+        {tags.filter(tag=>article.tagIds?.includes(tag.id)).map(tag=><Link viewTransition className="nordlys-upstream-tag" key={tag.id} to={localizedPath('/tags/'+tag.slug,lang)}>{tag.label}</Link>)}
+      </div>}
+      <p className="nordlys-upstream-meta">
+        {ro?'Publicat la ':'Published on '}
+        {article.firstPublishedDate&&<time dateTime={new Date(article.firstPublishedDate).toISOString()}>{new Date(article.firstPublishedDate).toLocaleDateString(ro?'ro-RO':'en-GB',{day:'numeric',month:'short',year:'numeric'})}</time>}
+        {ro?' de ':' by '}<Link viewTransition to={localizedPath('/about',lang)} className="nordlys-upstream-author">Liviu Bucel</Link>
+        {article.minutesToRead?' · '+article.minutesToRead+' min':''}
+      </p>
     </header>
     {headings.length>2&&<NordlysTableOfContents headings={headings.map(h=>({id:h.id,label:h.text,level:h.level}))}/>}
     <div className="nordlys-article">{article.richContent?.nodes?.length?
       article.richContent.nodes.map((node,index)=>renderNode(node,index,(src:string)=>{void openNordlysPhotoSwipe(photos,photos.findIndex(p=>p.src===src)).catch(()=>setImageError(true))})):
       <p>{article.contentText||article.excerpt}</p>}
     </div>
-    <nav className="nordlys-adjacent-posts" aria-label="Adjacent posts">
-      <div>{prev&&<Link viewTransition to={linkTo(prev)}><span className="nordlys-item-meta">← {ro?'Anterior':'Previous'}</span><span>{prev.title}</span></Link>}</div>
-      <div>{next&&<Link viewTransition to={linkTo(next)}><span className="nordlys-item-meta">{ro?'Următor':'Next'} →</span><span>{next.title}</span></Link>}</div>
+    <nav className="nordlys-upstream-adjacent" aria-label={ro?'Articole învecinate':'Adjacent posts'}>
+      <div>{next&&<Link viewTransition to={linkTo(next)}><span>← {ro?'Articolul următor':'Next post'}</span><strong>{next.title}</strong></Link>}</div>
+      <div>{prev&&<Link viewTransition to={linkTo(prev)}><span>{ro?'Articolul precedent':'Previous post'} →</span><strong>{prev.title}</strong></Link>}</div>
     </nav>
     {imageError&&<p className="nordlys-feedback" role="alert">{ro?'Vizualizarea imaginii nu este disponibilă momentan.':'Image viewer is currently unavailable.'}</p>}
     </>:<p role={error?'alert':'status'}>{error||(ro?'Articolul nu există.':'Post not found.')}</p>}

@@ -1,0 +1,43 @@
+<scroll-progress-bar class="fixed top-0 w-full">
+  <div class="bg-accent h-1 w-0"></div>
+</scroll-progress-bar>
+
+<script>
+  class ScrollProgressbar extends HTMLElement {
+    onScroll?: () => void
+    frame = 0
+
+    connectedCallback() {
+      const bar = this.children[0] as HTMLElement
+
+      function calculateScrollPercentage() {
+        const scrollTop =
+          document.body.scrollTop || document.documentElement.scrollTop
+
+        const totalHeight =
+          document.documentElement.scrollHeight -
+          document.documentElement.clientHeight
+        return (scrollTop / totalHeight) * 100
+      }
+
+      this.onScroll = () => {
+        if (this.frame) return
+
+        this.frame = requestAnimationFrame(() => {
+          this.frame = 0
+          bar.style.width = `${calculateScrollPercentage()}%`
+        })
+      }
+
+      document.addEventListener('scroll', this.onScroll, { passive: true })
+    }
+
+    disconnectedCallback() {
+      if (this.onScroll) document.removeEventListener('scroll', this.onScroll)
+      if (this.frame) cancelAnimationFrame(this.frame)
+    }
+  }
+
+  if (!customElements.get('scroll-progress-bar'))
+    customElements.define('scroll-progress-bar', ScrollProgressbar)
+</script>

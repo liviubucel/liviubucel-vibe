@@ -1,0 +1,76 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import {items} from '@wix/data';
+interface Incident{
+  _id:string;title?:string;slug?:string;organisation?:string;summary?:string;
+  recordType?:string;verificationStatus?:string;editorialStatus?:string;
+  independentlyConfirmed?:boolean;sourceName?:string;sourceLanding?:string;sourceUrl?:string
+}
+interface Props{category?:string;slug?:string}
+const {category,slug}=Astro.props;
+const ro=Astro.url.pathname === '/ro' || Astro.url.pathname.startsWith('/ro/');
+const localePrefix=ro?'/ro':'';
+const sections=[
+  {slug:'ransomware',kind:'ransomware_claim',label:'Ransomware'},
+  {slug:'breaches',kind:'verified_breach',label:'Breaches'},
+  {slug:'exposures',kind:'public_exposure',label:'Exposures'},
+  {slug:'malware',kind:'malware_intelligence',label:'Malware'},
+  {slug:'threat-infrastructure',kind:'threat_indicator',label:'Threat infrastructure'}
+];
+const selected=sections.find(s=>s.slug===category);
+let reports:Incident[]=[];
+let error='';
+try{
+  let query=items.query('romaniaCyberIncidents').eq('editorialStatus','published');
+  if(selected)query=query.eq('recordType',selected.kind);
+  if(slug)query=query.eq('slug',slug);
+  const response=await query.limit(100).find();
+  reports=((response.items||[]) as Incident[]).filter(r=>r.editorialStatus==='published');
+}catch(e){error='Incident reports are temporarily unavailable.';console.error('[nordlys-cyber-monitor]',e instanceof Error?e.message:'Wix data unavailable')}
+if(slug && reports.length===0) Astro.response.status=error?503:404;
+const frontmatter={
+  title:slug&&reports[0]?.title?reports[0].title:'Romania Cyber Monitor',
+  description:'Open-source cyber threat reporting related to Romania with evidence and verification status',
+  activeHeaderLink:'Cyber Monitor'
+};
+---
+<PageLayout {frontmatter}>
+  <h1>Romania Cyber Monitor</h1>
+  <p>{ro?'Raportări publice despre amenințări cu legătură documentată cu România. Afirmațiile atacatorilor nu sunt confirmarea incidentului.':'Public reports linked to Romania. Threat-actor claims are not evidence that a victim was actually compromised.'}</p>
+  <p>{ro?'Înregistrările istorice pot conține semnalări neverificate, nu incidente confirmate independent.':'Historical records may contain unverified claims, not independently confirmed incidents.'}</p>
+  <nav aria-label="Monitor categories" class="flex flex-wrap gap-4">
+    <a class="clickable" href={localePrefix+"/romania-cyber-monitor/"}>{ro?'Toate':'All'}</a>
+    {sections.map(s=>(
+      <a class="clickable" href={localePrefix+'/romania-cyber-monitor/'+s.slug+'/'} aria-current={category===s.slug?'page':undefined}>{s.label}</a>
+    ))}
+  </nav>
+  {slug&&<p><a class="clickable" href={localePrefix+"/romania-cyber-monitor/"}>← {ro?'Toate rapoartele':'All reports'}</a></p>}
+  {!slug&&<label class="mt-4 flex flex-col gap-2">{ro?'Caută rapoarte':'Search reports'}
+    <input id="monitor-search" type="search" placeholder={ro?'Organizație sau titlu…':'Organisation or title…'} class="border-accent rounded-sm border p-3"/>
+  </label>}
+  {error&&<p role="alert">{error}</p>}
+  {!error&&!reports.length&&<p role="status">{ro?'Nu există rapoarte publicate pentru această selecție.':'No published reports match this selection.'}</p>}
+  <div id="monitor-results">
+    {reports.map(report=>(
+      <article data-monitor-entry data-search={(report.title||'')+' '+(report.organisation||'')+' '+(report.summary||'')}>
+        <p class="opacity-75">{report.recordType?.replace(/_/g,' ')} · {report.verificationStatus?.replace(/_/g,' ')}</p>
+        <h2>{report.slug&&!slug?<a href={localePrefix+'/romania-cyber-monitor/incidents/'+encodeURIComponent(report.slug)+'/'}>{report.title||report.organisation}</a>:report.title||report.organisation}</h2>
+        <p>{(report.summary||'').replace(/<[^>]*>/g,'')}</p>
+        <p class="opacity-75">{report.independentlyConfirmed?(ro?'Confirmat independent':'Independently confirmed'):(ro?'Afirmație neconfirmată':'Unverified claim')}</p>
+        {report.sourceName&&report.sourceLanding?.startsWith('https://')&&<p>Feed source: <a href={report.sourceLanding} target="_blank" rel="noopener noreferrer">{report.sourceName}</a></p>}
+      </article>
+    ))}
+  </div>
+</PageLayout>
+<script>
+  document.addEventListener('astro:page-load',()=>{
+    const input=document.querySelector<HTMLInputElement>('#monitor-search');
+    if(!input||input.dataset.ready)return;
+    input.dataset.ready='true';
+    const reports=Array.from(document.querySelectorAll<HTMLElement>('[data-monitor-entry]'));
+    input.addEventListener('input',()=>{
+      const q=input.value.toLocaleLowerCase();
+      for(const report of reports)report.hidden=!report.dataset.search?.toLocaleLowerCase().includes(q);
+    });
+  });
+</script>

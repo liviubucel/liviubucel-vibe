@@ -1,0 +1,54 @@
+---
+/** Original Nordlys tags index; taxonomy comes from Wix Blog + Wix Portfolio. */
+import {tags} from '@wix/blog';
+import {getNativeProjects,projectTechnologies} from '@/lib/wix-portfolio';
+import PageLayout from '@/layouts/PageLayout.astro';
+export const prerender=false;
+type LiveTag={slug:string;label:string;count:number};
+const grouped=new Map<string,LiveTag>();
+let available=false;
+try{
+  const result=await tags.queryTags().find();
+  available=true;
+  for(const tag of result.items||[]){
+    if((tag.publishedPostCount||0)<1||!tag.slug)continue;
+    grouped.set(tag.slug,{
+      slug:tag.slug,
+      label:tag.label||tag.slug,
+      count:tag.publishedPostCount||0
+    });
+  }
+}catch(e){console.error('[nordlys-tags-blog]',e instanceof Error?e.message:'Wix Blog tags unavailable')}
+try{
+  const projects=await getNativeProjects();
+  available=true;
+  for(const project of projects){
+    const seen=new Set<string>();
+    for(const item of (projectTechnologies(project)||'').split(',')){
+      const label=item.trim();
+      if(!label)continue;
+      const slug=label.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+      if(!slug||seen.has(slug))continue;
+      seen.add(slug);
+      const existing=grouped.get(slug);
+      grouped.set(slug,{slug,label:existing?.label||label,count:(existing?.count||0)+1});
+    }
+  }
+}catch(e){console.error('[nordlys-tags-portfolio]',e instanceof Error?e.message:'Wix Portfolio unavailable')}
+const native=[...grouped.values()].sort((a,b)=>a.label.localeCompare(b.label));
+const frontmatter={title:'Etichete',activeHeaderLink:'Tags'};
+---
+<PageLayout {frontmatter}>
+  <h1>Etichete</h1>
+  <p>Explorează articole și proiecte după subiect. Sunt afișate doar etichete din Wix Blog și tehnologii asociate proiectelor reale.</p>
+  {!available&&<p role="alert">Tags are temporarily unavailable.</p>}
+  <div class="flex flex-wrap justify-between gap-4 sm:gap-8">
+    {native.map(({slug,label,count})=>(
+      <a class="clickable flex flex-col items-center gap-1 no-underline" href={'/ro/tags/'+encodeURIComponent(slug)+'/'} data-astro-prefetch>
+        <span class="iconify text-4xl sm:text-5xl tabler--tag" />
+        <span class="text-base font-normal sm:text-lg">{label} ({count})</span>
+      </a>
+    ))}
+    <div class="mr-auto"></div>
+  </div>
+</PageLayout>

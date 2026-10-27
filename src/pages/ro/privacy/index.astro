@@ -1,0 +1,23 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+const frontmatter={title:'Confidențialitate',description:'Politica de confidențialitate a website-ului personal',activeHeaderLink:'Privacy'};
+const sections=[
+ ['Operator și domeniu','Acest website personal independent, inclusiv Romania Cyber Monitor, este administrat de Liviu Bucel. Politica descrie prelucrarea datelor prin formulare și serviciile necesare funcționării.'],
+ ['Formularul de contact','Wix Forms prelucrează numele, adresa de email, subiectul și mesajul trimis. Wix Contacts poate păstra datele de contact în scopul răspunderii la solicitări.'],
+ ['Actualizări de securitate','Formularul Security Updates colectează emailul și consimțământul explicit prin Wix Forms și Wix Contacts. Campaniile de email nu încep înainte de configurarea funcțiilor de confirmare, livrare și dezabonare.'],
+ ['Scop și temei','Răspunsurile la solicitări sunt legate de mesajul primit. Marketingul opțional prin email necesită consimțământ. Jurnalele tehnice servesc securității și prevenirii abuzurilor. Datele nu sunt vândute.'],
+ ['Furnizori','Noul website utilizează Wix pentru găzduire, formulare, portofoliu și blog nativ. Unele componente Cloudflare rămân active până la verificarea integrală a migrării.'],
+ ['CV și păstrare','CV-ul este trimis la cerere directă, nu este oferit printr-un link public neprotejat. Datele sunt păstrate numai cât este justificat de scop și de legislația aplicabilă.'],
+ ['Cyber Monitor','Semnalările din surse publice sunt separate de incidentele confirmate independent. Apariția într-o listă ransomware nu constituie dovada compromiterii unei organizații. Poți solicita corecturi.'],
+ ['Drepturile tale','În condițiile legii aplicabile poți solicita acces, rectificare, ștergere, restricționare, portabilitate, opoziție sau retragerea consimțământului.']
+] as const;
+---
+<PageLayout {frontmatter}>
+ <h1>Confidențialitate</h1>
+ <p>Actualizat la 22 octombrie 2026</p>
+ {sections.map(([title,description],i)=>(
+   <section><h2>{i+1}. {title}</h2><p>{description}</p></section>
+ ))}
+ <h2>Contact pentru confidențialitate</h2>
+ <p><a href="mailto:contact@liviubucel.com">contact@liviubucel.com</a></p>
+</PageLayout>

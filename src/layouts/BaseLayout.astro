@@ -1,0 +1,94 @@
+---
+import '@/style/main.css'
+import ibmPlexNormal from '@/assets/fonts/ibm-plex-sans-latin-400-normal.woff2?url'
+import ibmPlexMedium from '@/assets/fonts/ibm-plex-sans-latin-500-normal.woff2?url'
+import ibmPlexSemiBold from '@/assets/fonts/ibm-plex-sans-latin-600-normal.woff2?url'
+import ibmPlexBold from '@/assets/fonts/ibm-plex-sans-latin-700-normal.woff2?url'
+
+import ModeManager from '@/components/mode/ModeManager.astro'
+import CodeBlockIconsPlugin from '@/plugins/CodeBlockIconsPlugin.astro'
+import ZoomableImagesPlugin from '@/plugins/ZoomableImagesPlugin.astro'
+import config from '@/theme.config'
+import {SEO} from '@wix/seo/components'
+import {loadSEOTagsServiceConfig} from '@wix/seo/services'
+import { ClientRouter } from 'astro:transitions'
+
+const preloadFonts = [
+  ibmPlexNormal,
+  ibmPlexMedium,
+  ibmPlexSemiBold,
+  ibmPlexBold
+]
+
+export interface Props {
+  frontmatter: Partial<{
+    title: string
+    author: string
+    description: string
+    canonicalURL: string
+    publishedDate: Date
+    updatedDate?: Date
+    wixSeoItem?: boolean
+  }>
+}
+const { frontmatter }=Astro.props;
+const author=frontmatter.author||config.author;
+// Resolve SEO from Wix SEO & GEO instead of rendering duplicate handwritten tags.
+// Native Blog and Portfolio item pages render Wix-resolved item tags through the slot.
+const forwardedUrl=Astro.request.headers.get('x-wix-forwarded-url');
+const pageUrl=forwardedUrl&&URL.canParse(forwardedUrl)&&/^https?:$/.test(new URL(forwardedUrl).protocol)
+  ? forwardedUrl:Astro.url.href;
+let mainSeo:Awaited<ReturnType<typeof loadSEOTagsServiceConfig>>|undefined;
+if(!frontmatter.wixSeoItem){
+  try{
+    mainSeo=await loadSEOTagsServiceConfig({
+      pageUrl,
+      itemData:{pageName:frontmatter.title||config.title}
+    });
+  }catch(error){
+    console.error('[wix-native-main-seo]',error instanceof Error?error.message:'Service unavailable');
+  }
+}
+
+---
+
+<!doctype html>
+<html lang={Astro.url.pathname === '/ro' || Astro.url.pathname.startsWith('/ro/') ? 'ro' : config.locale} class={config.colorScheme || 'scheme-mono'}>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href="/brand/lb-mark.png" />
+
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="author" content={author} />
+    <!-- Native Wix SEO (dashboard controlled): title, description, canonical,
+         OG/Twitter, robots and JSON-LD injected by @wix/astro middleware.
+         Dynamic Wix item pages forward resolved tags through this slot. -->
+    {mainSeo&&<SEO.Tags seoTagsServiceConfig={mainSeo}/>}
+    <slot name="seo-tags" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Liviu Bucel — Wix Blog"
+      href="/rss.xml"
+    />
+
+    {preloadFonts.map((font) => (
+      <link
+        rel="preload"
+        as="font"
+        type="font/woff2"
+        href={font}
+        crossorigin="anonymous"
+      />
+    ))}
+
+    <ModeManager />
+    <ClientRouter />
+  </head>
+  <body>
+    <slot />
+    <CodeBlockIconsPlugin />
+    <ZoomableImagesPlugin />
+  </body>
+</html>

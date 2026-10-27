@@ -1,0 +1,47 @@
+---
+const logoUrl = 'https://static.wixstatic.com/media/a4f45c_7fb5025a965f4edf813cf097cb85783e~mv2.png'
+
+export interface Props {
+  frontmatter: Partial<{
+    background: boolean
+    logo: boolean
+  }>
+}
+
+const { background, logo: showLogo } = Astro.props.frontmatter
+---
+
+<div class="w-fit">
+  <div
+    class:list={[
+      'text-accent relative mb-1 w-fit pb-2 text-5xl font-bold tracking-tight sm:mb-2 sm:text-8xl',
+      {
+        'mb-2 sm:mb-8': background
+      }
+    ]}
+  >
+    {background && (
+      <span
+        class:list={['bg-accent/75 absolute inset-0 h-full w-full blur-3xl']}
+      />
+    )}
+    <div
+      class="relative flex items-center gap-4 sm:gap-8"
+      transition:name="branding"
+    >
+      {showLogo && (
+        <img
+          loading="eager"
+          alt="Liviu Bucel original LB logo"
+          src={logoUrl}
+          width={182}
+          height={195}
+          class="h-12 w-12 shrink-0 object-contain dark:invert sm:h-24 sm:w-24"
+        />
+      )}
+      <h1>
+        <slot />
+      </h1>
+    </div>
+  </div>
+</div>

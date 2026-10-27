@@ -1,0 +1,36 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+const portrait='https://static.wixstatic.com/media/a4f45c_3af2a1300a6d440191dfab00029b44c3~mv2.jpg';
+const frontmatter={title:'Despre mine',description:'Liviu Bucel — studii în securitate cibernetică, proiecte tehnice și investigații digitale',activeHeaderLink:'About'};
+---
+<PageLayout {frontmatter}>
+  <h1>Despre mine</h1>
+  <img src={portrait} width="960" height="960" alt="Fotografie cu Liviu Bucel" loading="eager" class="float-right mb-5 ml-6 h-40 w-40 rounded-sm object-cover sm:h-56 sm:w-56" />
+  <p>Sunt Liviu Bucel și studiez securitatea cibernetică la <a href="https://www.dmu.ac.uk/" target="_blank" rel="noopener noreferrer">De Montfort University</a>, în Leicester, Regatul Unit. Mă interesează cum apar vulnerabilitățile, cum sunt detectate atacurile și cum putem investiga incidentele pe baza dovezilor tehnice.</p>
+  <p>Experiența mea combină suportul IT, infrastructura web și lucrul practic cu mecanisme de securitate. Prin <a href="https://www.zebrabyte.ro/" target="_blank" rel="noopener noreferrer">ZebraByte</a> dezvolt și administrez servicii tehnice, cu atenție la găzduire, DNS, TLS și securizare.</p>
+  <p>Acest site reflectă ceea ce construiesc, testez și învăț, nu doar o listă de tehnologii.</p>
+  <div class="clear-both"></div>
+  <div class="not-prose mt-6 mb-7 flex items-start gap-3 rounded-sm border border-current/20 p-4 text-base">
+    <span class="iconify tabler--users-group mt-0.5 shrink-0 text-2xl opacity-70" aria-hidden="true"></span>
+    <div><p class="font-semibold">Membru al comunității OWASP</p><p class="mt-1 opacity-80">Sunt membru al comunității <a class="clickable underline" href="https://owasp.org/" rel="noopener noreferrer" target="_blank">Open Worldwide Application Security Project (OWASP)</a>. Apartenența nu este o certificare sau acreditare.</p></div>
+  </div>
+
+
+  <h2>Direcțiile mele</h2>
+  <p><strong>Securitatea aplicațiilor.</strong> Analiza vulnerabilităților web, a autentificării și a configurărilor, cu testare autorizată și recomandări de remediere.</p>
+  <p><strong>Investigații defensive.</strong> Analiza traficului de rețea, a logurilor și a indicatorilor relevanți pentru răspunsul la incidente și criminalistica digitală.</p>
+  <p><strong>Infrastructură securizată.</strong> Linux, Windows, DNS, HTTPS/TLS, Cloudflare WAF, limitarea cererilor și protecția aplicațiilor web.</p>
+
+  <h2>Studii și practică</h2>
+  <p>Urmez BSc (Hons) Cyber Security la De Montfort University (2024–2027, absolvire estimată). În laboratoare lucrez cu evaluări de securitate autorizate, analiza traficului, răspuns la incidente și instrumente tehnice.</p>
+  <p>Folosesc Nmap, Wireshark, Burp Suite, Kali Linux și scripting pentru a înțelege comportamentul real al sistemelor. Exercițiile din laborator sunt prezentate ca exerciții, nu ca proiecte comerciale.</p>
+
+  <h2>Proiecte și articole</h2>
+  <p>În secțiunea <a href="/ro/projects/">Proiecte</a> explic ce am construit, ce tehnologii am folosit și ce problemă rezolvă fiecare aplicație. În <a href="/ro/blog/">Blog</a> public cercetări și analize tehnice.</p>
+
+  <h2>Experiență și colaborări</h2>
+  <p>Poți consulta <a href="/ro/experience/">CV-ul și experiența mea</a> sau <a href="/ro/tools/">instrumentele folosite</a>. Pentru evaluări de securitate autorizate, administrare Cloudflare ori colaborări tehnice, vezi <a href="/ro/services/">serviciile</a> și <a href="/ro/contact/">pagina de contact</a>.</p>
+
+  <h2>Profiluri</h2>
+  <p><a href="https://www.linkedin.com/in/liviubucel/" target="_blank" rel="noopener noreferrer">LinkedIn</a> · <a href="https://github.com/liviubucel" target="_blank" rel="noopener noreferrer">GitHub</a> · <a href="https://x.com/liviubucel" target="_blank" rel="noopener noreferrer">X</a></p>
+</PageLayout>

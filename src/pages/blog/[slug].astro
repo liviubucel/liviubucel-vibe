@@ -1,53 +1,107 @@
 ---
-/* Native Wix Blog SEO per the official Wix-managed Astro item-page guide:
- * https://dev.wix.com/docs/go-headless/wix-managed-headless/full-integration-astro/feature-guides/seo/add-seo-support-to-item-pages
- * The React application still renders the post using the existing Wix SDK.
+/**
+ * An ACTUAL Nordlys Astro article page, not a React copy.
+ * All CSS/layout/TOC/scroll interactions come from original FjellOverflow.
+ * Only the Wix SDK data payload is adapted.
  */
-import { SEO } from '@wix/seo/components';
-import { seoTags } from '@wix/seo';
-import { loadSEOTagsServiceConfig } from '@wix/seo/services';
+import { posts, tags } from '@wix/blog';
 import { WIX_APPS } from '@wix/essentials';
-import { Head } from '@/components/Head';
-import AppRouter from '@/components/Router';
-import '@wix/wix-vibe-plugins/plugins-vars.css';
-import '@wix/wix-vibe-plugins/plugins-theme.css';
-import '@/styles/global.css';
-import '@/styles/nordlys.css';
-import '@/vendor/photoswipe/photoswipe.css';
-import '@/vendor/photoswipe/photoswipe-dynamic-caption-plugin.css';
-import '@/vendor/photoswipe/photoswipe-thumbs-plugin.css';
+import WixItemSeo from '@/components/wix/WixItemSeo.astro';
+import PageLayout from '@/layouts/PageLayout.astro';
+import ToC from '@/components/ToC.astro';
+import HeadingAnchorsPlugin from '@/plugins/HeadingAnchorsPlugin.astro';
+import { convertWixBlogPost } from '@/lib/nordlys-wix-content';
+import { legacySlugs, type NativeBlogPost } from '@/lib/wix-blog';
 
+export const prerender=false;
 export const wixMetadata={
-  appDefId: WIX_APPS.blogs.id,
-  pageIdentifier: WIX_APPS.blogs.postPageMetadata.pageIdentifier,
-  identifiers:{
-    slug:WIX_APPS.blogs.postPageMetadata.identifiers.slug
-  }
+  appDefId:WIX_APPS.blogs.id,
+  pageIdentifier:WIX_APPS.blogs.postPageMetadata.pageIdentifier,
+  identifiers:{slug:WIX_APPS.blogs.postPageMetadata.identifiers.slug}
 };
-const forwarded=Astro.request.headers.get('x-wix-forwarded-url');
-const pageUrl=forwarded&&URL.canParse(forwarded)&&/^https?:$/.test(new URL(forwarded).protocol)
-  ?forwarded:Astro.url.href;
-const seoTagsServiceConfig=await loadSEOTagsServiceConfig({
-  pageUrl,
-  itemType:seoTags.ItemType.BLOG_POST,
-  itemData:{slug:Astro.params.slug!}
-});
+
+const requested=Astro.params.slug||'';
+const slug=legacySlugs[requested]||requested;
+let post:NativeBlogPost|undefined;
+let allPosts:NativeBlogPost[]=[];
+let articleTags:{label:string;slug:string}[]=[];
+let unavailable=false;
+try {
+  if(slug.length>0&&slug.length<=256){
+    const response=await posts.listPosts({paging:{limit:100}});
+    allPosts=(response.posts||[]) as NativeBlogPost[];
+    const entry=allPosts.find(p=>p.slug===slug||p._id===slug||p.id===slug);
+    const id=entry?._id||entry?.id;
+    if(id){
+      const detail=await posts.getPost(id,{fieldsets:['RICH_CONTENT','URL']});
+      post=(detail.post||entry) as NativeBlogPost;
+      if(post.tagIds?.length){
+        const tagResult=await tags.queryTags().find();
+        articleTags=(tagResult.items||[]).filter(t=>post!.tagIds?.includes(t._id!)).map(t=>({label:t.label||'',slug:t.slug||''}));
+      }
+    }
+  }
+}catch(e){unavailable=true;console.error('[nordlys-original-post] Failed to load Wix post:',e instanceof Error?e.message:'Wix API error')}
+if(!post)Astro.response.status=unavailable?503:404;
+const {html,headings}=post?convertWixBlogPost(post):{html:'',headings:[]};
+const date=post?.firstPublishedDate?new Date(post.firstPublishedDate):undefined;
+const validDate=date&&!Number.isNaN(date.valueOf())?date:undefined;
+const sorted=[...allPosts].sort((a,b)=>new Date(b.firstPublishedDate||0).valueOf()-new Date(a.firstPublishedDate||0).valueOf());
+const index=sorted.findIndex(p=>p.id===post?.id||p._id===post?._id);
+const older=index>=0?sorted[index+1]:undefined;
+const newer=index>0?sorted[index-1]:undefined;
+const postLink=(p:NativeBlogPost)=>'/blog/'+encodeURIComponent(p.slug||p._id||p.id||'');
+const frontmatter={
+  title:post?.title||(unavailable?'Blog unavailable':'Article not found'),
+  author:'Liviu Bucel',
+  description:post?.excerpt||'Cybersecurity articles by Liviu Bucel',
+  activeHeaderLink:'Blog',
+  wixSeoItem:true,
+  scrollProgress:!!post,
+  publishedDate:validDate,
+  openGraphContent:post?'article':'website'
+};
 ---
-<html lang="en" class="w-full h-full">
-  <head>
-    <script is:inline>
-      try {
-        const mode=localStorage.getItem('liviubucel-nordlys-mode')==='light'?'light':'dark';
-        document.documentElement.dataset.mode=mode;
-        document.documentElement.style.colorScheme=mode;
-      } catch {document.documentElement.dataset.mode='dark'}
-    </script>
-    <Head/>
-    <SEO.Tags seoTagsServiceConfig={seoTagsServiceConfig} slot="seo-tags"/>
-  </head>
-  <body class="w-full h-full">
-    <div id="root" class="w-full h-full">
-      <AppRouter client:only="react"/>
+<PageLayout {frontmatter}>
+  {post&&<WixItemSeo kind="blog" slug={post.slug||slug} slot="seo-tags" />}
+  <div slot="aside" class="border-accent mt-24 hidden border-r pr-4 opacity-75 transition duration-500 ease-in-out hover:opacity-100 2xl:block">
+    {post && headings.length>0 && <ToC headings={headings} open />}
+  </div>
+  <div slot="top" class="mt-4">
+    <a href="/blog/" class="clickable flex w-fit items-center gap-1">
+      <span class="iconify tabler--arrow-left text-xl"></span>
+      Back to all posts
+    </a>
+  </div>
+  {post?(
+    <>
+      <h1 class="mt-2 mb-2 sm:my-4">{post.title}</h1>
+      <div class="flex flex-wrap gap-x-6 gap-y-3 text-base">
+        {articleTags.map(tag=>(
+          <a class="clickable inline-flex items-center gap-1 no-underline" href={'/tags/'+encodeURIComponent(tag.slug)+'/'}><span class="iconify text-xl tabler--tag"></span><span class="font-normal">{tag.label}</span></a>
+        ))}
+      </div>
+      <div class="mt-4">
+        <span class="opacity-75">Published on{' '}
+          {validDate&&<time datetime={validDate.toISOString()}>{validDate.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</time>}
+          {' '}by
+        </span>
+        {' '}<a class="clickable" href="/about/">Liviu Bucel</a>
+        {post.minutesToRead&&<> · <span class="whitespace-nowrap opacity-75">{post.minutesToRead} min read</span></>}
+      </div>
+      {headings.length>0&&(
+        <div class="mt-8 w-fit rounded-sm border 2xl:hidden"><ToC headings={headings}/></div>
+      )}
+      <article data-pagefind-body><Fragment set:html={html}/></article>
+      <HeadingAnchorsPlugin/>
+    </>
+  ):<p>{unavailable?'Wix Blog is temporarily unavailable.':'Article not found.'}</p>}
+  <div slot="bottom" class="mt-8 grid grid-cols-5 gap-4">
+    <div class="col-span-2">
+      {newer&&<a href={postLink(newer)} class="clickable flex flex-col gap-2"><span>← Next post</span><span class="underline">{newer.title}</span></a>}
     </div>
-  </body>
-</html>
+    <div class="col-span-2 col-start-4 text-right">
+      {older&&<a href={postLink(older)} class="clickable flex flex-col gap-2"><span>Previous post →</span><span class="underline">{older.title}</span></a>}
+    </div>
+  </div>
+</PageLayout>

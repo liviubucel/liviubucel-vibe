@@ -1,0 +1,83 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import WixItemSeo from '@/components/wix/WixItemSeo.astro';
+import {projectStories} from '@/lib/project-stories';
+import TagsBar from '@/components/TagsBar.astro';
+import {resolveTags} from '@/util/tags';
+import {getNativeProject,projectTechnologies,projectExternalLink,projectCoverUrl,getNativeProjectGallery} from '@/lib/wix-portfolio';
+export const prerender=false;
+let unavailable=false;
+let project;
+try{project=await getNativeProject(Astro.params.id||'')}catch(e){unavailable=true;console.error('[nordlys-wix-project]',e instanceof Error?e.message:'Portfolio unavailable')}
+if(!project)Astro.response.status=unavailable?503:404;
+const story=projectStories[project?.slug||''];
+const coverSrc=project?projectCoverUrl(project):undefined;
+const featureImage=coverSrc||projectStories[project?.slug||'']?.screenshot;
+let gallery:Awaited<ReturnType<typeof getNativeProjectGallery>>=[];
+if(project) {
+  try{gallery=await getNativeProjectGallery(project.slug||'')}
+  catch(e){console.error('[wix-portfolio-gallery]',e instanceof Error?e.message:'Unavailable')}
+}
+const coverCaption=project?.slug==='ssl-certificate-generator-acme-automation-tool'
+  ?'Real screenshot of the original project page on Odoo'
+  :'Real Wix Portfolio cover: public website or source repository';
+
+const narrative=story?.en;
+const technologies=(project?projectTechnologies(project):'')?.split(',').map(x=>x.trim()).filter(Boolean)||[];
+const link=project?projectExternalLink(project):undefined;
+const frontmatter={title:project?.title||'Project not found',activeHeaderLink:'Projects',wixSeoItem:true,description:project?.description||'Technical project by Liviu Bucel'};
+---
+<PageLayout {frontmatter}>
+  {project?.slug&&<WixItemSeo kind="portfolio" slug={project.slug} slot="seo-tags" />}
+  <div slot="top" class="mt-4">
+    <a class="clickable flex w-fit items-center gap-1" href="/projects/">
+      <span class="iconify tabler--arrow-left text-xl"></span>
+      Back to all projects
+    </a>
+  </div>
+  {project?(
+    <>
+      <h1 class="mt-2 mb-2 sm:my-4">{project.title}</h1>
+      <TagsBar tags={resolveTags(technologies)}/>
+      <p>{project.description}</p>
+      {technologies.length>0&&<p class="mt-3 text-sm opacity-75"><strong>Technical stack: </strong>{technologies.join(" · ")}</p>}
+      {featureImage&&<figure class="mt-8">
+        <a href={featureImage} target="_blank" rel="noopener noreferrer"><img src={featureImage} alt={coverSrc?coverCaption:(story?.imageCaption.en||'Project image')} width="1440" height="1000" loading="lazy" decoding="async" class="w-full rounded-sm border border-current/20 object-contain" /></a>
+        <figcaption class="mt-2 text-sm opacity-70">{coverSrc?coverCaption:story?.imageCaption.en}</figcaption>
+      </figure>}
+      <article>
+      {narrative&&<>
+        <section><h2 id="challenge">Problem to solve</h2><p>{narrative.problem}</p></section>
+        <section><h2 id="architecture">Design & architecture</h2><p>{narrative.approach}</p></section>
+        <section><h2 id="capabilities">What it provides</h2><ul>{narrative.outcomes.map(x=><li>{x}</li>)}</ul></section>
+        <section><h2 id="safeguards">Security considerations</h2><ul>{narrative.security.map(x=><li>{x}</li>)}</ul></section>
+      </>}
+      <section><h2 id="code">Code and demonstration</h2>
+      {story?.repository&&<p><a class="clickable" href={story.repository} rel="noopener noreferrer" target="_blank">Source code on GitHub</a></p>}
+      {story?.demo&&<p><a class="clickable" href={story.demo} rel="noopener noreferrer" target="_blank">Live website / demo</a></p>}
+      </section>
+      {project.details?.filter(d=>d.label!=='Technologies'&&d.label!=='Project link').map(detail=>(
+        <section>
+          {detail.label&&<h2>{detail.label}</h2>}
+          {detail.text&&<p class="whitespace-pre-line">{detail.text}</p>}
+          {detail.link?.url?.startsWith('https://')&&<p><a href={detail.link.url} rel="noopener noreferrer" target="_blank">{detail.link.text||'Open link'}</a></p>}
+        </section>
+      ))}
+      </article>
+
+      {gallery.length>0&&<section class="mt-12" aria-label="Original project screenshots">
+        <h2>Original project screenshots</h2>
+        <p>These are actual project images stored in Wix Portfolio, not generated mockups.</p>
+        <div class="not-prose mt-6 grid gap-5 sm:grid-cols-2">
+          {gallery.map(photo=><figure class="min-w-0">
+            <a href={photo.url} target="_blank" rel="noopener noreferrer" aria-label={photo.title}>
+              <img src={photo.url} alt={photo.title} width="962" height="807" loading="lazy" decoding="async" class="aspect-[4/3] w-full rounded-sm border border-current/20 object-contain" />
+            </a>
+            <figcaption class="mt-2 text-sm opacity-70">{photo.title}</figcaption>
+          </figure>)}
+        </div>
+      </section>}
+      {link&&<p><a class="clickable" href={link} rel="noopener noreferrer" target="_blank">Open project <span class="iconify tabler--external-link align-middle"></span></a></p>}
+    </>
+  ):<p>{unavailable?'Portfolio temporarily unavailable.':'Project not found.'}</p>}
+</PageLayout>

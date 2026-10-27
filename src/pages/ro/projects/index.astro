@@ -1,0 +1,41 @@
+---
+/** Original Nordlys ProjectsList / ProjectsListItem, with native Wix Portfolio data. */
+import PageLayout from '@/layouts/PageLayout.astro';
+import ProjectsList from '@/components/projects/ProjectsList.astro';
+import {projectStories} from '@/lib/project-stories';
+import Pagination from '@/components/Pagination.astro';
+import {getNativeProjects,projectTechnologies,projectCoverUrl} from '@/lib/wix-portfolio';
+import type {CollectionEntry} from 'astro:content';
+import type {Page} from 'astro';
+export const prerender=false;
+let available=true;
+let projects:Awaited<ReturnType<typeof getNativeProjects>>=[];
+try{projects=await getNativeProjects()}catch(e){available=false;console.error('[nordlys-wix-projects]',e instanceof Error?e.message:'Portfolio unavailable')}
+const lastPage=Math.max(1,Math.ceil(projects.length/3));
+const requested=Number(Astro.url.searchParams.get('page')||'1');
+const currentPage=Number.isInteger(requested)?Math.min(Math.max(requested,1),lastPage):1;
+const visible=projects.slice((currentPage-1)*3,currentPage*3);
+const entries=visible.map(p=>({
+  id:p.slug||p._id||p.id||'',
+  data:{
+    title:p.title||'Untitled',
+    url:'/ro/projects/'+encodeURIComponent(p.slug||p._id||p.id||'')+'/',
+    tags:(projectTechnologies(p)||'').split(',').map(x=>x.trim()).filter(Boolean),
+    previewImage:projectCoverUrl(p)||projectStories[p.slug||'']?.screenshot,
+    wixDescription:p.description||''
+  }
+})) as unknown as CollectionEntry<'projects'>[];
+const page={
+  currentPage,lastPage,
+  url:{prev:currentPage>1?'/ro/projects/?page='+(currentPage-1):undefined,next:currentPage<lastPage?'/ro/projects/?page='+(currentPage+1):undefined}
+} as unknown as Page;
+const frontmatter={title:'Proiecte',activeHeaderLink:'Projects',description:'Cybersecurity, digital investigation and infrastructure projects'};
+---
+<PageLayout {frontmatter}>
+  <h1>Proiecte</h1>
+  <p>Proiecte din securitate cibernetică, infrastructură și dezvoltare.</p>
+  {!available&&<p role="alert">Portofoliul nu este disponibil temporar.</p>}
+  {available&&projects.length===0&&<p>Nu există încă proiecte publicate.</p>}
+  <ProjectsList projects={entries}/>
+  <Pagination slot="bottom" {page}/>
+</PageLayout>

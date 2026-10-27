@@ -1,0 +1,10 @@
+---
+import CyberMonitorView from '@/components/wix/CyberMonitorView.astro';
+export const prerender=false;
+const value=Astro.params.rest||'';
+const categories=new Set(['ransomware','breaches','exposures','malware','threat-infrastructure']);
+const category=categories.has(value)?value:undefined;
+const slug=value.startsWith('incidents/')?value.slice('incidents/'.length):undefined;
+if(!category&&!slug)Astro.response.status=404;
+---
+{category||slug?<CyberMonitorView {category} {slug}/>:<p>Page not found.</p>}

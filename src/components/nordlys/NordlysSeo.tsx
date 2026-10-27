@@ -11,6 +11,7 @@ import {getLanguage} from '@/lib/portfolio';
 const routeSEO:Record<string,{en:string;ro:string;enDesc:string;roDesc:string}>={
  '/':{en:'Home',ro:'Acasă',enDesc:'Liviu Bucel — cybersecurity portfolio, projects, research, CV and professional services.',roDesc:'Liviu Bucel — portofoliu de cybersecurity, proiecte, cercetare, CV și servicii profesionale.'},
  '/blog':{en:'Blog',ro:'Blog',enDesc:'Cybersecurity research, technical articles and security analysis by Liviu Bucel.',roDesc:'Articole tehnice, cercetare și analize de cybersecurity de Liviu Bucel.'},
+ '/tags':{en:'Tags',ro:'Etichete',enDesc:'Browse tags assigned to published cybersecurity articles in Wix Blog.',roDesc:'Explorează etichetele articolelor publicate în Wix Blog.'},
  '/projects':{en:'Projects',ro:'Proiecte',enDesc:'Selected cybersecurity and infrastructure projects by Liviu Bucel.',roDesc:'Proiecte de cybersecurity și infrastructură dezvoltate de Liviu Bucel.'},
  '/contact':{en:'Contact',ro:'Contact',enDesc:'Contact Liviu Bucel about cybersecurity work, partnerships or professional opportunities.',roDesc:'Contactează-l pe Liviu Bucel pentru colaborări și proiecte de cybersecurity.'},
  '/services':{en:'Cybersecurity Services',ro:'Servicii de cybersecurity',enDesc:'Security assessments, DNS, TLS, cloud security and responsible cybersecurity consulting.',roDesc:'Evaluări de securitate, DNS, TLS, cloud și consultanță responsabilă în cybersecurity.'},
