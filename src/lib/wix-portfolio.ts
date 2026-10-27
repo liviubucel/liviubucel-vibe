@@ -60,9 +60,12 @@ export function wixPortfolioImageUrl(media: unknown): string | undefined {
     } catch { /* malformed input: do not generate an image */ }
     return undefined;
   }
-  const mediaId = /^wix:image:\/\/v1\/([a-z0-9_~.-]+)(?:\/|#|$)/i.exec(value)?.[1]
-    ?? (/^[a-z0-9]+_[a-z0-9]+~mv2\.(?:png|jpg|jpeg|webp)$/i.test(value) ? value : undefined);
-  return mediaId ? 'https://static.wixstatic.com/media/' + encodeURIComponent(mediaId) : undefined;
+  const candidate = /^wix:image:\/\/v1\/([^\/#?]+)(?:\/|#|$)/i.exec(value)?.[1] ?? value;
+  // Reject traversal, protocol tricks and arbitrary paths. Real Wix media IDs
+  // carry an owner prefix, opaque ID, ~mv2 and a supported image extension.
+  const mediaId = /^[a-z0-9]+_[a-z0-9]+~mv2\.(?:png|jpg|jpeg|webp)$/i.test(candidate)
+    ? candidate : undefined;
+  return mediaId ? 'https://static.wixstatic.com/media/' + mediaId : undefined;
 }
 export function projectCoverUrl(project: NativeProject): string | undefined {
   return wixPortfolioImageUrl(project.coverImage);
