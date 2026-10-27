@@ -2,7 +2,7 @@ import {useEffect,useState} from 'react';
 import {Link,useLocation,useParams} from 'react-router-dom';
 import {getLanguage,localizedPath} from '@/lib/portfolio';
 import {setNordlysDocumentSEO} from '@/components/nordlys/NordlysSeo';
-import {getNativeProject,projectExternalLink,projectTechnologies,type NativeProject} from '@/lib/wix-portfolio';
+import {getNativeProject,projectExternalLink,projectTechnologies,projectCoverUrl,type NativeProject} from '@/lib/wix-portfolio';
 export default function ProjectDetailPage(){
   const {id}=useParams<{id:string}>();const lang=getLanguage(useLocation().pathname),ro=lang==='ro';
   const [project,setProject]=useState<NativeProject>(),[loading,setLoading]=useState(true),[error,setError]=useState(false);
@@ -13,7 +13,13 @@ export default function ProjectDetailPage(){
     <p className="nordlys-item-meta"><Link viewTransition className="nordlys-inline-link" to={localizedPath('/projects',lang)}>← {ro?'Toate proiectele':'All projects'}</Link></p>
     {loading?<p role="status">{ro?'Se încarcă…':'Loading project…'}</p>:project?<><header className="nordlys-section">
       <p className="nordlys-kicker">{projectTechnologies(project)||'Cybersecurity'}</p><h1 className="nordlys-page-title">{project.title}</h1><p className="nordlys-page-lead">{project.description}</p>
-    </header><div className="nordlys-article">
+    </header>
+    {projectCoverUrl(project)&&<figure className="nordlys-project-hero">
+      <img src={projectCoverUrl(project)} alt={ro?'Captură reală a proiectului '+project.title:'Authentic project capture: '+project.title}
+        loading="eager" decoding="async" />
+      <figcaption>{ro?'Captură din proiectul real, păstrată în Wix Portfolio.':'Real project image, managed in Wix Portfolio.'}</figcaption>
+    </figure>}
+    <div className="nordlys-article">
       {project.details?.map((item,i)=><section key={i}><h2>{item.label}</h2><p style={{whiteSpace:'pre-line'}}>{item.text}</p>
         {item.link&&<p><a className="nordlys-inline-link" href={item.link.url} target="_blank" rel="noopener noreferrer">{item.link.text||'Open source project'} ↗</a></p>}
       </section>)}
