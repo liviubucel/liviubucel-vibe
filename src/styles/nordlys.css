@@ -414,3 +414,24 @@ html.theme-switching ::view-transition-old(root){z-index:1;}
   }
   .nordlys-navbar{padding-top:15px;padding-bottom:16px;}
 }
+
+/* Original SSL Generator screenshots loaded from Wix Portfolio/ProjectItems. */
+.nordlys-project-gallery{margin:28px 0 38px;}
+.nordlys-project-gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;}
+.nordlys-gallery-item{margin:0;min-width:0;}
+.nordlys-gallery-item a{display:block;}
+.nordlys-gallery-item img{
+  display:block;width:100%;height:160px;object-fit:cover;object-position:top;
+  border:1px solid var(--n-border);border-radius:3px;
+}
+.nordlys-gallery-item figcaption{
+  font-size:.76rem;line-height:1.5;color:var(--n-dim);margin-top:7px;
+}
+@media(max-width:680px){
+  .nordlys-project-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .nordlys-gallery-item img{height:135px;}
+}
+@media(max-width:400px){
+  .nordlys-project-gallery-grid{grid-template-columns:minmax(0,1fr);}
+  .nordlys-gallery-item img{height:auto;max-height:280px;object-fit:contain;}
+}
