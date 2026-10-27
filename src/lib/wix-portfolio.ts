@@ -16,6 +16,7 @@ export interface NativeProject {
   description?:string;
   slug?:string;
   hidden?:boolean;
+  coverImage?:{imageInfo?:string|{id?:string;url?:string;altText?:string}};
   details?:Array<{label?:string;text?:string;link?:{text?:string;url?:string;target?:string}}>;
 }
 export async function getNativeProjects():Promise<NativeProject[]> {
@@ -32,4 +33,37 @@ export function projectExternalLink(project:NativeProject):string|undefined {
 }
 export function projectTechnologies(project:NativeProject):string|undefined {
   return project.details?.find(item=>item.label==='Technologies')?.text;
+}
+
+/**
+ * Wix Portfolio/Projects exposes coverImage.imageInfo as a wix:image:// URI,
+ * unlike the REST Projects API which returns a nested Image object.
+ * This converts the public Wix-managed media reference only; no external
+ * hotlinks, data copies, user input or synthetic marketing imagery.
+ */
+export function wixPortfolioImageUrl(media: unknown): string | undefined {
+  let value: unknown = media;
+  if (value && typeof value === 'object') {
+    const outer = value as {imageInfo?:unknown;url?:unknown;id?:unknown};
+    value = outer.imageInfo ?? outer.url ?? outer.id;
+    if (value && typeof value === 'object') {
+      const image = value as {url?:unknown;id?:unknown};
+      value = image.url ?? image.id;
+    }
+  }
+  if (typeof value !== 'string') return undefined;
+  if (value.startsWith('https://static.wixstatic.com/media/')) {
+    try {
+      const parsed = new URL(value);
+      if (parsed.hostname === 'static.wixstatic.com' && parsed.pathname.startsWith('/media/'))
+        return parsed.toString();
+    } catch { /* malformed input: do not generate an image */ }
+    return undefined;
+  }
+  const mediaId = /^wix:image:\/\/v1\/([a-z0-9_~.-]+)(?:\/|#|$)/i.exec(value)?.[1]
+    ?? (/^[a-z0-9]+_[a-z0-9]+~mv2\.(?:png|jpg|jpeg|webp)$/i.test(value) ? value : undefined);
+  return mediaId ? 'https://static.wixstatic.com/media/' + encodeURIComponent(mediaId) : undefined;
+}
+export function projectCoverUrl(project: NativeProject): string | undefined {
+  return wixPortfolioImageUrl(project.coverImage);
 }
