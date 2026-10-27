@@ -67,3 +67,40 @@ export function wixPortfolioImageUrl(media: unknown): string | undefined {
 export function projectCoverUrl(project: NativeProject): string | undefined {
   return wixPortfolioImageUrl(project.coverImage);
 }
+
+/**
+ * Wix's Portfolio/ProjectItems CMS projection currently omits its documented
+ * 'project' relationship: `eq('project', projectId)` returns zero rows even
+ * for an existing project. To avoid showing another project's photographs,
+ * store the exact native Project Item IDs that were created for SSL Generator.
+ * Image, title, order and alt source are still read live from native Wix CMS;
+ * no binary files are bundled in the app.
+ *
+ * IDs were cross-checked against Wix Portfolio Project Items REST on 27 Oct.
+ */
+const verifiedProjectItemIds: Record<string,readonly string[]> = {
+  'da19f867-bb22-45ca-befb-1b4eb2d9696c': [
+    '87b2dbb2-8af5-488a-991a-3e5010b303d9',
+    '167eca22-4d88-4083-b7ad-5b4059e49852',
+    '8d846d7f-0a0e-425e-af76-461f5502b5f5'
+  ]
+};
+export interface NativeProjectGalleryItem {
+  _id?:string;
+  type?:string;
+  title?:string;
+  description?:string;
+  sortOrder?:number;
+  image?:{imageInfo?:string|{id?:string;url?:string;altText?:string}};
+}
+export async function getNativeProjectGallery(project:NativeProject):Promise<NativeProjectGalleryItem[]> {
+  const projectId = project.id || project._id;
+  const allowlist = projectId ? verifiedProjectItemIds[projectId] : undefined;
+  if (!allowlist?.length) return [];
+  const result = await items.query('Portfolio/ProjectItems')
+    .hasSome('_id',[...allowlist]).limit(100).find();
+  return (result.items as unknown as NativeProjectGalleryItem[])
+    .filter(item => item._id && allowlist.includes(item._id)
+      && item.type === 'IMAGE' && wixPortfolioImageUrl(item.image))
+    .sort((a,b) => (a.sortOrder??0)-(b.sortOrder??0));
+}
