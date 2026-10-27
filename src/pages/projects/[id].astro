@@ -1,5 +1,6 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
+import WixItemSeo from '@/components/wix/WixItemSeo.astro';
 import {projectStories} from '@/lib/project-stories';
 import TagsBar from '@/components/TagsBar.astro';
 import {resolveTags} from '@/util/tags';
@@ -16,6 +17,7 @@ const link=project?projectExternalLink(project):undefined;
 const frontmatter={title:project?.title||'Project not found',activeHeaderLink:'Projects',description:project?.description||'Technical project by Liviu Bucel'};
 ---
 <PageLayout {frontmatter}>
+  {project?.slug&&<WixItemSeo kind="portfolio" slug={project.slug} slot="seo-tags" />}
   <div slot="top" class="mt-4">
     <a class="clickable flex w-fit items-center gap-1" href="/projects/">
       <span class="iconify tabler--arrow-left text-xl"></span>

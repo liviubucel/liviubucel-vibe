@@ -31,6 +31,7 @@ const {
 ---
 
 <BaseLayout frontmatter={frontmatter}>
+  <slot name="seo-tags" slot="seo-tags" />
   <div class:list={["mx-auto flex min-h-svh w-full max-w-[90%] flex-col justify-between",wide ? "md:max-w-5xl" : "md:max-w-3xl"]}>
     <Header activeHeaderLink={activeHeaderLink} />
     <slot name="top" />

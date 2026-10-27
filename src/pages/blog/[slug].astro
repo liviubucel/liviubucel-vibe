@@ -6,6 +6,7 @@
  */
 import { posts, tags } from '@wix/blog';
 import { WIX_APPS } from '@wix/essentials';
+import WixItemSeo from '@/components/wix/WixItemSeo.astro';
 import PageLayout from '@/layouts/PageLayout.astro';
 import ToC from '@/components/ToC.astro';
 import HeadingAnchorsPlugin from '@/plugins/HeadingAnchorsPlugin.astro';
@@ -57,11 +58,11 @@ const frontmatter={
   activeHeaderLink:'Blog',
   scrollProgress:!!post,
   publishedDate:validDate,
-  canonicalURL:new URL(Astro.url.pathname,'https://www.liviubucel.com').href,
   openGraphContent:post?'article':'website'
 };
 ---
 <PageLayout {frontmatter}>
+  {post&&<WixItemSeo kind="blog" slug={post.slug||slug} slot="seo-tags" />}
   <div slot="aside" class="border-accent mt-24 hidden border-r pr-4 opacity-75 transition duration-500 ease-in-out hover:opacity-100 2xl:block">
     {post && headings.length>0 && <ToC headings={headings} open />}
   </div>

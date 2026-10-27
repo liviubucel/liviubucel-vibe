@@ -3,6 +3,7 @@ import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import cloudProviderFetchAdapter from "@wix/cloud-provider-fetch-adapter";
 import wix from "@wix/astro";
+import wixAstroPages from "@wix/astro-pages";
 import monitoring from "@wix/monitoring-astro";
 import react from "@astrojs/react";
 import sourceAttrsPlugin from "@wix/babel-plugin-jsx-source-attrs";
@@ -14,7 +15,8 @@ const isBuild = process.env.NODE_ENV == "production";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://www.liviubucel.com",
+  // Until the verified domain cutover, the Wix URL is the actual published origin.
+  site: "https://my-site-p444dlue-zebrabyte.wix-vibe-site.com",
   output: "server",
   integrations: [
     {
@@ -34,7 +36,9 @@ export default defineConfig({
     wix({
       htmlEmbeds: isBuild,
       auth: true,
+      robots: true,
     }),
+    wixAstroPages(),
     ...(isBuild ? [monitoring()] : []),
     react(isBuild ? {} : {
       babel: { plugins: [sourceAttrsPlugin, dynamicDataPlugin] },

@@ -28,6 +28,7 @@ const ro=Astro.url.pathname==='/ro'||Astro.url.pathname.startsWith('/ro/');
 ---
 
 <BaseLayout frontmatter={frontmatter}>
+  <slot name="seo-tags" slot="seo-tags" />
   <div class="mx-auto flex min-h-svh w-full max-w-[90%] flex-col justify-between md:max-w-3xl">
     <div class="mt-16 px-4 sm:mt-36 sm:px-12">
       <main id="main">

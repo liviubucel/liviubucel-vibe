@@ -3,7 +3,7 @@ import { defineThemeConfig } from './types'
 // The FjellOverflow/Nordlys original configuration, with identity,
 // menu targets, metadata and social destination personalized ONLY.
 export default defineThemeConfig({
-  site: 'https://www.liviubucel.com',
+  site: 'https://my-site-p444dlue-zebrabyte.wix-vibe-site.com',
   title: 'Liviu Bucel',
   description: 'Cybersecurity, digital investigations and technical projects',
   author: 'Liviu Bucel',
