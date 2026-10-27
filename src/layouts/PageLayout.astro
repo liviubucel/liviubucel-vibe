@@ -15,6 +15,7 @@ export type Props = BaseLayoutProps & {
     activeHeaderLink: string
     scrollToTop: boolean
     searchable: boolean
+    wide: boolean
   }>
 }
 
@@ -24,12 +25,13 @@ const {
   scrollProgress = config.scrollProgress,
   scrollToTop = config.scrollToTop,
   activeHeaderLink,
-  searchable = false
+  searchable = false,
+  wide = false
 } = frontmatter
 ---
 
 <BaseLayout frontmatter={frontmatter}>
-  <div class="mx-auto flex min-h-svh w-full max-w-[90%] flex-col justify-between md:max-w-3xl">
+  <div class:list={["mx-auto flex min-h-svh w-full max-w-[90%] flex-col justify-between",wide ? "md:max-w-5xl" : "md:max-w-3xl"]}>
     <Header activeHeaderLink={activeHeaderLink} />
     <slot name="top" />
 

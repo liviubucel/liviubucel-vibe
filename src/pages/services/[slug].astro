@@ -1,33 +1,8 @@
 ---
-import PageLayout from '@/layouts/PageLayout.astro';
-import ToC from '@/components/ToC.astro';
+import ServiceDetail from '@/components/services/ServiceDetail.astro';
 import {lookupService} from '@/lib/professional-services';
 export const prerender=false;
 const entry=lookupService(Astro.params.slug||'');
-if(!entry) Astro.response.status=404;
-const info=entry?.en;
-const headings=[
-{depth:2,slug:'overview',text:'Overview'},
-{depth:2,slug:'deliverables',text:'What is included'},
-{depth:2,slug:'process',text:'How the work happens'},
-{depth:2,slug:'audience',text:'Who this is for'},
-{depth:2,slug:'contact',text:'Discuss a project'}
-];
-const frontmatter={title:info?.name||'Service not found',activeHeaderLink:'Services',scrollProgress:!!entry,description:info?.lead||'Professional services'};
+if(!entry)Astro.response.status=404;
 ---
-<PageLayout {frontmatter}>
-  <div slot="aside" class="border-accent mt-24 hidden border-r pr-4 opacity-75 transition duration-500 ease-in-out hover:opacity-100 2xl:block">{entry&&<ToC {headings} open />}</div>
-  <a slot="top" class="clickable mt-4 flex w-fit items-center gap-1" href="/services/"><span class="iconify tabler--arrow-left"></span> All services</a>
-  {info?<>
-    <h1>{info.name}</h1>
-    <p class="text-xl">{info.lead}</p>
-    <div class="mt-6 w-fit rounded-sm border 2xl:hidden"><ToC {headings}/></div>
-    <article>
-      <section><h2 id="overview">Overview</h2><p>{info.introduction}</p></section>
-      <section><h2 id="deliverables">What is included</h2><ul>{info.deliverables.map(x=><li>{x}</li>)}</ul></section>
-      <section><h2 id="process">How the work happens</h2><ol>{info.process.map(x=><li>{x}</li>)}</ol></section>
-      <section><h2 id="audience">Who this is for</h2><ul>{info.forWhom.map(x=><li>{x}</li>)}</ul><p class="text-sm opacity-75">{info.scopeNote}</p></section>
-      <section><h2 id="contact">Discuss a project</h2><p>Tell me what you want to protect, what the problem is and which services you need. I'll reply with the next steps and whether a consultation is appropriate.</p><p><a href={'/contact/?service='+encodeURIComponent(entry.slug)} class="clickable">Request a consultation <span class="iconify tabler--arrow-up-right align-middle"></span></a></p></section>
-    </article>
-  </>:<h1>Service not found</h1>}
-</PageLayout>
+<ServiceDetail locale="en" {entry}/>
