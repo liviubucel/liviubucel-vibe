@@ -1,16 +1,23 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
+import {serviceOfferings} from '@/lib/professional-services';
 const frontmatter={title:"Professional services",description:"Practical cybersecurity and secure-infrastructure support, with clear technical scope, written authorisation and documented outcomes.",activeHeaderLink:'Services'};
 ---
 <PageLayout {frontmatter}>
   <h1>Professional services</h1>
   <p>Practical cybersecurity and secure-infrastructure support, with clear technical scope, written authorisation and documented outcomes.</p>
   <h2>What I can help with</h2>
-    <section id="scoped-security"><h3>Security assessment</h3><p class="font-medium">Authorised reviews of web applications, authentication and externally exposed services.</p><p>Agree targets and rules of engagement; review configuration and vulnerabilities; explain risk; deliver a prioritised remediation summary.</p></section>
-  <section id="cloudflare-managed"><h3>Cloudflare Managed</h3><p class="font-medium">Managed Cloudflare configuration, protection and ongoing optimisation for websites, domains and APIs.</p><p>DNS and DNSSEC configuration; SSL/TLS and secure headers; WAF managed/custom rules; bot and rate-limit controls; CDN/cache tuning; safe changes, monitoring and configuration reviews. Service availability depends on the customer’s Cloudflare plan and agreed scope.</p></section>
-  <section id="hosting"><h3>Website and hosting hardening</h3><p class="font-medium">Secure foundations for production websites, hosting and email infrastructure.</p><p>DNS and certificate hygiene, HTTP security headers, origin restrictions, access policies, update and backup reviews, plus technical troubleshooting.</p></section>
-  <section id="vulnerability"><h3>Vulnerability review and remediation guidance</h3><p class="font-medium">Turn reported exposures and vulnerability alerts into a practical action plan.</p><p>Validate applicability within scope, assess affected assets, prioritise patches and configuration changes, and document follow-up verification.</p></section>
-  <section id="incident"><h3>Incident triage</h3><p class="font-medium">Initial defensive help when a website or service may have been compromised.</p><p>Scope containment options, preserve relevant evidence, review technical indicators, and recommend the next investigative or recovery steps; specialist escalation when necessary.</p></section>
+  <div class="flex flex-col gap-2">
+    {serviceOfferings.map(service=>(
+      <section class="mb-2">
+        <h3><span class={'iconify '+service.icon+' mr-2 inline-block align-middle'} aria-hidden="true"></span>
+          <a href={'/services/'+service.slug+'/'}>{service.en.name}</a>
+        </h3>
+        <p>{service.en.lead}</p>
+        <p><a class="clickable" href={'/services/'+service.slug+'/'}>Explore this service <span class="iconify tabler--arrow-up-right align-middle"></span></a></p>
+      </section>
+    ))}
+  </div>
   <h2>How an engagement works</h2>
     <section><h3>01 — Scope</h3><p>Agree the assets, objectives, access and explicit testing authorisation.</p></section>
   <section><h3>02 — Assess</h3><p>Document the environment, verify observations and separate confirmed issues from assumptions.</p></section>

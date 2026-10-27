@@ -26,7 +26,6 @@ export default defineThemeConfig({
     {icon:'tabler--brand-github',href:'https://github.com/liviubucel',label:'GitHub'},
     {icon:'tabler--brand-linkedin',href:'https://www.linkedin.com/in/liviubucel/',label:'LinkedIn'},
     {icon:'tabler--brand-x',href:'https://x.com/liviubucel',label:'X'},
-    {icon:'tabler--mail',href:'mailto:contact@liviubucel.com',label:'Email'},
     {icon:'tabler--rss',href:'/rss.xml',label:'RSS feed'}
   ],
   locale:'en',

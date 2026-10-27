@@ -59,6 +59,7 @@ const PageDescription = undefined
                 data-icon={item.icon}
                 data-highlight-color={item.highlightColor}
                 data-description={item.description}
+                data-example={item.example}
                 data-tag={tagLabel ? tagLink.tag : undefined}
                 data-tag-label={tagLabel || undefined}
               >
@@ -83,6 +84,8 @@ const PageDescription = undefined
               <div class="flex flex-col gap-1 sm:gap-2">
                 <tool-details-title class="text-base sm:text-xl" />
                 <tool-details-description class="text-xs sm:text-base" />
+                <p class="text-xs font-semibold opacity-70 sm:text-sm">Exemplu practic</p>
+                <tool-details-example class="border-accent border-l-2 pl-3 text-xs leading-relaxed opacity-80 sm:text-base" />
                 <tool-details-tag class="hidden">
                   <a
                     href="/tags/"
@@ -113,11 +116,12 @@ const PageDescription = undefined
       const description = this.querySelector<HTMLElement>(
         'tool-details-description'
       )
+      const example = this.querySelector<HTMLElement>('tool-details-example')
       const tag = this.querySelector<HTMLElement>('tool-details-tag')
 
-      if (!title || !icon || !description || !tag) return
+      if (!title || !icon || !description || !example || !tag) return
 
-      return { title, icon, description, tag }
+      return { title, icon, description, example, tag }
     }
 
     connectedCallback() {
@@ -151,11 +155,12 @@ const PageDescription = undefined
           )
             return
 
-          const { title, description, icon, tag } = details
+          const { title, description, example, icon, tag } = details
 
           title.innerText = itemTitle
 
           description.innerText = itemDescription
+          example.innerText = button.dataset.example || ''
 
           icon.style = `--highlight-color: ${itemHighlightColor}`
 

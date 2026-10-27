@@ -24,8 +24,7 @@ const localePrefix = isRomanian ? '/ro' : ''
 const navTranslate=(label:string)=>isRomanian ? ({Projects:'Proiecte',Tags:'Etichete','Other pages':'Alte pagini',About:'Despre',Services:'Servicii',Resume:'CV',Tools:'Instrumente'} as Record<string,string>)[label] || label : label
 const localizedNavbarItems = config.navbarItems.map((item) =>
   isNavItem(item) ? {...item,label:navTranslate(item.label),href:localePrefix+item.href} :
-  {...item,label:navTranslate(item.label),children:[...item.children.map((child)=>({...child,label:navTranslate(child.label),href:localePrefix+child.href})),
-    {label:isRomanian?'English':'Română',href:isRomanian?'/':'/ro/'}]}
+  {...item,label:navTranslate(item.label),children:item.children.map(child=>({...child,label:navTranslate(child.label),href:localePrefix+child.href}))}
 )
 ---
 
@@ -36,19 +35,19 @@ const localizedNavbarItems = config.navbarItems.map((item) =>
   <div class="flex justify-between py-4 sm:py-8">
     <a
       href={localePrefix||"/"}
-      class="text-accent flex gap-2 text-2xl font-semibold"
+      class="text-accent flex shrink-0 items-center"
       transition:name="branding"
+      aria-label={isRomanian ? "Liviu Bucel — Acasă" : "Liviu Bucel — Home"}
+      title="Liviu Bucel"
     >
       <img
         alt="Liviu Bucel original LB logo"
         src={logoUrl}
-        width={24}
-        height={26}
-        class="h-6 w-6 object-contain dark:invert"
-        height={24}
+        width={182}
+        height={195}
+        class="h-14 w-14 shrink-0 object-contain dark:invert sm:h-20 sm:w-20"
         loading="eager"
       />
-      {config.title}
     </a>
     <nav class="hidden flex-col justify-end sm:flex">
       <ul class="flex gap-6">

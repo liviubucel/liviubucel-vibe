@@ -1,0 +1,33 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import ToC from '@/components/ToC.astro';
+import {lookupService} from '@/lib/professional-services';
+export const prerender=false;
+const entry=lookupService(Astro.params.slug||'');
+if(!entry) Astro.response.status=404;
+const info=entry?.ro;
+const headings=[
+{depth:2,slug:'overview',text:'Prezentare'},
+{depth:2,slug:'deliverables',text:'Ce include'},
+{depth:2,slug:'process',text:'Cum lucrăm'},
+{depth:2,slug:'audience',text:'Cui i se adresează'},
+{depth:2,slug:'contact',text:'Discută proiectul'}
+];
+const frontmatter={title:info?.name||'Serviciu negăsit',activeHeaderLink:'Services',scrollProgress:!!entry,description:info?.lead||'Servicii profesionale'};
+---
+<PageLayout {frontmatter}>
+  <div slot="aside" class="border-accent mt-24 hidden border-r pr-4 opacity-75 transition duration-500 ease-in-out hover:opacity-100 2xl:block">{entry&&<ToC {headings} open />}</div>
+  <a slot="top" class="clickable mt-4 flex w-fit items-center gap-1" href="/ro/services/"><span class="iconify tabler--arrow-left"></span> Toate serviciile</a>
+  {info?<>
+    <h1>{info.name}</h1>
+    <p class="text-xl">{info.lead}</p>
+    <div class="mt-6 w-fit rounded-sm border 2xl:hidden"><ToC {headings}/></div>
+    <article>
+      <section><h2 id="overview">Prezentare</h2><p>{info.introduction}</p></section>
+      <section><h2 id="deliverables">Ce include serviciul</h2><ul>{info.deliverables.map(x=><li>{x}</li>)}</ul></section>
+      <section><h2 id="process">Cum lucrăm</h2><ol>{info.process.map(x=><li>{x}</li>)}</ol></section>
+      <section><h2 id="audience">Cui i se adresează</h2><ul>{info.forWhom.map(x=><li>{x}</li>)}</ul><p class="text-sm opacity-75">{info.scopeNote}</p></section>
+      <section><h2 id="contact">Discută proiectul</h2><p>Descrie sistemul vizat, problema și scopul dorit. Îți voi răspunde cu pașii următori și îți voi spune dacă este potrivită o consultație.</p><p><a href={'/ro/contact/?service='+encodeURIComponent(entry.slug)} class="clickable">Solicită o consultație <span class="iconify tabler--arrow-up-right align-middle"></span></a></p></section>
+    </article>
+  </>:<h1>Serviciu negăsit</h1>}
+</PageLayout>

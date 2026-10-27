@@ -1,5 +1,6 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
+import ToC from '@/components/ToC.astro';
 import {projectStories} from '@/lib/project-stories';
 import TagsBar from '@/components/TagsBar.astro';
 import {resolveTags} from '@/util/tags';
@@ -13,9 +14,17 @@ const story=projectStories[project?.slug||''];
 const narrative=story?.en;
 const technologies=(project?projectTechnologies(project):'')?.split(',').map(x=>x.trim()).filter(Boolean)||[];
 const link=project?projectExternalLink(project):undefined;
-const frontmatter={title:project?.title||'Project not found',activeHeaderLink:'Projects',description:project?.description||'Technical project by Liviu Bucel'};
+const headings=narrative?[
+{depth:2,slug:'challenge',text:'Problem to solve'},
+{depth:2,slug:'architecture',text:'Design & architecture'},
+{depth:2,slug:'capabilities',text:'What it provides'},
+{depth:2,slug:'safeguards',text:'Security considerations'},
+{depth:2,slug:'code',text:'Code and demonstration'}
+]:[];
+const frontmatter={title:project?.title||'Project not found',activeHeaderLink:'Projects',scrollProgress:!!project,description:project?.description||'Technical project by Liviu Bucel'};
 ---
 <PageLayout {frontmatter}>
+  <div slot="aside" class="border-accent mt-24 hidden border-r pr-4 opacity-75 transition duration-500 ease-in-out hover:opacity-100 2xl:block">{narrative&&<ToC {headings} open />}</div>
   <div slot="top" class="mt-4">
     <a class="clickable flex w-fit items-center gap-1" href="/projects/">
       <span class="iconify tabler--arrow-left text-xl"></span>
@@ -25,20 +34,25 @@ const frontmatter={title:project?.title||'Project not found',activeHeaderLink:'P
   {project?(
     <>
       <h1 class="mt-2 mb-2 sm:my-4">{project.title}</h1>
+      {narrative&&<div class="mt-6 w-fit rounded-sm border 2xl:hidden"><ToC {headings}/></div>}
       <TagsBar tags={resolveTags(technologies)}/>
       <p>{project.description}</p>
+      {technologies.length>0&&<p class="mt-3 text-sm opacity-75"><strong>Technical stack: </strong>{technologies.join(" · ")}</p>}
       {story&&<figure class="mt-8">
         <a href={story.screenshot} target="_blank" rel="noopener noreferrer"><img src={story.screenshot} alt={story.imageCaption.en} width="1280" height="800" loading="lazy" class="w-full rounded-sm border border-current/20" /></a>
         <figcaption class="text-sm opacity-70">{story.imageCaption.en}</figcaption>
       </figure>}
+      <article>
       {narrative&&<>
-        <section><h2>Problem to solve</h2><p>{narrative.problem}</p></section>
-        <section><h2>Design & architecture</h2><p>{narrative.approach}</p></section>
-        <section><h2>What it provides</h2><ul>{narrative.outcomes.map(x=><li>{x}</li>)}</ul></section>
-        <section><h2>Security considerations</h2><ul>{narrative.security.map(x=><li>{x}</li>)}</ul></section>
+        <section><h2 id="challenge">Problem to solve</h2><p>{narrative.problem}</p></section>
+        <section><h2 id="architecture">Design & architecture</h2><p>{narrative.approach}</p></section>
+        <section><h2 id="capabilities">What it provides</h2><ul>{narrative.outcomes.map(x=><li>{x}</li>)}</ul></section>
+        <section><h2 id="safeguards">Security considerations</h2><ul>{narrative.security.map(x=><li>{x}</li>)}</ul></section>
       </>}
+      <section><h2 id="code">Code and demonstration</h2>
       {story?.repository&&<p><a class="clickable" href={story.repository} rel="noopener noreferrer" target="_blank">Source code on GitHub</a></p>}
       {story?.demo&&<p><a class="clickable" href={story.demo} rel="noopener noreferrer" target="_blank">Live website / demo</a></p>}
+      </section>
       {project.details?.filter(d=>d.label!=='Technologies'&&d.label!=='Project link').map(detail=>(
         <section>
           {detail.label&&<h2>{detail.label}</h2>}
@@ -46,6 +60,7 @@ const frontmatter={title:project?.title||'Project not found',activeHeaderLink:'P
           {detail.link?.url?.startsWith('https://')&&<p><a href={detail.link.url} rel="noopener noreferrer" target="_blank">{detail.link.text||'Open link'}</a></p>}
         </section>
       ))}
+      </article>
       {link&&<p><a class="clickable" href={link} rel="noopener noreferrer" target="_blank">Open project <span class="iconify tabler--external-link align-middle"></span></a></p>}
     </>
   ):<p>{unavailable?'Portfolio temporarily unavailable.':'Project not found.'}</p>}

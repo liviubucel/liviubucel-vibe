@@ -61,6 +61,7 @@
     "@wix/babel-plugin-jsx-dynamic-data": "1.0.19",
     "@wix/babel-plugin-jsx-source-attrs": "^1.1.0",
     "@wix/blog": "^1.0.557",
+    "@wix/bookings": "^1.0.1740",
     "@wix/cloud-provider-fetch-adapter": "^1.0.4",
     "@wix/data": "^1.0.376",
     "@wix/ecom": "^1.0.1706",

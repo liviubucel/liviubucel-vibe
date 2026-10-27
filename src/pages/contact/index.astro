@@ -1,48 +1,10 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
-const frontmatter={title:'Contact',description:'Contact Liviu Bucel for authorised cybersecurity projects',activeHeaderLink:'Contact'};
+import ContactExperience from '@/components/wix/ContactExperience.astro';
+const frontmatter={title:'Contact',description:'Contact Liviu Bucel about cybersecurity projects, Cloudflare Managed or a technical consultation',activeHeaderLink:'Contact'};
 ---
 <PageLayout {frontmatter}>
   <h1>Contact</h1>
-  <p>For cybersecurity engagements, professional opportunities and collaborations.</p>
-  <form id="nordlys-contact" class="flex flex-col gap-4" aria-label="Contact form">
-    <label class="flex flex-col gap-2">Name <input required name="name" autocomplete="name" minlength="2" maxlength="120" class="border-accent rounded-sm border p-3 bg-transparent" /></label>
-    <label class="flex flex-col gap-2">Email <input required name="email" type="email" autocomplete="email" maxlength="254" class="border-accent rounded-sm border p-3 bg-transparent" /></label>
-    <label class="flex flex-col gap-2">Subject <input required name="subject" minlength="3" maxlength="180" class="border-accent rounded-sm border p-3 bg-transparent" /></label>
-    <label class="flex flex-col gap-2">Message <textarea required name="message" minlength="10" maxlength="6000" rows="7" class="border-accent rounded-sm border p-3 bg-transparent"></textarea></label>
-    <div class="hidden" aria-hidden="true"><label>Website <input type="text" name="website" autocomplete="off" tabindex="-1" /></label></div>
-    <p class="text-sm opacity-75">Messages are processed through Wix Forms as described in the <a href="/privacy/">privacy policy</a>.</p>
-    <button type="submit" class="clickable self-start rounded-sm border p-3">Send message</button>
-    <p id="nordlys-contact-result" role="status" aria-live="polite"></p>
-  </form>
-  <h2>Other ways to connect</h2>
-  <p><a href="mailto:contact@liviubucel.com">contact@liviubucel.com</a> · <a href="https://www.linkedin.com/in/liviubucel/" rel="noopener noreferrer" target="_blank">LinkedIn</a></p>
-  <p>For a current CV, please use the subject “CV Request”.</p>
+  <p>Tell me about your project, technical problem or professional opportunity. I can help define a realistic scope before any security work starts.</p>
+  <ContactExperience locale="en"/>
 </PageLayout>
-<script>
-  function bindContact(){
-    const form=document.querySelector<HTMLFormElement>('#nordlys-contact');
-    if(!form||form.dataset.ready==='true')return;
-    form.dataset.ready='true';
-    const result=document.querySelector<HTMLElement>('#nordlys-contact-result');
-    const button=form.querySelector<HTMLButtonElement>('button[type=submit]');
-    form.addEventListener('submit',async event=>{
-      event.preventDefault();
-      if(!form.reportValidity()||!button)return;
-      button.disabled=true;
-      button.textContent='Sending…';
-      if(result)result.textContent='';
-      try{
-        const data=Object.fromEntries(new FormData(form).entries());
-        const response=await fetch('/api/contact',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(data)});
-        if(!response.ok)throw new Error('Submission unavailable');
-        form.reset();
-        if(result)result.textContent='Message sent. Thank you!';
-      }catch{
-        if(result)result.textContent='Message could not be sent. Please email contact@liviubucel.com instead.';
-      }finally{button.disabled=false;button.textContent='Send message'}
-    });
-  }
-  document.addEventListener('astro:page-load',bindContact);
-  bindContact();
-</script>
