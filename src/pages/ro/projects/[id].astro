@@ -14,7 +14,7 @@ const story=projectStories[project?.slug||''];
 const narrative=story?.ro;
 const technologies=(project?projectTechnologies(project):'')?.split(',').map(x=>x.trim()).filter(Boolean)||[];
 const link=project?projectExternalLink(project):undefined;
-const frontmatter={title:project?.title||'Project not found',activeHeaderLink:'Projects',description:project?.description||'Technical project de Liviu Bucel'};
+const frontmatter={title:project?.title||'Project not found',activeHeaderLink:'Projects',wixSeoItem:true,description:project?.description||'Technical project de Liviu Bucel'};
 ---
 <PageLayout {frontmatter}>
   {project?.slug&&<WixItemSeo kind="portfolio" slug={project.slug} slot="seo-tags" />}

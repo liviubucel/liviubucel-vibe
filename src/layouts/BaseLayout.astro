@@ -9,6 +9,8 @@ import ModeManager from '@/components/mode/ModeManager.astro'
 import CodeBlockIconsPlugin from '@/plugins/CodeBlockIconsPlugin.astro'
 import ZoomableImagesPlugin from '@/plugins/ZoomableImagesPlugin.astro'
 import config from '@/theme.config'
+import {SEO} from '@wix/seo/components'
+import {loadSEOTagsServiceConfig} from '@wix/seo/services'
 import { ClientRouter } from 'astro:transitions'
 
 const preloadFonts = [
@@ -26,10 +28,28 @@ export interface Props {
     canonicalURL: string
     publishedDate: Date
     updatedDate?: Date
+    wixSeoItem?: boolean
   }>
 }
 const { frontmatter }=Astro.props;
 const author=frontmatter.author||config.author;
+// Resolve SEO from Wix SEO & GEO instead of rendering duplicate handwritten tags.
+// Native Blog and Portfolio item pages render Wix-resolved item tags through the slot.
+const forwardedUrl=Astro.request.headers.get('x-wix-forwarded-url');
+const pageUrl=forwardedUrl&&URL.canParse(forwardedUrl)&&/^https?:$/.test(new URL(forwardedUrl).protocol)
+  ? forwardedUrl:Astro.url.href;
+let mainSeo:Awaited<ReturnType<typeof loadSEOTagsServiceConfig>>|undefined;
+if(!frontmatter.wixSeoItem){
+  try{
+    mainSeo=await loadSEOTagsServiceConfig({
+      pageUrl,
+      itemData:{pageName:frontmatter.title||config.title}
+    });
+  }catch(error){
+    console.error('[wix-native-main-seo]',error instanceof Error?error.message:'Service unavailable');
+  }
+}
+
 ---
 
 <!doctype html>
@@ -44,6 +64,7 @@ const author=frontmatter.author||config.author;
     <!-- Native Wix SEO (dashboard controlled): title, description, canonical,
          OG/Twitter, robots and JSON-LD injected by @wix/astro middleware.
          Dynamic Wix item pages forward resolved tags through this slot. -->
+    {mainSeo&&<SEO.Tags seoTagsServiceConfig={mainSeo}/>}
     <slot name="seo-tags" />
     <link
       rel="alternate"
