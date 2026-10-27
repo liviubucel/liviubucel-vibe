@@ -1,11 +1,13 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
 import {serviceOfferings,type Locale,type ServiceOffering} from '@/lib/professional-services';
+import {getServiceMedia} from '@/lib/service-media';
 interface Props{locale:Locale;entry?:ServiceOffering}
 const {locale,entry}=Astro.props;
 const ro=locale==='ro';
 const prefix=ro?'/ro':'';
 const info=entry?.[locale];
+const visual=entry?getServiceMedia(entry.slug):undefined;
 if(!entry) Astro.response.status=404;
 const contact=prefix+'/contact/?service='+encodeURIComponent(entry?.slug||'');
 const next=serviceOfferings.filter(s=>s.slug!==entry?.slug).slice(0,3);
@@ -48,6 +50,13 @@ const frontmatter={title:info?.name||'Service not found',description:info?.lead|
           </div>
         </div>
       </section>
+
+      {visual&&<figure class="my-8 sm:my-12">
+        <img src={visual.url} alt={visual.alt[locale]} width="1400" height="933"
+          class:list={['w-full rounded-sm border border-current/20',visual.kind==='public-site'?'max-h-[450px] object-contain':'aspect-[16/8] max-h-[450px] object-cover']}
+          loading="lazy" decoding="async" />
+        <figcaption class="mt-2 text-sm opacity-65">{visual.caption[locale]}</figcaption>
+      </figure>}
 
       <section class="grid gap-8 border-b border-current/20 py-12 sm:py-16 lg:grid-cols-[0.65fr_1fr] lg:gap-16">
         <div>

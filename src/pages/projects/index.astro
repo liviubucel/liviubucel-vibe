@@ -4,7 +4,7 @@ import PageLayout from '@/layouts/PageLayout.astro';
 import ProjectsList from '@/components/projects/ProjectsList.astro';
 import {projectStories} from '@/lib/project-stories';
 import Pagination from '@/components/Pagination.astro';
-import {getNativeProjects,projectTechnologies} from '@/lib/wix-portfolio';
+import {getNativeProjects,projectTechnologies,projectCoverUrl} from '@/lib/wix-portfolio';
 import type {CollectionEntry} from 'astro:content';
 import type {Page} from 'astro';
 export const prerender=false;
@@ -21,7 +21,7 @@ const entries=visible.map(p=>({
     title:p.title||'Untitled',
     url:'/projects/'+encodeURIComponent(p.slug||p._id||p.id||'')+'/',
     tags:(projectTechnologies(p)||'').split(',').map(x=>x.trim()).filter(Boolean),
-    previewImage:projectStories[p.slug||'']?.screenshot,
+    previewImage:projectCoverUrl(p)||projectStories[p.slug||'']?.screenshot,
     wixDescription:p.description||''
   }
 })) as unknown as CollectionEntry<'projects'>[];

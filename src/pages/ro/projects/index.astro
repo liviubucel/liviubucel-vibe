@@ -4,7 +4,7 @@ import PageLayout from '@/layouts/PageLayout.astro';
 import ProjectsList from '@/components/projects/ProjectsList.astro';
 import {projectStories} from '@/lib/project-stories';
 import Pagination from '@/components/Pagination.astro';
-import {getNativeProjects,projectTechnologies} from '@/lib/wix-portfolio';
+import {getNativeProjects,projectTechnologies,projectCoverUrl} from '@/lib/wix-portfolio';
 import type {CollectionEntry} from 'astro:content';
 import type {Page} from 'astro';
 export const prerender=false;
@@ -21,7 +21,7 @@ const entries=visible.map(p=>({
     title:p.title||'Untitled',
     url:'/ro/projects/'+encodeURIComponent(p.slug||p._id||p.id||'')+'/',
     tags:(projectTechnologies(p)||'').split(',').map(x=>x.trim()).filter(Boolean),
-    previewImage:projectStories[p.slug||'']?.screenshot,
+    previewImage:projectCoverUrl(p)||projectStories[p.slug||'']?.screenshot,
     wixDescription:p.description||''
   }
 })) as unknown as CollectionEntry<'projects'>[];
@@ -33,9 +33,9 @@ const frontmatter={title:'Proiecte',activeHeaderLink:'Projects',description:'Cyb
 ---
 <PageLayout {frontmatter}>
   <h1>Proiecte</h1>
-  <p>Selected cybersecurity, infrastructure and development projects.</p>
-  {!available&&<p role="alert">Portfolio is temporarily unavailable.</p>}
-  {available&&projects.length===0&&<p>No projects published yet.</p>}
+  <p>Proiecte din securitate cibernetică, infrastructură și dezvoltare.</p>
+  {!available&&<p role="alert">Portofoliul nu este disponibil temporar.</p>}
+  {available&&projects.length===0&&<p>Nu există încă proiecte publicate.</p>}
   <ProjectsList projects={entries}/>
   <Pagination slot="bottom" {page}/>
 </PageLayout>

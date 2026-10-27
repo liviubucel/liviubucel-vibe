@@ -1,6 +1,7 @@
 ---
 import PageLayout from '@/layouts/PageLayout.astro';
 import {serviceOfferings,type Locale} from '@/lib/professional-services';
+import {getServiceMedia} from '@/lib/service-media';
 interface Props{locale:Locale}
 const {locale}=Astro.props;
 const ro=locale==='ro';
@@ -22,10 +23,10 @@ const frontmatter={
       <div class="grid items-end gap-8 md:grid-cols-[1.5fr_1fr]">
         <div>
           <h1 class="max-w-[16ch] text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
-            {ro?'Soluții practice pentru sisteme mai sigure.':'Practical security for systems that matter.'}
+            {ro?'Analizez și securizez infrastructura web.':'I review and secure web infrastructure.'}
           </h1>
           <p class="mt-6 max-w-2xl text-lg leading-relaxed opacity-80">
-            {ro?'De la configurația Cloudflare până la evaluarea aplicațiilor și securizarea infrastructurii. Lucrăm cu obiective clare, verificări documentate și schimbări aprobate.':'From Cloudflare management to application reviews and infrastructure hardening. Clear scope, documented findings and authorised changes.'}
+            {ro?'Lucrez cu Cloudflare, DNS, TLS, WAF și protecția site-urilor. Fiecare proiect începe cu un scop clar, constatări documentate și modificări aprobate.':'I work with Cloudflare, DNS, TLS, WAF and website protection. Each project starts with a defined scope, documented findings and approved changes.'}
           </p>
         </div>
         <div class="rounded-sm border border-current/20 p-6">
@@ -47,6 +48,11 @@ const frontmatter={
       {serviceOfferings.map((offering,i)=>(
         <a href={prefix+'/services/'+offering.slug+'/'} class:list={['group flex min-w-0 flex-col justify-between rounded-sm border border-current/20 p-6 no-underline transition duration-300 ease-in-out hover:-translate-y-1 hover:border-current/60 focus-visible:outline-2 focus-visible:outline-offset-2',i===0?'sm:col-span-2':'']}>
           <div>
+            {getServiceMedia(offering.slug)&&<figure class="mb-6">
+              <img src={getServiceMedia(offering.slug)!.url} alt={getServiceMedia(offering.slug)!.alt[locale]} width="1400" height="933" loading="lazy" decoding="async"
+                class:list={['w-full rounded-sm border border-current/15 object-cover',i===0?'aspect-[16/7] max-h-[290px]':'aspect-[16/9] max-h-[210px]']} />
+              <figcaption class="mt-2 text-xs leading-relaxed opacity-60">{getServiceMedia(offering.slug)!.caption[locale]}</figcaption>
+            </figure>}
             <div class="mb-6 flex items-center justify-between">
               <span class="flex h-12 w-12 items-center justify-center rounded-sm border border-current/20">
                 <span class={'iconify '+offering.icon+' text-3xl'} aria-hidden="true"></span>

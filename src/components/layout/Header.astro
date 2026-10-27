@@ -32,7 +32,7 @@ const localizedNavbarItems = config.navbarItems.map((item) =>
   <a href="#main" class="absolute -top-full left-8 px-2 py-2 focus:top-8">
     Skip to main content
   </a>
-  <div class="flex justify-between py-4 sm:py-8">
+  <div class="flex items-center justify-between gap-4 py-4 sm:py-6">
     <a
       href={localePrefix||"/"}
       class="text-accent flex shrink-0 items-center"
@@ -45,12 +45,12 @@ const localizedNavbarItems = config.navbarItems.map((item) =>
         src={logoUrl}
         width={182}
         height={195}
-        class="h-11 w-11 shrink-0 object-contain dark:invert sm:h-13 sm:w-13"
+        class="h-13 w-13 shrink-0 object-contain dark:invert sm:h-[68px] sm:w-[68px]"
         loading="eager"
       />
     </a>
-    <nav class="hidden flex-col justify-end sm:flex">
-      <ul class="flex gap-6">
+    <nav class="hidden items-center sm:flex">
+      <ul class="flex items-center gap-5">
         {localizedNavbarItems.map((item) => (
           <li class="flex flex-col justify-center">
             {isNavItem(item) ? (
