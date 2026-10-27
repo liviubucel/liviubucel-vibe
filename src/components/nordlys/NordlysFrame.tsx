@@ -121,7 +121,12 @@ export function NordlysNavigation(){
   return <header className="nordlys-navbar">
     <a href="#main" className="nordlys-skip">Skip to main content</a>
     <div className="nordlys-nav-row">
-      <Link viewTransition className="nordlys-logo-link" to={localizedPath('/',lang)}><AuroraMark/> {portfolio.name}</Link>
+      <Link viewTransition className="nordlys-logo-link" to={localizedPath('/',lang)} aria-label={portfolio.name}>
+        <img className="nordlys-logo-img" width={68} height={68}
+          src="https://static.wixstatic.com/media/a4f45c_7fb5025a965f4edf813cf097cb85783e~mv2.png"
+          alt="" decoding="async"/>
+        <span className="nordlys-brand-visually-hidden">{portfolio.name}</span>
+      </Link>
       <nav className="nordlys-navlinks" aria-label={ro?'Navigare principală':'Main navigation'}>
         {mainItems.map(([path,label])=><Link viewTransition key={path} to={localizedPath(path,lang)} aria-current={loc.pathname===localizedPath(path,lang)?'page':undefined}>{label}</Link>)}
         <NordlysDropdown items={moreItems} label={ro?'Mai mult':'More'}/>
