@@ -122,7 +122,7 @@ export function NordlysNavigation(){
     <a href="#main" className="nordlys-skip">Skip to main content</a>
     <div className="nordlys-nav-row">
       <Link viewTransition className="nordlys-logo-link" to={localizedPath('/',lang)} aria-label={portfolio.name}>
-        <img className="nordlys-logo-img" width={56} height={56}
+        <img className="nordlys-logo-img" width={68} height={68}
           src="https://static.wixstatic.com/media/a4f45c_7fb5025a965f4edf813cf097cb85783e~mv2.png"
           alt="" decoding="async"/>
         <span className="nordlys-brand-visually-hidden">{portfolio.name}</span>
