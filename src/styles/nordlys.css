@@ -359,12 +359,12 @@ html.theme-switching ::view-transition-old(root){z-index:1;}
   clip:rect(0,0,0,0);white-space:nowrap;border:0;
 }
 .nordlys-logo-link{
-  min-width:56px;min-height:56px;display:inline-flex;align-items:center;
+  min-width:68px;min-height:68px;display:inline-flex;align-items:center;
   justify-content:flex-start;flex:0 0 auto;gap:0;
   line-height:1;transition:none;
 }
 .nordlys-logo-img{
-  display:block;width:56px;height:56px;object-fit:contain;object-position:center;
+  display:block;width:68px;height:68px;object-fit:contain;object-position:center;
   filter:invert(1);
 }
 :root[data-mode="light"] .nordlys-logo-img{filter:none;}
@@ -403,8 +403,8 @@ html.theme-switching ::view-transition-old(root){z-index:1;}
   color:var(--n-dim);font-size:.78rem;line-height:1.6;margin-top:8px;
 }
 @media(max-width:680px){
-  .nordlys-logo-link{min-height:48px;min-width:48px;}
-  .nordlys-logo-img{width:48px;height:48px;}
+  .nordlys-logo-link{min-height:56px;min-width:56px;}
+  .nordlys-logo-img{width:56px;height:56px;}
   .nordlys-project-list .nordlys-list-item,
   .nordlys-services-list .nordlys-service-item{
     grid-template-columns:minmax(0,1fr);gap:12px;align-items:start;
