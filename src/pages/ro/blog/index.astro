@@ -36,13 +36,13 @@ const page={
   currentPage,lastPage,
   url:{prev:currentPage>1?'/ro/blog/?page='+(currentPage-1):undefined,next:currentPage<lastPage?'/ro/blog/?page='+(currentPage+1):undefined}
 } as unknown as Page;
-const frontmatter={title:'Articole',activeHeaderLink:'Blog',description:'Cybersecurity research, technical notes and investigations'};
+const frontmatter={title:'Articole',activeHeaderLink:'Blog',description:'Analize de securitate cibernetică, note tehnice și investigații'};
 ---
 <PageLayout {frontmatter}>
   <h1>Articole</h1>
-  <p>Technical notes, cybersecurity research and investigation reports.</p>
-  {!available&&<p role="alert">Wix Blog is temporarily unavailable.</p>}
-  {available&&native.length===0&&<p>No published posts yet.</p>}
+  <p>Note tehnice, cercetări de securitate cibernetică și analize ale incidentelor.</p>
+  {!available&&<p role="alert">Wix Blog nu este disponibil temporar.</p>}
+  {available&&native.length===0&&<p>Nu există încă articole publicate.</p>}
   <PostsList posts={adapted}/>
   <Pagination slot="bottom" {page}/>
 </PageLayout>

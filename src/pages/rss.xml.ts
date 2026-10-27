@@ -1,15 +1,16 @@
 import type {APIRoute} from 'astro';
 import {posts} from '@wix/blog';
+import {publishedSiteBase} from '@/lib/site-sitemap';
 export const prerender=false;
 const esc=(v:string)=>v.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
 export const GET:APIRoute=async()=>{
   try{
     const response=await posts.listPosts({paging:{limit:100}});
     const entries=response.posts||[];
-    const base='https://www.liviubucel.com';
+    const base=publishedSiteBase;
     const items=entries.slice(0,100).map(p=>{
       const title=esc(p.title||'Untitled');
-      const link=base+'/blog/'+encodeURIComponent(p.slug||p.id||p._id||'');
+      const link=base+'/blog/'+encodeURIComponent(p.slug||p.id||p._id||'')+'/';
       const description=esc(p.excerpt||'');
       const date=p.firstPublishedDate?new Date(p.firstPublishedDate).toUTCString():'';
       return '<item><title>'+title+'</title><link>'+esc(link)+'</link><guid>'+esc(link)+'</guid><description>'+description+'</description>'+(date?'<pubDate>'+date+'</pubDate>':'')+'</item>';

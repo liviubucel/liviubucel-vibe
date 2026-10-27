@@ -51,7 +51,7 @@ const frontmatter={title:project?.title||'Project not found',activeHeaderLink:'P
         </section>
       ))}
       </article>
-      {link&&<p><a class="clickable" href={link} rel="noopener noreferrer" target="_blank">Open project <span class="iconify tabler--external-link align-middle"></span></a></p>}
+      {link&&<p><a class="clickable" href={link} rel="noopener noreferrer" target="_blank">Deschide proiectul <span class="iconify tabler--external-link align-middle"></span></a></p>}
     </>
-  ):<p>{unavailable?'Portfolio temporarily unavailable.':'Project not found.'}</p>}
+  ):<p>{unavailable?'Portofoliul nu este disponibil temporar.':'Proiectul nu a fost găsit.'}</p>}
 </PageLayout>
